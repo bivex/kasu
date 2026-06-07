@@ -1,0 +1,159 @@
+## Article 327. Cassation court
+
+```catala
+declaration scope Article327CassationCourt:
+  input determination content CassationCourtDetermination
+  output supremeCourtIsCassationCourt content YesNo
+
+scope Article327CassationCourt:
+# Supreme Court is the cassation court
+  label supreme_court definition supremeCourtIsCassationCourt under condition
+    determination.isSupremeCourt = Yes
+    consequence equals Yes
+
+  label not_supreme definition supremeCourtIsCassationCourt equals No
+```
+
+## Article 328. Right to cassation appeal
+
+```catala
+declaration scope Article328CassationRight:
+  input check content CassationRightCheck
+  output hasRightToCassationAppeal content YesNo
+  output mayAppealAppealCourtRuling content YesNo
+  output notSubjectToCassation content YesNo
+  output nonParticipantAcquiresRights content YesNo
+
+scope Article328CassationRight:
+# Case participants may appeal after appeal review
+  label participant_appeal definition hasRightToCassationAppeal under condition
+    check.isCaseParticipant = Yes
+    consequence equals Yes
+
+# Non-participant whose rights were decided may appeal
+  label nonparticipant_appeal definition hasRightToCassationAppeal under condition
+    check.courtDecidedRightsOfNonParticipant = Yes
+    consequence equals Yes
+
+  label no_right definition hasRightToCassationAppeal equals No
+
+# May appeal appeal court rulings
+  label appeal_ruling definition mayAppealAppealCourtRuling under condition
+    check.appealingAppealCourtRuling = Yes
+    consequence equals Yes
+
+  label no_appeal_ruling definition mayAppealAppealCourtRuling equals No
+
+# Not subject to cassation: Supreme Court appeal decisions, simplified proceedings
+  label not_cassationable definition notSubjectToCassation under condition
+    check.isNonAppealableCategory = Yes
+    and check.simplifiedCassationExceptionApplies = No
+    consequence equals Yes
+
+  label exception_applies definition notSubjectToCassation under condition
+    check.isNonAppealableCategory = Yes
+    and check.simplifiedCassationExceptionApplies = Yes
+    consequence equals No
+
+  label cassationable definition notSubjectToCassation equals No
+
+# Non-participant whose rights decided acquires participant rights
+  label acquires_rights definition nonParticipantAcquiresRights under condition
+    check.courtDecidedRightsOfNonParticipant = Yes
+    consequence equals Yes
+
+  label no_acquisition definition nonParticipantAcquiresRights equals No
+```
+
+## Article 329. Cassation appeal deadlines
+
+```catala
+declaration scope Article329CassationDeadlines:
+  input deadline content CassationDeadlineDetermination
+  output appealWithinDeadline content YesNo
+  output deadlineMayBeRestored content YesNo
+  output oneYearAbsoluteDeadlineApplies content YesNo
+
+scope Article329CassationDeadlines:
+# 30 days from pronouncement
+  label thirty_days definition appealWithinDeadline under condition
+    deadline.daysSincePronouncement <= 30
+    consequence equals Yes
+
+# Abbreviated: from full decision composition
+  label abbreviated definition appealWithinDeadline under condition
+    deadline.abbreviatedDecisionPronounced = Yes
+    and deadline.daysSinceFullDecisionComposed <= 30
+    consequence equals Yes
+
+# Written: from full decision composition
+  label written definition appealWithinDeadline under condition
+    deadline.writtenProceeding = Yes
+    and deadline.daysSinceFullDecisionComposed <= 30
+    consequence equals Yes
+
+  label deadline_expired definition appealWithinDeadline equals No
+
+# Restoration when full decision not served on day of pronouncement
+  label restoration_service definition deadlineMayBeRestored under condition
+    deadline.fullDecisionServedToComplainant = No
+    consequence equals Yes
+
+# Restoration for good cause
+  label restoration_good_cause definition deadlineMayBeRestored under condition
+    deadline.goodCauseForDelay = Yes
+    consequence equals Yes
+
+  label no_restoration definition deadlineMayBeRestored equals No
+
+# One year absolute deadline for prosecutor/authority
+  label one_year definition oneYearAbsoluteDeadlineApplies under condition
+    deadline.isProsecutorOrAuthority = Yes
+    and deadline.oneYearSinceFullDecision = Yes
+    consequence equals Yes
+
+  label no_one_year definition oneYearAbsoluteDeadlineApplies under condition
+    deadline.isProsecutorOrAuthority = Yes
+    and deadline.oneYearSinceFullDecision = No
+    consequence equals No
+```
+
+## Article 330. Form and content of cassation complaint
+
+```catala
+declaration scope Article330CassationForm:
+  input check content CassationComplianceCheck
+  output complaintMeetsFormRequirements content YesNo
+
+scope Article330CassationForm:
+# Complaint must meet all formal requirements
+  label compliant definition complaintMeetsFormRequirements under condition
+    check.complaintInWrittenForm = Yes
+    and check.courtFeePaid = Yes
+    and check.groundsSpecified = Yes
+    consequence equals Yes
+
+  label not_compliant definition complaintMeetsFormRequirements under condition
+    check.complaintInWrittenForm = No
+    consequence equals No
+
+  label no_fee definition complaintMeetsFormRequirements under condition
+    check.courtFeePaid = No
+    and check.exemptFromCourtFee = No
+    consequence equals No
+
+  label no_grounds definition complaintMeetsFormRequirements under condition
+    check.groundsSpecified = No
+    consequence equals No
+```
+
+## Article 331. Filing procedure
+
+```catala
+declaration scope Article331CassationFiling:
+  output filedDirectlyWithCassationCourt content YesNo
+
+scope Article331CassationFiling:
+# Cassation complaint filed directly with cassation court
+  label direct_filing definition filedDirectlyWithCassationCourt equals Yes
+```

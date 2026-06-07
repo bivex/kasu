@@ -1,0 +1,273 @@
+## Article 361. Grounds for review for newly discovered or exceptional circumstances
+
+```catala
+declaration scope Article361ReviewGrounds:
+  input check content ReviewGroundsCheck
+  output reviewGroundExists content YesNo
+  output newlyDiscoveredGroundExists content YesNo
+  output exceptionalGroundExists content YesNo
+  output reviewNotAllowed content YesNo
+
+scope Article361ReviewGrounds:
+# Newly discovered grounds
+  label not_known definition newlyDiscoveredGroundExists under condition
+    check.newlyDiscoveredGround = NewlyDiscoveredGround.SignificantCircumstancesNotKnown
+    consequence equals Yes
+
+  label false_evidence definition newlyDiscoveredGroundExists under condition
+    check.newlyDiscoveredGround = NewlyDiscoveredGround.FalseEvidenceEstablished
+    consequence equals Yes
+
+  label cancelled_decision definition newlyDiscoveredGroundExists under condition
+    check.newlyDiscoveredGround = NewlyDiscoveredGround.UnderlyingDecisionCancelled
+    consequence equals Yes
+
+  label no_newly_discovered definition newlyDiscoveredGroundExists equals No
+
+# Exceptional grounds
+  label unconstitutional definition exceptionalGroundExists under condition
+    check.exceptionalGround = ExceptionalCircumstanceGround.UnconstitutionalityEstablished
+    consequence equals Yes
+
+  label judge_guilt definition exceptionalGroundExists under condition
+    check.exceptionalGround = ExceptionalCircumstanceGround.JudgeCriminalGuilt
+    consequence equals Yes
+
+  label international definition exceptionalGroundExists under condition
+    check.exceptionalGround = ExceptionalCircumstanceGround.InternationalCourtViolation
+    consequence equals Yes
+
+  label no_exceptional definition exceptionalGroundExists equals No
+
+# Review ground exists when either newly discovered or exceptional
+  label ground definition reviewGroundExists under condition
+    newlyDiscoveredGroundExists = Yes
+    or exceptionalGroundExists = Yes
+    consequence equals Yes
+
+  label no_ground definition reviewGroundExists equals No
+
+# Review not allowed for re-evaluation of evidence
+  label reevaluation definition reviewNotAllowed under condition
+    check.isReevaluationOfEvidence = Yes
+    consequence equals Yes
+
+  label unexamined definition reviewNotAllowed under condition
+    check.isUnexaminedEvidenceOfEstablishedFacts = Yes
+    consequence equals Yes
+
+  label new_law_not_ground definition reviewNotAllowed under condition
+    check.newLawSoftensOrCancelsResponsibility = No
+    consequence equals Yes
+
+  label allowed definition reviewNotAllowed equals No
+```
+
+## Article 362. Right to apply for review
+
+```catala
+declaration scope Article362ReviewRight:
+  input check content ReviewRightCheck
+  output hasRightToRequestReview content YesNo
+
+scope Article362ReviewRight:
+# Case participants may request review
+  label participant definition hasRightToRequestReview under condition
+    check.isCaseParticipant = Yes
+    consequence equals Yes
+
+# Non-participant whose rights were decided may request review
+  label nonparticipant definition hasRightToRequestReview under condition
+    check.courtDecidedRightsOfNonParticipant = Yes
+    consequence equals Yes
+
+  label no_right definition hasRightToRequestReview equals No
+```
+
+## Article 363. Procedure and deadlines for review application
+
+```catala
+declaration scope Article363ReviewDeadlines:
+  input deadline content ReviewDeadlineDetermination
+  output applicationWithinDeadline content YesNo
+  output absoluteDeadlineApplies content YesNo
+
+scope Article363ReviewDeadlines:
+# Newly discovered: significant circumstances - 30 days from discovery, max 3 years
+  label significant_circumstances definition applicationWithinDeadline under condition
+    deadline.daysSinceDiscovery <= 30
+    and deadline.yearsSinceDecisionFinal <= 3
+    consequence equals Yes
+
+# Newly discovered: false evidence - 30 days from verdict
+  label false_evidence definition applicationWithinDeadline under condition
+    deadline.daysSinceVerdictFinal <= 30
+    consequence equals Yes
+
+# Newly discovered: underlying decision cancelled - 30 days from cancellation
+  label cancelled definition applicationWithinDeadline under condition
+    deadline.daysSinceUnderlyingDecisionCancelled <= 30
+    consequence equals Yes
+
+# Exceptional: constitutional court - 30 days from publication
+  label constitutional definition applicationWithinDeadline under condition
+    deadline.daysSinceConstitutionalCourtPublished <= 30
+    consequence equals Yes
+
+# Exceptional: judge guilt - 30 days from verdict
+  label judge_verdict definition applicationWithinDeadline under condition
+    deadline.daysSinceJudgeVerdictFinal <= 30
+    consequence equals Yes
+
+# Exceptional: international court - 30 days from final status
+  label international definition applicationWithinDeadline under condition
+    deadline.daysSinceInternationalCourtFinal <= 30
+    consequence equals Yes
+
+  label deadline_expired definition applicationWithinDeadline equals No
+
+# Absolute deadlines: 3 years for significant circumstances, 10 years for others
+  label three_year_absolute definition absoluteDeadlineApplies under condition
+    deadline.yearsSinceDecisionFinal > 3
+    and deadline.isInternationalCourtCase = No
+    consequence equals Yes
+
+  label ten_year_absolute definition absoluteDeadlineApplies under condition
+    deadline.yearsSinceDecisionFinal > 10
+    consequence equals Yes
+
+  label no_absolute definition absoluteDeadlineApplies equals No
+```
+
+## Article 364. Form and content of review application
+
+```catala
+declaration scope Article364ReviewForm:
+  input check content ReviewFormCheck
+  output applicationMeetsFormRequirements content YesNo
+
+scope Article364ReviewForm:
+# Application must meet formal requirements
+  label compliant definition applicationMeetsFormRequirements under condition
+    check.complaintMeetsRequirements = Yes
+    and check.evidenceAttached = Yes
+    consequence equals Yes
+
+  label not_compliant definition applicationMeetsFormRequirements under condition
+    check.complaintMeetsRequirements = No
+    consequence equals No
+
+  label no_evidence definition applicationMeetsFormRequirements under condition
+    check.evidenceAttached = No
+    consequence equals No
+```
+
+## Article 365. Filing procedure for review application
+
+```catala
+declaration scope Article365ReviewFiling:
+  input check content ReviewFilingCheck
+  output filedWithCorrectCourt content YesNo
+
+scope Article365ReviewFiling:
+# First instance decision review filed with court that decided
+  label first_instance definition filedWithCorrectCourt under condition
+    check.reviewingFirstInstanceDecision = Yes
+    consequence equals Yes
+
+# Appeal or cassation decision review filed with court that changed/adopted new decision
+  label higher_instance definition filedWithCorrectCourt under condition
+    check.reviewingAppealOrCassationDecision = Yes
+    consequence equals Yes
+
+# International court ground filed with Supreme Court Grand Chamber
+  label international definition filedWithCorrectCourt under condition
+    check.isInternationalCourtGround = Yes
+    consequence equals Yes
+
+  label wrong_court definition filedWithCorrectCourt equals No
+```
+
+## Article 366. Opening proceedings for review
+
+```catala
+declaration scope Article366ReviewOpening:
+  input check content ReviewOpeningCheck
+  output proceedingsOpened content YesNo
+  output fiveDayDecisionDeadline content YesNo
+
+scope Article366ReviewOpening:
+# Open when requirements met and deadline not expired
+  label open definition proceedingsOpened under condition
+    check.complaintMeetsRequirements = Yes
+    and check.deadlineExpiredWithoutRestoration = No
+    and check.absoluteDeadlineExpired = No
+    consequence equals Yes
+
+  label not_opened_requirements definition proceedingsOpened under condition
+    check.complaintMeetsRequirements = No
+    consequence equals No
+
+  label not_opened_deadline definition proceedingsOpened under condition
+    check.deadlineExpiredWithoutRestoration = Yes
+    consequence equals No
+
+  label not_opened_absolute definition proceedingsOpened under condition
+    check.absoluteDeadlineExpired = Yes
+    consequence equals No
+
+# Five day deadline
+  label five_days definition fiveDayDecisionDeadline equals Yes
+```
+
+## Article 367. Withdrawal of review application and consequences
+
+```catala
+declaration scope Article367ReviewWithdrawal:
+  input check content ReviewWithdrawalCheck
+  output withdrawalAccepted content YesNo
+
+scope Article367ReviewWithdrawal:
+# Withdrawal accepted before hearing starts
+  label accepted definition withdrawalAccepted under condition
+    check.withdrawnBeforeHearing = Yes
+    consequence equals Yes
+
+  label not_accepted definition withdrawalAccepted equals No
+```
+
+## Article 368. Procedure for review
+
+```catala
+declaration scope Article368ReviewProcedure:
+  input check content ReviewProceedingCheck
+  output thirtyDayDeadline content YesNo
+  output nonAppearanceNotPreclusive content YesNo
+
+scope Article368ReviewProcedure:
+# 30 day deadline from opening
+  label thirty_days definition thirtyDayDeadline under condition
+    check.daysSinceOpening <= 30
+    consequence equals Yes
+
+  label exceeded definition thirtyDayDeadline equals No
+
+# Non-appearance of properly notified participants does not prevent review
+  label non_preclusive definition nonAppearanceNotPreclusive equals Yes
+```
+
+## Article 369. Court decision following review proceedings
+
+```catala
+declaration scope Article369ReviewDecision:
+  input check content ReviewDecisionCheck
+  output reviewOutcomeDecided content YesNo
+  output newDecisionAppealable content YesNo
+
+scope Article369ReviewDecision:
+# Outcome decided based on review findings
+  label decided definition reviewOutcomeDecided equals Yes
+
+# New decision may be appealed according to rules for that instance
+  label appealable definition newDecisionAppealable equals Yes
+```

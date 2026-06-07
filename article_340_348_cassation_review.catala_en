@@ -1,0 +1,309 @@
+## Article 340. Preparation for cassation review
+
+```catala
+declaration scope Article340CassationPreparation:
+  input check content CassationPreparationCheck
+  output hearingPossible content YesNo
+  output writtenProceedingPossible content YesNo
+
+scope Article340CassationPreparation:
+# Hearing possible when participant requests
+  label hearing definition hearingPossible under condition
+    check.participantRequestsHearing = Yes
+    consequence equals Yes
+
+  label no_hearing definition hearingPossible equals No
+
+# Written proceeding possible when case can be decided on existing evidence
+  label written definition writtenProceedingPossible under condition
+    check.caseCanBeDecidedOnExistingEvidence = Yes
+    consequence equals Yes
+
+  label not_written definition writtenProceedingPossible equals No
+```
+
+## Article 341. Scope of cassation review
+
+```catala
+declaration scope Article341CassationScope:
+  input check content CassationReviewScopeCheck
+  output reviewWithinComplaintGrounds content YesNo
+  output mayGoBeyondComplaintGrounds content YesNo
+  output newClaimsProhibited content YesNo
+
+scope Article341CassationScope:
+# Review within complaint grounds
+  label within_grounds definition reviewWithinComplaintGrounds under condition
+    check.withinComplaintGrounds = Yes
+    consequence equals Yes
+
+# May go beyond complaint grounds for mandatory procedural violations or new Supreme Court conclusion
+  label beyond_grounds definition mayGoBeyondComplaintGrounds under condition
+    check.mandatoryProceduralViolationFound = Yes
+    or check.newSupremeCourtConclusionExists = Yes
+    consequence equals Yes
+
+  label not_beyond definition mayGoBeyondComplaintGrounds equals No
+
+# New claims not raised in first instance are prohibited
+  label no_new_claims definition newClaimsProhibited under condition
+    check.newClaimsNotRaisedInFirstInstance = Yes
+    consequence equals Yes
+
+  label no_new_issues definition newClaimsProhibited under condition
+    check.newClaimsNotRaisedInFirstInstance = No
+    consequence equals No
+```
+
+## Article 342. Timeline for cassation review
+
+```catala
+declaration scope Article342CassationTimeline:
+  input check content CassationTimelineCheck
+  output withinTimeLimit content YesNo
+
+scope Article342CassationTimeline:
+# Resolution: 60 days from opening
+  label resolution_timeline definition withinTimeLimit under condition
+    check.appealingResolution = Yes
+    and check.daysSinceOpening <= 60
+    consequence equals Yes
+
+  label resolution_exceeded definition withinTimeLimit under condition
+    check.appealingResolution = Yes
+    and check.daysSinceOpening > 60
+    consequence equals No
+
+# Ruling: 30 days from opening
+  label ruling_timeline definition withinTimeLimit under condition
+    check.appealingResolution = No
+    and check.daysSinceOpening <= 30
+    consequence equals Yes
+
+  label ruling_exceeded definition withinTimeLimit under condition
+    check.appealingResolution = No
+    and check.daysSinceOpening > 30
+    consequence equals No
+```
+
+## Article 343. Preliminary review of case
+
+```catala
+declaration scope Article343CassationPreliminaryReview:
+  input check content CassationPreliminaryReviewCheck
+  output leaveUnsatisfiedAtPreliminary content YesNo
+  output mandatoryCancellationAtPreliminary content YesNo
+  output scheduleForHearing content YesNo
+  output fiveDayDeadline content YesNo
+
+scope Article343CassationPreliminaryReview:
+# Leave unsatisfied when no cancellation grounds
+  label leave_unsatisfied definition leaveUnsatisfiedAtPreliminary under condition
+    check.noCancellationGrounds = Yes
+    consequence equals Yes
+
+  label not_leave definition leaveUnsatisfiedAtPreliminary equals No
+
+# Mandatory cancellation when grounds exist
+  label mandatory definition mandatoryCancellationAtPreliminary under condition
+    check.mandatoryCancellationApplies = Yes
+    consequence equals Yes
+
+  label not_mandatory definition mandatoryCancellationAtPreliminary equals No
+
+# Schedule for hearing when at least one judge requests
+  label schedule definition scheduleForHearing under condition
+    check.atLeastOneJudgeRequestsHearing = Yes
+    consequence equals Yes
+
+  label no_schedule definition scheduleForHearing equals No
+
+# Five day deadline after report
+  label five_days definition fiveDayDeadline equals Yes
+```
+
+## Article 344. Cassation review in court hearing
+
+```catala
+declaration scope Article344CassationHearing:
+  input check content CassationHearingCheck
+  output participantsMustBeNotified content YesNo
+  output nonAppearanceNotPreclusive content YesNo
+  output complainantSpeaksFirst content YesNo
+
+scope Article344CassationHearing:
+# Notify participants who requested attendance or court deems necessary
+  label must_notify definition participantsMustBeNotified under condition
+    check.participantRequestedAttendance = Yes
+    or check.courtDeemsAttendanceNecessary = Yes
+    consequence equals Yes
+
+  label no_notify definition participantsMustBeNotified equals No
+
+# Non-appearance of properly notified participants does not prevent review
+  label non_preclusive definition nonAppearanceNotPreclusive equals Yes
+
+# Complainant speaks first; if both sides appealed, plaintiff speaks first
+  label complainant_first definition complainantSpeaksFirst under condition
+    check.isComplainant = Yes
+    and check.isPlaintiff = No
+    consequence equals Yes
+
+  label plaintiff_first definition complainantSpeaksFirst under condition
+    check.isPlaintiff = Yes
+    consequence equals Yes
+```
+
+## Article 345. Cassation review in written proceeding
+
+```catala
+declaration scope Article345CassationWritten:
+  input check content CassationWrittenProceedingCheck
+  output writtenProceedingAllowed content YesNo
+
+scope Article345CassationWritten:
+# Written when no hearing requests from any participant
+  label no_request definition writtenProceedingAllowed under condition
+    check.noParticipantRequestsHearing = Yes
+    and check.caseCanBeDecidedOnExistingEvidence = Yes
+    consequence equals Yes
+
+# Written when no participant appeared
+  label no_appearance definition writtenProceedingAllowed under condition
+    check.noParticipantAppeared = Yes
+    and check.caseCanBeDecidedOnExistingEvidence = Yes
+    consequence equals Yes
+
+# Written when reviewing rulings
+  label reviewing_rulings definition writtenProceedingAllowed under condition
+    check.appealingRulings = Yes
+    consequence equals Yes
+
+# Written when reviewing simplified proceeding cases
+  label simplified_case definition writtenProceedingAllowed under condition
+    check.firstInstanceWasSimplified = Yes
+    consequence equals Yes
+
+  label not_allowed definition writtenProceedingAllowed equals No
+```
+
+## Article 346. Grounds for transfer to chamber, joint chamber or Grand Chamber
+
+```catala
+declaration scope Article346CassationTransfer:
+  input check content CassationTransferCheck
+  output mustTransferToChamber content YesNo
+  output mustTransferToJointChamber content YesNo
+  output mustTransferToGrandChamber content YesNo
+  output mayTransferToGrandChamber content YesNo
+  output mustTransferForJurisdiction content YesNo
+
+scope Article346CassationTransfer:
+# Transfer to same chamber when departing from chamber conclusion
+  label to_chamber definition mustTransferToChamber under condition
+    check.needsToDepartFromSameChamberConclusion = Yes
+    consequence equals Yes
+
+  label no_chamber definition mustTransferToChamber equals No
+
+# Transfer to joint chamber when departing from other chamber conclusion
+  label to_joint definition mustTransferToJointChamber under condition
+    check.needsToDepartFromOtherChamberConclusion = Yes
+    consequence equals Yes
+
+  label no_joint definition mustTransferToJointChamber equals No
+
+# Transfer to Grand Chamber when departing from other cassation court conclusion
+  label to_grand_cassation definition mustTransferToGrandChamber under condition
+    check.needsToDepartFromOtherCassationCourtConclusion = Yes
+    consequence equals Yes
+
+# Transfer to Grand Chamber when departing from Grand Chamber conclusion
+  label to_grand_chamber definition mustTransferToGrandChamber under condition
+    check.needsToDepartFromGrandChamberConclusion = Yes
+    consequence equals Yes
+
+  label no_grand definition mustTransferToGrandChamber equals No
+
+# May transfer to Grand Chamber for exceptional legal problem
+  label exceptional definition mayTransferToGrandChamber under condition
+    check.exceptionalLegalProblemExists = Yes
+    consequence equals Yes
+
+  label no_exceptional definition mayTransferToGrandChamber equals No
+
+# Must transfer to Grand Chamber for jurisdiction violation
+  label jurisdiction definition mustTransferForJurisdiction under condition
+    check.jurisdictionViolationRaised = Yes
+    and check.participantRaisedJurisdictionInFirstInstance = Yes
+    and check.jurisdictionViolationSupportedByPrecedent = Yes
+    and check.grandChamberAlreadyRuledOnJurisdiction = No
+    consequence equals Yes
+
+  label jurisdiction_excused definition mustTransferForJurisdiction under condition
+    check.jurisdictionViolationRaised = Yes
+    and check.participantRaisedJurisdictionInFirstInstance = No
+    consequence equals No
+
+  label jurisdiction_precedent definition mustTransferForJurisdiction under condition
+    check.jurisdictionViolationRaised = Yes
+    and check.jurisdictionViolationSupportedByPrecedent = No
+    consequence equals No
+
+  label jurisdiction_grand_ruled definition mustTransferForJurisdiction under condition
+    check.jurisdictionViolationRaised = Yes
+    and check.grandChamberAlreadyRuledOnJurisdiction = Yes
+    consequence equals No
+
+  label no_jurisdiction definition mustTransferForJurisdiction equals No
+```
+
+## Article 347. Procedure for transfer to chamber, joint chamber or Grand Chamber
+
+```catala
+declaration scope Article347CassationTransferProcedure:
+  input check content CassationTransferProcedureCheck
+  output transferDecisionMade content YesNo
+  output grandChamberMayDecline content YesNo
+
+scope Article347CassationTransferProcedure:
+# Transfer decided by court initiative or participant request, by majority
+  label decision definition transferDecisionMade under condition
+    check.majorityOfCourtAgrees = Yes
+    consequence equals Yes
+
+  label no_transfer definition transferDecisionMade equals No
+
+# Grand Chamber may decline transfer
+  label decline definition grandChamberMayDecline under condition
+    check.grandChamberDeclinesTransfer = Yes
+    consequence equals Yes
+
+  label no_decline definition grandChamberMayDecline equals No
+```
+
+## Article 348. Claim withdrawal and reconciliation during cassation
+
+```catala
+declaration scope Article348CassationReconciliation:
+  input check content CassationReconciliationCheck
+  output withdrawalOrReconciliationAllowed content YesNo
+  output firstInstanceAndAppealDecisionsInvalidated content YesNo
+
+scope Article348CassationReconciliation:
+# Plaintiff may withdraw, parties may reconcile at any time before cassation ends
+  label allowed definition withdrawalOrReconciliationAllowed under condition
+    check.withdrawalOrReconciliationValid = Yes
+    consequence equals Yes
+
+  label not_allowed definition withdrawalOrReconciliationAllowed under condition
+    check.withdrawalOrReconciliationValid = No
+    consequence equals No
+
+# First instance and appeal decisions invalidated upon withdrawal or reconciliation
+  label invalidated definition firstInstanceAndAppealDecisionsInvalidated under condition
+    check.withdrawalOrReconciliationValid = Yes
+    consequence equals Yes
+
+  label not_invalidated definition firstInstanceAndAppealDecisionsInvalidated equals No
+```

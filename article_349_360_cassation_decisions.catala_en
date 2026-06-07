@@ -1,0 +1,359 @@
+## Article 349. Powers of cassation court
+
+```catala
+declaration scope Article349CassationPowers:
+  input check content CassationPowersCheck
+  output mayLeaveUnsatisfied content YesNo
+  output mayCancelAndSendForNewReview content YesNo
+  output mayCancelAndNewDecision content YesNo
+  output mayCancelAppealKeepFirstInstance content YesNo
+  output mayCancelAndCloseOrLeave content YesNo
+  output mayInvalidateAndClose content YesNo
+
+scope Article349CassationPowers:
+# Leave unsatisfied when decisions correct
+  label leave_unsatisfied definition mayLeaveUnsatisfied under condition
+    check.decisionsCorrect = Yes
+    consequence equals Yes
+
+  label not_leave definition mayLeaveUnsatisfied equals No
+
+# Cancel and send for new review when cancellation ground exists
+  label cancel_new_review definition mayCancelAndSendForNewReview under condition
+    check.cancellationGroundExists = Yes
+    consequence equals Yes
+
+  label no_cancel_new_review definition mayCancelAndSendForNewReview equals No
+
+# Cancel and adopt new decision
+  label cancel_new definition mayCancelAndNewDecision under condition
+    check.cancellationGroundExists = Yes
+    consequence equals Yes
+
+  label no_cancel_new definition mayCancelAndNewDecision equals No
+
+# Cancel appeal court decision, keep first instance
+  label cancel_appeal definition mayCancelAppealKeepFirstInstance under condition
+    check.appealCourtCancelledCorrectFirstInstance = Yes
+    consequence equals Yes
+
+  label no_cancel_appeal definition mayCancelAppealKeepFirstInstance equals No
+
+# Cancel and close or leave without consideration
+  label cancel_close definition mayCancelAndCloseOrLeave under condition
+    check.closureOrLeaveWithoutConsiderationGround = Yes
+    consequence equals Yes
+
+  label no_cancel_close definition mayCancelAndCloseOrLeave equals No
+
+# Invalidate and close
+  label invalidate definition mayInvalidateAndClose under condition
+    check.jurisdictionViolation = Yes
+    consequence equals Yes
+
+  label no_invalidate definition mayInvalidateAndClose equals No
+```
+
+## Article 350. Grounds for leaving cassation complaint unsatisfied
+
+```catala
+declaration scope Article350CassationLeaveUnsatisfied:
+  input check content CassationLeaveUnsatisfiedCheck
+  output decisionsCorrect content YesNo
+
+scope Article350CassationLeaveUnsatisfied:
+# Decisions correct when properly applied law
+  label correct definition decisionsCorrect under condition
+    check.firstInstanceCorrect = Yes
+    consequence equals Yes
+
+# Not overturned for procedural violations that did not affect outcome
+  label procedural_excused definition decisionsCorrect under condition
+    check.proceduralViolationDidNotAffectOutcome = Yes
+    consequence equals Yes
+
+  label incorrect definition decisionsCorrect equals No
+```
+
+## Article 351. Grounds for cancellation and new decision
+
+```catala
+declaration scope Article351CassationCancellationNewDecision:
+  input check content CassationCancellationNewDecisionCheck
+  output cancellationForNewDecision content YesNo
+
+scope Article351CassationCancellationNewDecision:
+# Cancel when wrong substantive law applied
+  label wrong_law definition cancellationForNewDecision under condition
+    check.wrongSubstantiveLaw = Yes
+    consequence equals Yes
+
+# Cancel when procedural violation affected outcome
+  label procedural definition cancellationForNewDecision under condition
+    check.proceduralViolationAffectedOutcome = Yes
+    consequence equals Yes
+
+  label no_cancellation definition cancellationForNewDecision equals No
+```
+
+## Article 352. Grounds for cancelling appeal court decision and keeping first instance
+
+```catala
+declaration scope Article352CancelAppealKeepFirstInstance:
+  input check content CassationCancelAppealCheck
+  output appealMustBeCancelled content YesNo
+
+scope Article352CancelAppealKeepFirstInstance:
+# Cancel appeal decision when first instance was correct
+  label cancel definition appealMustBeCancelled under condition
+    check.appealCourtCancelledCorrectFirstInstance = Yes
+    consequence equals Yes
+
+  label no_cancel definition appealMustBeCancelled equals No
+```
+
+## Article 353. Grounds for sending case for continued or new review
+
+```catala
+declaration scope Article353CassationSendForReview:
+  input check content CassationSendForNewReviewCheck
+  output mustSendForNewReview content YesNo
+  output mandatoryCancellationApplies content YesNo
+  output caseSentToAppealCourt content YesNo
+
+scope Article353CassationSendForReview:
+# Send for new review when procedural violation prevented establishing facts
+  label evidence_not_examined definition mustSendForNewReview under condition
+    check.sendForReviewGround = CassationSendForReviewGround.CourtDidNotExamineEvidence
+    consequence equals Yes
+
+  label simplified_instead_general definition mustSendForNewReview under condition
+    check.sendForReviewGround = CassationSendForReviewGround.SimplifiedInsteadOfGeneral
+    consequence equals Yes
+
+  label rejected_motion definition mustSendForNewReview under condition
+    check.sendForReviewGround = CassationSendForReviewGround.UnreasonablyRejectedEvidenceMotion
+    consequence equals Yes
+
+  label inadmissible_evidence definition mustSendForNewReview under condition
+    check.sendForReviewGround = CassationSendForReviewGround.EstablishedFactsOnInadmissibleEvidence
+    consequence equals Yes
+
+  label no_send definition mustSendForNewReview equals No
+
+# Mandatory cancellation for specific procedural violations
+  label unauthorized_composition definition mandatoryCancellationApplies under condition
+    check.mandatoryCancellation = CassationMandatoryCancellation.UnauthorizedCourtComposition
+    consequence equals Yes
+
+  label recused_judge definition mandatoryCancellationApplies under condition
+    check.mandatoryCancellation = CassationMandatoryCancellation.RecusedJudgeParticipated
+    consequence equals Yes
+
+  label not_notified definition mandatoryCancellationApplies under condition
+    check.mandatoryCancellation = CassationMandatoryCancellation.ParticipantNotProperlyNotified
+    consequence equals Yes
+
+  label non_participant definition mandatoryCancellationApplies under condition
+    check.mandatoryCancellation = CassationMandatoryCancellation.RightsOfNonParticipantAffected
+    consequence equals Yes
+
+  label not_signed definition mandatoryCancellationApplies under condition
+    check.mandatoryCancellation = CassationMandatoryCancellation.DecisionNotSigned
+    consequence equals Yes
+
+  label wrong_judges definition mandatoryCancellationApplies under condition
+    check.mandatoryCancellation = CassationMandatoryCancellation.DecisionByWrongJudges
+    consequence equals Yes
+
+  label jurisdiction definition mandatoryCancellationApplies under condition
+    check.mandatoryCancellation = CassationMandatoryCancellation.JurisdictionViolation
+    and check.participantRaisedJurisdictionInFirstInstance = Yes
+    consequence equals Yes
+
+  label jurisdiction_excused definition mandatoryCancellationApplies under condition
+    check.mandatoryCancellation = CassationMandatoryCancellation.JurisdictionViolation
+    and check.participantRaisedJurisdictionInFirstInstance = No
+    consequence equals No
+
+  label not_mandatory definition mandatoryCancellationApplies equals No
+
+# Case sent to appeal court when only they made violations
+  label to_appeal definition caseSentToAppealCourt under condition
+    check.violationOnlyByAppealCourt = Yes
+    consequence equals Yes
+
+  label to_first definition caseSentToAppealCourt equals No
+```
+
+## Article 354. Grounds for cancellation with closure or leave without consideration
+
+```catala
+declaration scope Article354CassationCloseOrLeave:
+  input check content CassationCloseOrLeaveCheck
+  output mustCancelAndCloseOrLeave content YesNo
+  output administrativeJurisdictionViolationMandatory content YesNo
+  output deathOrTerminationNotGround content YesNo
+
+scope Article354CassationCloseOrLeave:
+# Cancel and close or leave on grounds of Arts 238, 240
+  label cancel_close definition mustCancelAndCloseOrLeave under condition
+    check.closureGroundUnderArt238 = Yes
+    or check.closureGroundUnderArt240 = Yes
+    consequence equals Yes
+
+  label no_cancel definition mustCancelAndCloseOrLeave equals No
+
+# Administrative jurisdiction violation is mandatory ground
+  label mandatory definition administrativeJurisdictionViolationMandatory under condition
+    check.administrativeJurisdictionViolation = Yes
+    consequence equals Yes
+
+  label not_mandatory definition administrativeJurisdictionViolationMandatory equals No
+
+# Death or termination after lawful decision is not ground
+  label not_ground definition deathOrTerminationNotGround under condition
+    check.deathOrTerminationAfterDecision = Yes
+    and check.legalSuccessionNotPossible = Yes
+    consequence equals Yes
+
+  label may_be_ground definition deathOrTerminationNotGround equals No
+```
+
+## Article 355. Cassation court decisions and procedure
+
+```catala
+declaration scope Article355CassationDecisionsForm:
+  input check content CassationDecisionsFormCheck
+  output decisionsInFormOfPostanova content YesNo
+  output proceduralQuestionsByRulings content YesNo
+  output decisionsFinalAndNotAppealable content YesNo
+
+scope Article355CassationDecisionsForm:
+# Cassation court decisions in form of postanova
+  label postanova definition decisionsInFormOfPostanova equals Yes
+
+# Procedural questions resolved by rulings
+  label rulings definition proceduralQuestionsByRulings equals Yes
+
+# Cassation decisions are final and not appealable
+  label final definition decisionsFinalAndNotAppealable equals Yes
+```
+
+## Article 356. Content of cassation court postanova
+
+```catala
+declaration scope Article356CassationPostanovaContent:
+  output mustContainIntroductoryPart content YesNo
+  output mustContainDescriptivePart content YesNo
+  output mustContainMotivationalPart content YesNo
+  output mustContainOperativePart content YesNo
+
+scope Article356CassationPostanovaContent:
+# Postanova must contain all four parts
+  label introductory definition mustContainIntroductoryPart equals Yes
+
+  label descriptive definition mustContainDescriptivePart equals Yes
+
+  label motivational definition mustContainMotivationalPart equals Yes
+
+  label operative definition mustContainOperativePart equals Yes
+```
+
+## Article 357. Late cassation complaint
+
+```catala
+declaration scope Article357CassationLateComplaint:
+  input check content CassationLateComplaintCheck
+  output lateComplaintConsidered content YesNo
+  output mayStayPreviousDecisions content YesNo
+  output refusalForAlreadyConsideredGrounds content YesNo
+
+scope Article357CassationLateComplaint:
+# Late complaint considered when arrived after review and complainant not present
+  label considered definition lateComplaintConsidered under condition
+    check.complaintArrivedAfterReviewEnded = Yes
+    and check.complainantNotPresentAtReview = Yes
+    consequence equals Yes
+
+  label not_considered definition lateComplaintConsidered equals No
+
+# May stay previous postanova and lower court decisions
+  label may_stay definition mayStayPreviousDecisions under condition
+    check.complaintArrivedAfterReviewEnded = Yes
+    consequence equals Yes
+
+  label no_stay definition mayStayPreviousDecisions equals No
+
+# Refuse when grounds already considered
+  label refuse definition refusalForAlreadyConsideredGrounds under condition
+    check.groundsNotPreviouslyConsidered = No
+    consequence equals Yes
+
+  label no_refuse definition refusalForAlreadyConsideredGrounds under condition
+    check.groundsNotPreviouslyConsidered = Yes
+    consequence equals No
+```
+
+## Article 358. Separate ruling by cassation court
+
+```catala
+declaration scope Article358CassationSeparateRuling:
+  output mayIssueSeparateRuling content YesNo
+
+scope Article358CassationSeparateRuling:
+# Cassation court may issue separate ruling per Art 249 rules
+  label separate_ruling definition mayIssueSeparateRuling equals Yes
+```
+
+## Article 359. Entry into force of cassation court decisions
+
+```catala
+declaration scope Article359CassationEntryIntoForce:
+  input check content CassationEntryIntoForceCheck
+  output postanovaEntersIntoForceOnAdoption content YesNo
+  output rulingEntersIntoForceOnPronouncement content YesNo
+  output rulingOutsideSessionEntersOnSignature content YesNo
+
+scope Article359CassationEntryIntoForce:
+# Postanova enters into force on adoption
+  label postanova_adoption definition postanovaEntersIntoForceOnAdoption under condition
+    check.isResolution = Yes
+    consequence equals Yes
+
+# Ruling enters into force on pronouncement
+  label ruling_pronouncement definition rulingEntersIntoForceOnPronouncement under condition
+    check.isRuling = Yes
+    and check.pronouncedInSession = Yes
+    consequence equals Yes
+
+# Ruling outside session or all absent or written enters on signature
+  label ruling_signature definition rulingOutsideSessionEntersOnSignature under condition
+    check.isRuling = Yes
+    and (check.allParticipantsAbsent = Yes
+    or check.isWrittenProceeding = Yes)
+    consequence equals Yes
+
+  label not_postanova definition postanovaEntersIntoForceOnAdoption equals No
+
+  label not_ruling definition rulingEntersIntoForceOnPronouncement equals No
+
+  label not_outside definition rulingOutsideSessionEntersOnSignature equals No
+```
+
+## Article 360. Return of administrative case
+
+```catala
+declaration scope Article360CassationCaseReturn:
+  input check content CassationCaseReturnCheck
+  output caseReturnedToFifteenDays content YesNo
+
+scope Article360CassationCaseReturn:
+# Case returned to first instance within 15 days after cassation review
+  label fifteen_days definition caseReturnedToFifteenDays under condition
+    check.daysSinceReviewEnded <= 15
+    and check.differentDestinationSpecified = No
+    consequence equals Yes
+
+  label different_destination definition caseReturnedToFifteenDays equals No
+```

@@ -1,0 +1,281 @@
+## Article 332. Leaving cassation complaint without motion, returning cassation complaint
+
+```catala
+declaration scope Article332CassationLeaveReturn:
+  input leaveCheck content CassationLeaveCheck
+  input returnCheck content CassationReturnCheck
+  output leftWithoutMotion content YesNo
+  output returned content YesNo
+  output twentyDayDeadlineForLeaveDecision content YesNo
+
+scope Article332CassationLeaveReturn:
+# Left without motion when requirements not met or deadline expired without restoration
+  label leave_requirements definition leftWithoutMotion under condition
+    leaveCheck.complaintMeetsRequirements = No
+    consequence equals Yes
+
+  label leave_deadline definition leftWithoutMotion under condition
+    leaveCheck.deadlineExpired = Yes
+    and leaveCheck.restorationRequested = No
+    consequence equals Yes
+
+  label leave_restoration_invalid definition leftWithoutMotion under condition
+    leaveCheck.deadlineExpired = Yes
+    and leaveCheck.restorationRequested = Yes
+    and leaveCheck.restorationGroundsValid = No
+    consequence equals Yes
+
+  label no_leave definition leftWithoutMotion equals No
+
+# Returned when filed by incapable, unsigned, wrong method, withdrawn, or no grounds
+  label return_incapable definition returned under condition
+    returnCheck.returnGround = CassationReturnGround.FiledByIncapablePerson
+    consequence equals Yes
+
+  label return_unsigned definition returned under condition
+    returnCheck.returnGround = CassationReturnGround.NotSignedOrUnauthorized
+    consequence equals Yes
+
+  label return_wrong_method definition returned under condition
+    returnCheck.returnGround = CassationReturnGround.FiledWrongMethod
+    consequence equals Yes
+
+  label return_withdrawn definition returned under condition
+    returnCheck.returnGround = CassationReturnGround.WithdrawnBeforeOpening
+    consequence equals Yes
+
+  label return_no_grounds definition returned under condition
+    returnCheck.returnGround = CassationReturnGround.NoCassationGroundsSpecified
+    consequence equals Yes
+
+  label no_return definition returned equals No
+
+# Twenty day deadline for leave decision
+  label twenty_days definition twentyDayDeadlineForLeaveDecision equals Yes
+```
+
+## Article 333. Refusal to open cassation proceedings
+
+```catala
+declaration scope Article333CassationRefusal:
+  input check content CassationRefusalCheck
+  output refusalToOpenProceedings content YesNo
+
+scope Article333CassationRefusal:
+# Refuse when decision not cassationable
+  label not_cassationable definition refusalToOpenProceedings under condition
+    check.decisionNotCassationable = Yes
+    consequence equals Yes
+
+# Refuse when previous closure with withdrawal
+  label previous_closure definition refusalToOpenProceedings under condition
+    check.previousClosureWithWithdrawal = Yes
+    consequence equals Yes
+
+# Refuse when previous refusal for same person same decision
+  label previous_refusal definition refusalToOpenProceedings under condition
+    check.previousRefusalSamePerson = Yes
+    consequence equals Yes
+
+# Refuse when deadline expired without restoration
+  label deadline_expired definition refusalToOpenProceedings under condition
+    check.deadlineExpiredWithoutRestoration = Yes
+    consequence equals Yes
+
+# Refuse when complaint unfounded
+  label unfounded definition refusalToOpenProceedings under condition
+    check.complaintUnfounded = Yes
+    consequence equals Yes
+
+# Refuse when Supreme Court conclusion already applied correctly
+  label conclusion_applied definition refusalToOpenProceedings under condition
+    check.supremeCourtConclusionAlreadyApplied = Yes
+    consequence equals Yes
+
+# Refuse when correct law application is obvious (rulings)
+  label obvious definition refusalToOpenProceedings under condition
+    check.correctLawApplicationObvious = Yes
+    consequence equals Yes
+
+# Refuse when cassation decision cannot form unified practice
+  label no_practice definition refusalToOpenProceedings under condition
+    check.cassationDecisionCannotFormPractice = Yes
+    consequence equals Yes
+
+# One year absolute deadline for prosecutor/authority
+  label one_year_absolute definition refusalToOpenProceedings under condition
+    check.oneYearSinceFullDecision = Yes
+    and check.isProsecutorOrAuthority = Yes
+    and check.authorityNotNotifiedOfCase = No
+    consequence equals Yes
+
+  label no_refusal definition refusalToOpenProceedings equals No
+```
+
+## Article 334. Opening cassation proceedings
+
+```catala
+declaration scope Article334CassationOpening:
+  input check content CassationOpeningCheck
+  output proceedingsOpened content YesNo
+  output twentyDayDecisionDeadline content YesNo
+  output panelOfThreeRequired content YesNo
+
+scope Article334CassationOpening:
+# Open when no grounds for leave, return, or refusal
+  label open definition proceedingsOpened under condition
+    check.noGroundsForLeave = Yes
+    and check.noGroundsForReturn = Yes
+    and check.noGroundsForRefusal = Yes
+    consequence equals Yes
+
+  label not_opened definition proceedingsOpened equals No
+
+# Decision within 20 days
+  label twenty_days definition twentyDayDecisionDeadline equals Yes
+
+# Panel of three judges
+  label three_judges definition panelOfThreeRequired equals Yes
+```
+
+## Article 335. Sending copies to participants
+
+```catala
+declaration scope Article335SendingCopies:
+  output copiesMustBeSentToParticipants content YesNo
+
+scope Article335SendingCopies:
+# Court sends copies of cassation complaint to all participants
+  label must_send definition copiesMustBeSentToParticipants equals Yes
+```
+
+## Article 336. Joining cassation complaint
+
+```catala
+declaration scope Article336CassationJoin:
+  input check content CassationJoinCheck
+  output joiningAllowed content YesNo
+
+scope Article336CassationJoin:
+# Participants and affected non-participants may join before review starts
+  label join_participant definition joiningAllowed under condition
+    check.filedByParticipant = Yes
+    and check.filedBeforeCassationReviewStarted = Yes
+    and check.courtFeePaid = Yes
+    consequence equals Yes
+
+  label join_nonparticipant definition joiningAllowed under condition
+    check.filedByNonParticipantWithRights = Yes
+    and check.filedBeforeCassationReviewStarted = Yes
+    and check.courtFeePaid = Yes
+    consequence equals Yes
+
+  label no_join definition joiningAllowed equals No
+```
+
+## Article 337. Supplementing, amending, recalling cassation complaint
+
+```catala
+declaration scope Article337CassationAmendment:
+  input check content CassationAmendmentCheck
+  output amendmentAllowed content YesNo
+  output recallAllowed content YesNo
+  output withdrawalAfterOpeningAllowed content YesNo
+
+scope Article337CassationAmendment:
+# May supplement or amend within cassation deadline
+  label amend definition amendmentAllowed under condition
+    check.withinCassationDeadline = Yes
+    and check.copiesSentToOtherParticipants = Yes
+    consequence equals Yes
+
+  label no_amend_deadline definition amendmentAllowed under condition
+    check.withinCassationDeadline = No
+    consequence equals No
+
+  label no_amend_copies definition amendmentAllowed under condition
+    check.copiesSentToOtherParticipants = No
+    consequence equals No
+
+# May recall before opening of proceedings
+  label recall definition recallAllowed under condition
+    check.withdrawnBeforeOpening = Yes
+    consequence equals Yes
+
+  label no_recall definition recallAllowed equals No
+
+# Withdrawal after opening closes proceedings unless joined persons object
+  label withdrawal_allowed definition withdrawalAfterOpeningAllowed under condition
+    check.withdrawnAfterOpening = Yes
+    and check.otherJoinedPersonsObject = No
+    consequence equals Yes
+
+  label withdrawal_objected definition withdrawalAfterOpeningAllowed under condition
+    check.withdrawnAfterOpening = Yes
+    and check.otherJoinedPersonsObject = Yes
+    consequence equals No
+```
+
+## Article 338. Response to cassation complaint
+
+```catala
+declaration scope Article338CassationResponse:
+  input check content CassationResponseCheck
+  output responseAccepted content YesNo
+  output absenceOfResponseNotPreclusive content YesNo
+
+scope Article338CassationResponse:
+# Response accepted when filed within court-set deadline
+  label accepted definition responseAccepted under condition
+    check.filedWithinCourtDeadline = Yes
+    consequence equals Yes
+
+  label not_accepted definition responseAccepted under condition
+    check.filedWithinCourtDeadline = No
+    consequence equals No
+
+# Absence of response does not prevent review
+  label not_preclusive definition absenceOfResponseNotPreclusive equals Yes
+```
+
+## Article 339. Closure of cassation proceedings
+
+```catala
+declaration scope Article339CassationClosure:
+  input check content CassationClosureCheck
+  output cassationProceedingsClosed content YesNo
+
+scope Article339CassationClosure:
+# Close when withdrawal after opening and no objections from joined persons
+  label withdrawal definition cassationProceedingsClosed under condition
+    check.closureGround = CassationClosureGround.WithdrawalAfterOpening
+    and check.otherJoinedPersonsObject = No
+    consequence equals Yes
+
+  label withdrawal_objected definition cassationProceedingsClosed under condition
+    check.closureGround = CassationClosureGround.WithdrawalAfterOpening
+    and check.otherJoinedPersonsObject = Yes
+    consequence equals No
+
+# Close when unsigned or incapable discovered after opening
+  label incapable definition cassationProceedingsClosed under condition
+    check.closureGround = CassationClosureGround.UnsignedOrIncapableAfterOpening
+    consequence equals Yes
+
+# Close when non-participant's rights not actually decided
+  label not_decided definition cassationProceedingsClosed under condition
+    check.closureGround = CassationClosureGround.NonParticipantRightsNotDecided
+    consequence equals Yes
+
+# Close when Supreme Court conclusion already exists
+  label conclusion_exists definition cassationProceedingsClosed under condition
+    check.closureGround = CassationClosureGround.SupremeCourtConclusionAlreadyExists
+    consequence equals Yes
+
+# Close when legal relations not similar
+  label not_similar definition cassationProceedingsClosed under condition
+    check.closureGround = CassationClosureGround.LegalRelationsNotSimilar
+    consequence equals Yes
+
+  label no_closure definition cassationProceedingsClosed equals No
+```
