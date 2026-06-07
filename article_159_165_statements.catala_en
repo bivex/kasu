@@ -1,0 +1,166 @@
+## Article 159. Written proceedings
+
+```catala
+declaration scope Article159WrittenProceedings:
+  input case content AdministrativeCase
+  input allPartiesConsent content YesNo
+  input caseFactsEstablished content YesNo
+  input disputeOfLawOnly content YesNo
+  output canUseWrittenProceedings content YesNo
+
+scope Article159WrittenProceedings:
+  label written_default definition canUseWrittenProceedings equals No
+
+# Written proceedings when all parties consent and facts are established
+  label written_consent exception written_default
+  definition canUseWrittenProceedings under condition
+    allPartiesConsent = Yes
+    and caseFactsEstablished = Yes
+    consequence equals Yes
+
+# Pure questions of law can use written proceedings
+  label written_law exception written_default
+  definition canUseWrittenProceedings under condition
+    disputeOfLawOnly = Yes
+    consequence equals Yes
+```
+
+## Article 160. Statement of claim
+
+```catala
+declaration scope Article160StatementOfClaim:
+  input statement content WrittenStatement
+  input specifiesCourt content YesNo
+  input specifiesPlaintiff content YesNo
+  input specifiesDefendant content YesNo
+  input specifiesDisputeSubject content YesNo
+  input specifiesGrounds content YesNo
+  input specifiesEvidence content YesNo
+  input specifiesReliefSought content YesNo
+  input specifiesAttachedDocuments content YesNo
+  output statementMeetsRequirements content YesNo
+
+scope Article160StatementOfClaim:
+  label requirements_default definition statementMeetsRequirements equals No
+
+  label requirements_met exception requirements_default
+  definition statementMeetsRequirements under condition
+    statement.statementType = StatementOfClaim
+    and specifiesCourt = Yes
+    and specifiesPlaintiff = Yes
+    and specifiesDefendant = Yes
+    and specifiesDisputeSubject = Yes
+    and specifiesGrounds = Yes
+    and specifiesReliefSought = Yes
+    consequence equals Yes
+```
+
+## Article 161. Content of statement of claim
+
+```catala
+declaration scope Article161ClaimContent:
+  input statement content WrittenStatement
+  input containsFactualGrounds content YesNo
+  input containsLegalGrounds content YesNo
+  input containsEvidenceList content YesNo
+  input containsCostCalculation content YesNo
+  input containsReliefRequested content YesNo
+  output claimContentComplete content YesNo
+
+scope Article161ClaimContent:
+  label content_default definition claimContentComplete equals No
+
+  label content_complete exception content_default
+  definition claimContentComplete under condition
+    containsFactualGrounds = Yes
+    and containsLegalGrounds = Yes
+    and containsEvidenceList = Yes
+    and containsReliefRequested = Yes
+    consequence equals Yes
+```
+
+## Article 162. Attachments to statement of claim
+
+```catala
+declaration scope Article162Attachments:
+  input statement content WrittenStatement
+  input proofOfFeePayment content YesNo
+  input proofOfServiceToDefendant content YesNo
+  input powerOfAttorney content YesNo
+  input copiesForAllDefendants content YesNo
+  output attachmentsComplete content YesNo
+
+scope Article162Attachments:
+  label attachments_default definition attachmentsComplete equals No
+
+  label attachments_complete exception attachments_default
+  definition attachmentsComplete under condition
+    proofOfFeePayment = Yes
+    and proofOfServiceToDefendant = Yes
+    and copiesForAllDefendants = Yes
+    consequence equals Yes
+```
+
+## Article 163. Filing electronic statement of claim
+
+```catala
+declaration scope Article163ElectronicFiling:
+  input statement content WrittenStatement
+  input electronicSystemAvailable content YesNo
+  input plaintiffHasElectronicSignature content YesNo
+  output canFileElectronically content YesNo
+
+scope Article163ElectronicFiling:
+  label electronic_default definition canFileElectronically equals No
+
+  label electronic_available exception electronic_default
+  definition canFileElectronically under condition
+    electronicSystemAvailable = Yes
+    and plaintiffHasElectronicSignature = Yes
+    consequence equals Yes
+```
+
+## Article 164. Defense statement (response to claim)
+
+```catala
+declaration scope Article164DefenseStatement:
+  input statement content WrittenStatement
+  input filedByDefendant content YesNo
+  input respondsToEachClaim content YesNo
+  input statesDefendantPosition content YesNo
+  input listsDefenseEvidence content YesNo
+  output defenseMeetsRequirements content YesNo
+
+scope Article164DefenseStatement:
+  label defense_default definition defenseMeetsRequirements equals No
+
+  label defense_complete exception defense_default
+  definition defenseMeetsRequirements under condition
+    statement.statementType = DefenseStatement
+    and respondsToEachClaim = Yes
+    and statesDefendantPosition = Yes
+    consequence equals Yes
+```
+
+## Article 165. Objections and additional statements
+
+```catala
+declaration scope Article165Objections:
+  input statement content WrittenStatement
+  input filedWithinDeadline content YesNo
+  input respondsToNewCircumstances content YesNo
+  output objectionCanBeAccepted content YesNo
+
+scope Article165Objections:
+  label objection_default definition objectionCanBeAccepted equals No
+
+  label objection_timely exception objection_default
+  definition objectionCanBeAccepted under condition
+    filedWithinDeadline = Yes
+    consequence equals Yes
+
+  label objection_new_circumstances exception objection_default
+  definition objectionCanBeAccepted under condition
+    respondsToNewCircumstances = Yes
+    consequence equals Yes
+```

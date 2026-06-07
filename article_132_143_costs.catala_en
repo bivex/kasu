@@ -1,0 +1,175 @@
+## Article 132. Court costs
+
+```catala
+declaration scope Article132CourtCosts:
+  input cost content CourtCostItem
+  output isCourtCost content YesNo
+
+scope Article132CourtCosts:
+  label is_cost definition isCourtCost equals Yes
+```
+
+## Article 133. Court fee
+
+```catala
+declaration scope Article133CourtFee:
+  input calc content CostCalculation
+  output courtFeeRequired content YesNo
+  output feeAmountMinimums content integer
+
+scope Article133CourtFee:
+# Court fee is generally required
+  label fee_required definition courtFeeRequired equals Yes
+
+# Fee amounts based on dispute type
+  label fee_property definition feeAmountMinimums under condition
+    calc.isNonPropertyDispute = No
+    and calc.claimedAmountMinimums > 0
+    consequence equals 1
+
+  label fee_non_property definition feeAmountMinimums under condition
+    calc.isNonPropertyDispute = Yes
+    consequence equals 2
+
+  label fee_zero definition feeAmountMinimums under condition
+    calc.claimedAmountMinimums = 0
+    consequence equals 0
+```
+
+## Article 134. Exemption from court fees
+
+```catala
+declaration scope Article134FeeExemption:
+  input calc content CostCalculation
+  input plaintiffExemptByLaw content YesNo
+  input plaintiffLowIncome content YesNo
+  output feeExemption content FeePaymentStatus
+
+scope Article134FeeExemption:
+  label fee_full definition feeExemption equals FullFee
+
+# Full exemption for those exempt by law
+  label fee_exempt exception fee_full
+  definition feeExemption under condition
+    plaintiffExemptByLaw = Yes
+    consequence equals ExemptFromFee
+
+# Reduced fee for low income
+  label fee_reduced exception fee_full
+  definition feeExemption under condition
+    plaintiffLowIncome = Yes
+    and plaintiffExemptByLaw = No
+    consequence equals ReducedFee
+```
+
+## Article 135. Deferral and installment of court fees
+
+```catala
+declaration scope Article135FeeDeferral:
+  input calc content CostCalculation
+  input plaintiffRequestsDeferral content YesNo
+  input financialHardship content YesNo
+  output feePaymentArrangement content FeePaymentStatus
+
+scope Article135FeeDeferral:
+  label arrangement_full definition feePaymentArrangement equals FullFee
+
+  label arrangement_deferred exception arrangement_full
+  definition feePaymentArrangement under condition
+    plaintiffRequestsDeferral = Yes
+    and financialHardship = Yes
+    consequence equals DeferredPayment
+
+  label arrangement_installment exception arrangement_full
+  definition feePaymentArrangement under condition
+    plaintiffRequestsDeferral = Yes
+    and financialHardship = Yes
+    consequence equals InstallmentPayment
+```
+
+## Article 136. Other court expenses
+
+```catala
+declaration scope Article136OtherExpenses:
+  input cost content CourtCostItem
+  output expenseRecoverable content YesNo
+
+scope Article136OtherExpenses:
+  label recoverable_default definition expenseRecoverable equals No
+
+# Expert, witness, translation, travel, document expenses are recoverable
+  label recoverable_expert exception recoverable_default
+  definition expenseRecoverable under condition
+    cost.category = ExpertExpenses
+    consequence equals Yes
+
+  label recoverable_witness exception recoverable_default
+  definition expenseRecoverable under condition
+    cost.category = WitnessExpenses
+    consequence equals Yes
+
+  label recoverable_translation exception recoverable_default
+  definition expenseRecoverable under condition
+    cost.category = TranslationExpenses
+    consequence equals Yes
+
+  label recoverable_legal_aid exception recoverable_default
+  definition expenseRecoverable under condition
+    cost.category = LegalAidExpenses
+    consequence equals Yes
+
+  label recoverable_travel exception recoverable_default
+  definition expenseRecoverable under condition
+    cost.category = TravelExpenses
+    consequence equals Yes
+
+  label recoverable_document exception recoverable_default
+  definition expenseRecoverable under condition
+    cost.category = DocumentObtainmentExpenses
+    consequence equals Yes
+```
+
+## Article 137. Allocation of court costs
+
+```catala
+declaration scope Article137CostAllocation:
+  input calc content CostCalculation
+  output costAllocation content CostAllocationRule
+
+scope Article137CostAllocation:
+# Default: losing party pays
+  label allocation_losing definition costAllocation equals LosingPartyPays
+
+# If plaintiff partially succeeded
+  label allocation_proportional exception allocation_losing
+  definition costAllocation under condition
+    calc.plaintiffPrevailed = Yes
+    and calc.partialSuccess = Yes
+    consequence equals ProportionallyBySuccess
+
+# State budget pays in certain cases
+  label allocation_state exception allocation_losing
+  definition costAllocation under condition
+    calc.plaintiffPrevailed = No
+    and calc.case.plaintiff = StateBodyPlaintiff
+    consequence equals StateBudgetPays
+```
+
+## Articles 138-143. Cost recovery and enforcement
+
+```catala
+declaration scope Article138CostRecovery:
+  input calc content CostCalculation
+  input winningParty content YesNo
+  input costsReasonablyIncurred content YesNo
+  output costsRecoverableFromLosingParty content YesNo
+
+scope Article138CostRecovery:
+  label recoverable_default definition costsRecoverableFromLosingParty equals No
+
+  label recoverable_winning exception recoverable_default
+  definition costsRecoverableFromLosingParty under condition
+    winningParty = Yes
+    and costsReasonablyIncurred = Yes
+    consequence equals Yes
+```

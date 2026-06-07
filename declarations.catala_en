@@ -230,4 +230,232 @@ declaration structure VenueDetermination:
   data actIssuedInKyiv content YesNo
   data actionOccurredInKyiv content YesNo
   data defendantRegisteredInKyiv content YesNo
+
+declaration enumeration CourtCompositionType:
+  -- SoleJudge
+  -- PanelOfThree
+  -- PanelOfFive
+
+declaration enumeration RecusalGround:
+  -- FamilyRelationship
+  -- FinancialInterest
+  -- PreviousParticipationAsJudge
+  -- PreviousParticipationAsWitness
+  -- PreviousParticipationAsExpert
+  -- PreviousParticipationAsProsecutor
+  -- PreviousParticipationAsRepresentative
+  -- SubordinateRelationship
+  -- OtherDoubtfulCircumstances
+
+declaration enumeration RecusalFilingSubject:
+  -- RecusalJudge
+  -- RecusalCourtSecretary
+  -- RecusalExpert
+  -- RecusalTranslator
+  -- RecusalSpecialist
+
+declaration enumeration RecusalDecision:
+  -- RecusalGranted
+  -- RecusalDenied
+  -- SelfWithdrawn
+
+declaration enumeration ParticipantRole:
+  -- PlaintiffRole
+  -- DefendantRole
+  -- ThirdPartyClaimant
+  -- ThirdPartyDefendant
+  -- InterestedPerson
+  -- ProsecutorParticipant
+  -- StateBodyIntervener
+
+declaration enumeration EvidenceType:
+  -- DocumentaryEvidence
+  -- PhysicalEvidence
+  -- ExpertOpinion
+  -- WitnessTestimony
+  -- ElectronicEvidence
+  -- OfficialInquiryResponse
+
+declaration enumeration EvidenceAdmissibility:
+  -- Admissible
+  -- Inadmissible
+  -- ConditionallyAdmissible
+
+declaration enumeration BurdenOfProof:
+  -- BurdenPlaintiff
+  -- BurdenDefendant
+  -- BurdenCourt
+
+declaration enumeration SecuringMeasure:
+  -- StayEnforcementOfAct
+  -- ProhibitSpecificActions
+  -- CompelSpecificActions
+  -- SeizeProperty
+  -- ProhibitAlienationOfProperty
+  -- SuspendDisputedDecision
+  -- OtherInterimMeasure
+
+declaration enumeration CostCategory:
+  -- CourtFee
+  -- ExpertExpenses
+  -- WitnessExpenses
+  -- TranslationExpenses
+  -- LegalAidExpenses
+  -- TravelExpenses
+  -- DocumentObtainmentExpenses
+
+declaration enumeration FeePaymentStatus:
+  -- FullFee
+  -- ReducedFee
+  -- ExemptFromFee
+  -- DeferredPayment
+  -- InstallmentPayment
+
+declaration enumeration CostAllocationRule:
+  -- LosingPartyPays
+  -- ProportionallyBySuccess
+  -- StateBudgetPays
+  -- CourtDiscretion
+
+declaration enumeration EnforcementAction:
+  -- MonetaryFine
+  -- CompulsoryExecution
+  -- PropertySeizure
+  -- AccountFreeze
+  -- LicenseSuspension
+
+declaration enumeration DeadlineType:
+  -- CaseFilingDeadline
+  -- AppealFilingDeadline
+  -- CassationFilingDeadline
+  -- EvidenceSubmissionDeadline
+  -- WrittenObjectionDeadline
+  -- HearingPreparationDeadline
+  -- GeneralProceduralDeadline
+
+declaration enumeration DeadlineExtension:
+  -- ExtendedByCourt
+  -- NotExtended
+  -- RestoredByCourt
+
+declaration enumeration DeliveryMethod:
+  -- PersonalDelivery
+  -- RegisteredMail
+  -- ElectronicDelivery
+  -- CourtNoticeBoard
+  -- OfficialPublication
+  -- ViaRepresentative
+
+declaration enumeration WrittenStatementType:
+  -- StatementOfClaim
+  -- DefenseStatement
+  -- AppealComplaint
+  -- CassationComplaint
+  -- ApplicationMotion
+  -- WrittenExplanation
+  -- ObjectionToEvidence
+
+declaration enumeration RepresentativeType:
+  -- LegalRepresentative
+  -- Attorney
+  -- OtherAuthorizedRepresentative
+
+declaration structure CourtComposition:
+  data compositionType content CourtCompositionType
+  data numberOfJudges content integer
+  data instanceLevel content CourtInstance
+
+declaration structure RecusalRequest:
+  data ground content RecusalGround
+  data subject content RecusalFilingSubject
+  data filedByParticipant content ParticipantRole
+  data filedTimely content YesNo
+  data groundSubstantiated content YesNo
+
+declaration structure Participant:
+  data role content ParticipantRole
+  data isIndividual content YesNo
+  data hasLegalCapacity content YesNo
+  data hasRepresentative content YesNo
+  data representativeType content RepresentativeType
+  data isForeignParticipant content YesNo
+
+declaration structure EvidenceItem:
+  data evidenceType content EvidenceType
+  data admissibility content EvidenceAdmissibility
+  data burdenParty content BurdenOfProof
+  data isRelevant content YesNo
+  data obtainedLawfully content YesNo
+  data submittedTimely content YesNo
+
+declaration structure ProceduralDeadline:
+  data deadlineType content DeadlineType
+  data durationDays content integer
+  data startEvent content YesNo
+  data restorationAvailable content YesNo
+  data extensionStatus content DeadlineExtension
+
+declaration structure CourtCostItem:
+  data category content CostCategory
+  data amountMinimums content integer
+  data paymentStatus content FeePaymentStatus
+
+declaration structure SecuringClaimRequest:
+  data measure content SecuringMeasure
+  data groundsSubstantiated content YesNo
+  data urgentNeed content YesNo
+  data amountAtStakeMinimums content integer
+  data plaintiffRiskOfIrreparableHarm content YesNo
+  data balanceOfConvenience content YesNo
+
+declaration structure EnforcementMeasure:
+  data action content EnforcementAction
+  data deadlineDays content integer
+  data complianceStatus content YesNo
+
+declaration structure WrittenStatement:
+  data statementType content WrittenStatementType
+  data filedBy content ParticipantRole
+  data filedTimely content YesNo
+  data meetsFormalRequirements content YesNo
+
+declaration structure DocumentDelivery:
+  data method content DeliveryMethod
+  data deliverySuccessful content YesNo
+  data deliveryDateKnown content YesNo
+
+declaration structure CourtCompositionCheck:
+  data case content AdministrativeCase
+  data instanceLevel content CourtInstance
+  data isElectionCase content YesNo
+  data involvesCorruption content YesNo
+  data involvesHighOfficial content YesNo
+  data isMinorCase content YesNo
+  data isSupremeFirstInstance content YesNo
+
+declaration structure DeadlineCalculation:
+  data isIndividual content YesNo
+  data isAuthority content YesNo
+  data deadlineType content DeadlineType
+  data caseFiledDaysAgo content integer
+  data appealFiledDaysAfterDecision content integer
+  data goodCauseForDelay content YesNo
+  data deadlineNotified content YesNo
+
+declaration structure CostCalculation:
+  data case content AdministrativeCase
+  data plaintiffIsIndividual content YesNo
+  data plaintiffFinancialStatus content FeePaymentStatus
+  data plaintiffPrevailed content YesNo
+  data partialSuccess content YesNo
+  data claimedAmountMinimums content integer
+  data isNonPropertyDispute content YesNo
+
+declaration structure SecuringClaimCheck:
+  data case content AdministrativeCase
+  data measureRequested content SecuringMeasure
+  data irreparableHarmRisk content YesNo
+  data actAlreadyEnforced content YesNo
+  data measureProportionate content YesNo
+  data plaintiffProvidedSecurity content YesNo
 ```

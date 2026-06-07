@@ -1,0 +1,297 @@
+## Article 42. Parties to the case
+
+```catala
+declaration scope Article42Parties:
+  input participant content Participant
+  output isParty content YesNo
+  output hasProceduralRights content YesNo
+
+scope Article42Parties:
+  label party_default definition isParty equals No
+
+# Plaintiff and defendant are always parties
+  label party_plaintiff exception party_default
+  definition isParty under condition
+    participant.role = PlaintiffRole
+    consequence equals Yes
+
+  label party_defendant exception party_default
+  definition isParty under condition
+    participant.role = DefendantRole
+    consequence equals Yes
+
+# Parties always have procedural rights
+  label rights_parties definition hasProceduralRights under condition
+    isParty = Yes
+    consequence equals Yes
+
+  label rights_non_parties definition hasProceduralRights under condition
+    isParty = No
+    consequence equals No
+```
+
+## Article 43. Co-participants
+
+```catala
+declaration scope Article43CoParticipants:
+  input multiplePlaintiffs content YesNo
+  input multipleDefendants content YesNo
+  input sameLegalBasis content YesNo
+  output canJoinAsCoParticipants content YesNo
+
+scope Article43CoParticipants:
+  label join_default definition canJoinAsCoParticipants equals No
+
+# Multiple plaintiffs or defendants with same legal basis
+  label join_co_plaintiffs exception join_default
+  definition canJoinAsCoParticipants under condition
+    multiplePlaintiffs = Yes
+    and sameLegalBasis = Yes
+    consequence equals Yes
+
+  label join_co_defendants exception join_default
+  definition canJoinAsCoParticipants under condition
+    multipleDefendants = Yes
+    and sameLegalBasis = Yes
+    consequence equals Yes
+```
+
+## Article 44. Rights of parties
+
+```catala
+declaration scope Article44PartyRights:
+  input participant content Participant
+  output canFamiliarizeWithCaseMaterials content YesNo
+  output canMakeExcerpts content YesNo
+  output canFileMotions content YesNo
+  output canPresentEvidence content YesNo
+  output canParticipateInHearing content YesNo
+  output canMakeArguments content YesNo
+  output canFileAppeals content YesNo
+  output canObjectToMotions content YesNo
+
+scope Article44PartyRights:
+# All parties have the full set of procedural rights
+  label rights_familiarize definition canFamiliarizeWithCaseMaterials equals Yes
+  label rights_excerpts definition canMakeExcerpts equals Yes
+  label rights_motions definition canFileMotions equals Yes
+  label rights_evidence definition canPresentEvidence equals Yes
+  label rights_hearing definition canParticipateInHearing equals Yes
+  label rights_arguments definition canMakeArguments equals Yes
+  label rights_appeals definition canFileAppeals equals Yes
+  label rights_object definition canObjectToMotions equals Yes
+```
+
+## Article 45. Duties of parties
+
+```catala
+declaration scope Article45PartyDuties:
+  input participant content Participant
+  output mustActInGoodFaith content YesNo
+  output mustDiscloseEvidence content YesNo
+  output mustNotifyAddressChanges content YesNo
+  output mustRespectCourtProcedure content YesNo
+
+scope Article45PartyDuties:
+  label duty_good_faith definition mustActInGoodFaith equals Yes
+  label duty_disclose definition mustDiscloseEvidence equals Yes
+  label duty_notify definition mustNotifyAddressChanges equals Yes
+  label duty_respect definition mustRespectCourtProcedure equals Yes
+```
+
+## Article 46. Third parties
+
+```catala
+declaration scope Article46ThirdParties:
+  input participant content Participant
+  input independentClaims content YesNo
+  input sharesLegalInterest content YesNo
+  output canJoinAsThirdParty content YesNo
+  output thirdPartyType content ParticipantRole
+
+scope Article46ThirdParties:
+  label third_default definition canJoinAsThirdParty equals No
+
+# Third party with independent claims
+  label third_independent exception third_default
+  definition canJoinAsThirdParty under condition
+    independentClaims = Yes
+    consequence equals Yes
+
+  label third_independent_type definition thirdPartyType under condition
+    independentClaims = Yes
+    consequence equals ThirdPartyClaimant
+
+# Third party without independent claims but sharing legal interest
+  label third_shared exception third_default
+  definition canJoinAsThirdParty under condition
+    independentClaims = No
+    and sharesLegalInterest = Yes
+    consequence equals Yes
+
+  label third_shared_type definition thirdPartyType under condition
+    independentClaims = No
+    and sharesLegalInterest = Yes
+    consequence equals ThirdPartyDefendant
+```
+
+## Article 47. Interested persons
+
+```catala
+declaration scope Article47InterestedPersons:
+  input legalInterestAffected content YesNo
+  input notPartyToCase content YesNo
+  output canParticipateAsInterested content YesNo
+
+scope Article47InterestedPersons:
+  label interested_default definition canParticipateAsInterested equals No
+
+  label interested_exception exception interested_default
+  definition canParticipateAsInterested under condition
+    legalInterestAffected = Yes
+    and notPartyToCase = Yes
+    consequence equals Yes
+```
+
+## Article 48. Prosecutor participation
+
+```catala
+declaration scope Article48Prosecutor:
+  input prosecutorInitiatesCase content YesNo
+  input prosecutorJoinsCase content YesNo
+  input prosecutorFilesStatement content YesNo
+  output prosecutorHasPartyRights content YesNo
+  output prosecutorMustProveGrounds content YesNo
+
+scope Article48Prosecutor:
+# Prosecutor who initiates case has plaintiff rights
+  label prosecutor_initiator_rights definition prosecutorHasPartyRights under condition
+    prosecutorInitiatesCase = Yes
+    consequence equals Yes
+
+  label prosecutor_joiner_rights definition prosecutorHasPartyRights under condition
+    prosecutorJoinsCase = Yes
+    consequence equals Yes
+
+# Prosecutor who initiates must prove grounds
+  label prosecutor_burden definition prosecutorMustProveGrounds under condition
+    prosecutorInitiatesCase = Yes
+    consequence equals Yes
+
+  label prosecutor_no_burden definition prosecutorMustProveGrounds under condition
+    prosecutorInitiatesCase = No
+    consequence equals No
+```
+
+## Article 49. State body intervention
+
+```catala
+declaration scope Article49StateBodyIntervention:
+  input stateBodyHasCompetence content YesNo
+  input disputeInvolvesPublicAuthority content YesNo
+  input stateBodyRequestsIntervention content YesNo
+  output stateBodyCanIntervene content YesNo
+
+scope Article49StateBodyIntervention:
+  label intervene_default definition stateBodyCanIntervene equals No
+
+  label intervene_exception exception intervene_default
+  definition stateBodyCanIntervene under condition
+    stateBodyHasCompetence = Yes
+    and disputeInvolvesPublicAuthority = Yes
+    and stateBodyRequestsIntervention = Yes
+    consequence equals Yes
+```
+
+## Articles 50-55. Procedural capacity and representation
+
+```catala
+declaration scope Article50ProceduralCapacity:
+  input participant content Participant
+  output hasFullProceduralCapacity content YesNo
+  output needsRepresentative content YesNo
+
+scope Article50ProceduralCapacity:
+# Individuals with legal capacity have full procedural capacity
+  label capacity_full definition hasFullProceduralCapacity under condition
+    participant.isIndividual = Yes
+    and participant.hasLegalCapacity = Yes
+    consequence equals Yes
+
+  label capacity_limited definition hasFullProceduralCapacity under condition
+    participant.isIndividual = Yes
+    and participant.hasLegalCapacity = No
+    consequence equals No
+
+  label capacity_entity definition hasFullProceduralCapacity under condition
+    participant.isIndividual = No
+    consequence equals Yes
+
+# Those without capacity need representatives
+  label needs_rep_yes definition needsRepresentative under condition
+    hasFullProceduralCapacity = No
+    consequence equals Yes
+
+  label needs_rep_no definition needsRepresentative under condition
+    hasFullProceduralCapacity = Yes
+    consequence equals No
+
+declaration scope Article51Representation:
+  input participant content Participant
+  output canHaveRepresentative content YesNo
+  output representativeTypeAllowed content RepresentativeType
+
+scope Article51Representation:
+# Any party can have a representative
+  label can_have_rep definition canHaveRepresentative equals Yes
+
+# Representative type based on situation
+  label rep_legal definition representativeTypeAllowed under condition
+    participant.hasLegalCapacity = No
+    consequence equals LegalRepresentative
+
+  label rep_attorney definition representativeTypeAllowed under condition
+    participant.hasLegalCapacity = Yes
+    consequence equals Attorney
+
+declaration scope Article53ForeignParticipant:
+  input participant content Participant
+  output hasEqualProceduralRights content YesNo
+  output mayNeedDiplomaticRepresentation content YesNo
+
+scope Article53ForeignParticipant:
+  label foreign_equal definition hasEqualProceduralRights equals Yes
+
+  label diplomatic_default definition mayNeedDiplomaticRepresentation equals No
+
+  label diplomatic_exception exception diplomatic_default
+  definition mayNeedDiplomaticRepresentation under condition
+    participant.isForeignParticipant = Yes
+    and participant.isIndividual = No
+    consequence equals Yes
+```
+
+## Articles 56-60. Participant changes and succession
+
+```catala
+declaration scope Article56Succession:
+  input plaintiffReplaced content YesNo
+  input defendantReplaced content YesNo
+  input successorConsents content YesNo
+  output successionAllowed content YesNo
+
+scope Article56Succession:
+  label succession_default definition successionAllowed equals No
+
+# Universal succession (reorganization, death, etc.)
+  label succession_plaintiff exception succession_default
+  definition successionAllowed under condition
+    plaintiffReplaced = Yes
+    and successorConsents = Yes
+    consequence equals Yes
+
+  label succession_defendant exception succession_default
+  definition successionAllowed under condition
+    defendantReplaced = Yes
+    consequence equals Yes
+```

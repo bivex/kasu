@@ -1,0 +1,149 @@
+## Article 118. General provisions on procedural timeframes
+
+```catala
+declaration scope Article118GeneralDeadlines:
+  input deadline content ProceduralDeadline
+  output deadlineIsBinding content YesNo
+  output deadlineCanBeExtended content YesNo
+
+scope Article118GeneralDeadlines:
+  label binding definition deadlineIsBinding equals Yes
+
+# Deadlines can be extended only if the deadline type allows it
+  label extendable_default definition deadlineCanBeExtended equals No
+
+  label extendable_available exception extendable_default
+  definition deadlineCanBeExtended under condition
+    deadline.restorationAvailable = Yes
+    consequence equals Yes
+```
+
+## Article 119. Calculation of procedural timeframes
+
+```catala
+declaration scope Article119DeadlineCalculation:
+  input deadlineDays content integer
+  input startDayIsWorkingDay content YesNo
+  input lastDayIsWeekend content YesNo
+  input lastDayIsHoliday content YesNo
+  input nextWorkingDayAfterWeekend content YesNo
+  output calculatedDeadlineDays content integer
+  output deadlineExtendedToNextWorkingDay content YesNo
+
+scope Article119DeadlineCalculation:
+# Duration is as specified
+  label duration definition calculatedDeadlineDays equals deadlineDays
+
+# If last day is weekend or holiday, deadline extends to next working day
+  label extended_default definition deadlineExtendedToNextWorkingDay equals No
+
+  label extended_weekend exception extended_default
+  definition deadlineExtendedToNextWorkingDay under condition
+    lastDayIsWeekend = Yes
+    consequence equals Yes
+
+  label extended_holiday exception extended_default
+  definition deadlineExtendedToNextWorkingDay under condition
+    lastDayIsHoliday = Yes
+    consequence equals Yes
+```
+
+## Article 120. Deadline for filing administrative case
+
+```catala
+declaration scope Article120FilingDeadline:
+  input calc content DeadlineCalculation
+  output filingDeadlineDays content integer
+  output filingDeadlineExpired content YesNo
+
+scope Article120FilingDeadline:
+# 6 months for individuals to file
+  label deadline_individual definition filingDeadlineDays under condition
+    calc.isIndividual = Yes
+    consequence equals 180
+
+# 3 months for authorities
+  label deadline_authority definition filingDeadlineDays under condition
+    calc.isAuthority = Yes
+    consequence equals 90
+
+# Check if deadline expired
+  label expired_yes definition filingDeadlineExpired under condition
+    calc.deadlineType = CaseFilingDeadline
+    and calc.caseFiledDaysAgo > 180
+    and calc.isIndividual = Yes
+    consequence equals Yes
+
+  label expired_yes_authority definition filingDeadlineExpired under condition
+    calc.deadlineType = CaseFilingDeadline
+    and calc.caseFiledDaysAgo > 90
+    and calc.isAuthority = Yes
+    consequence equals Yes
+
+  label expired_no_individual definition filingDeadlineExpired under condition
+    calc.deadlineType = CaseFilingDeadline
+    and calc.caseFiledDaysAgo <= 180
+    and calc.isIndividual = Yes
+    consequence equals No
+
+  label expired_no_authority definition filingDeadlineExpired under condition
+    calc.deadlineType = CaseFilingDeadline
+    and calc.caseFiledDaysAgo <= 90
+    and calc.isAuthority = Yes
+    consequence equals No
+```
+
+## Article 121. Deadline for filing appeal
+
+```catala
+declaration scope Article121AppealDeadline:
+  input calc content DeadlineCalculation
+  output appealDeadlineDays content integer
+  output appealDeadlineExpired content YesNo
+
+scope Article121AppealDeadline:
+# 30 days for appeal
+  label appeal_deadline definition appealDeadlineDays equals 30
+
+  label appeal_expired definition appealDeadlineExpired under condition
+    calc.appealFiledDaysAfterDecision > 30
+    consequence equals Yes
+
+  label appeal_valid definition appealDeadlineExpired under condition
+    calc.appealFiledDaysAfterDecision <= 30
+    consequence equals No
+```
+
+## Article 122. Restoration of missed deadline
+
+```catala
+declaration scope Article122DeadlineRestoration:
+  input calc content DeadlineCalculation
+  output deadlineCanBeRestored content YesNo
+
+scope Article122DeadlineRestoration:
+  label restore_default definition deadlineCanBeRestored equals No
+
+# Deadline can be restored for good cause
+  label restore_good_cause exception restore_default
+  definition deadlineCanBeRestored under condition
+    calc.goodCauseForDelay = Yes
+    consequence equals Yes
+```
+
+## Article 123. Suspension of procedural timeframes
+
+```catala
+declaration scope Article123DeadlineSuspension:
+  input proceedingSuspended content YesNo
+  input suspensionReason content YesNo
+  output deadlineSuspended content YesNo
+
+scope Article123DeadlineSuspension:
+  label suspend_default definition deadlineSuspended equals No
+
+  label suspend_exception exception suspend_default
+  definition deadlineSuspended under condition
+    proceedingSuspended = Yes
+    consequence equals Yes
+```

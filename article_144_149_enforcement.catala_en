@@ -1,0 +1,142 @@
+## Article 144. Enforcement of court decisions
+
+```catala
+declaration scope Article144Enforcement:
+  input decisionFinal content YesNo
+  input decisionSubjectToEnforcement content YesNo
+  output canEnforce content YesNo
+
+scope Article144Enforcement:
+  label enforce_default definition canEnforce equals No
+
+# Only final decisions can be enforced
+  label enforce_final exception enforce_default
+  definition canEnforce under condition
+    decisionFinal = Yes
+    and decisionSubjectToEnforcement = Yes
+    consequence equals Yes
+```
+
+## Article 145. Immediate enforcement
+
+```catala
+declaration scope Article145ImmediateEnforcement:
+  input caseActsRegardingMinors content YesNo
+  input caseActsRegardingRestoration content YesNo
+  input courtSpecifiedImmediateEnforcement content YesNo
+  output subjectToImmediateEnforcement content YesNo
+
+scope Article145ImmediateEnforcement:
+  label immediate_default definition subjectToImmediateEnforcement equals No
+
+# Cases regarding minors → immediate
+  label immediate_minors exception immediate_default
+  definition subjectToImmediateEnforcement under condition
+    caseActsRegardingMinors = Yes
+    consequence equals Yes
+
+# Acts about restoration of rights → immediate
+  label immediate_restoration exception immediate_default
+  definition subjectToImmediateEnforcement under condition
+    caseActsRegardingRestoration = Yes
+    consequence equals Yes
+
+# Court explicitly orders immediate enforcement
+  label immediate_court_order exception immediate_default
+  definition subjectToImmediateEnforcement under condition
+    courtSpecifiedImmediateEnforcement = Yes
+    consequence equals Yes
+```
+
+## Article 146. Enforcement measures
+
+```catala
+declaration scope Article146EnforcementMeasures:
+  input enforcement content EnforcementMeasure
+  input defendantNonCompliant content YesNo
+  output enforcementMeasureAvailable content YesNo
+
+scope Article146EnforcementMeasures:
+  label available_default definition enforcementMeasureAvailable equals No
+
+  label available_fine exception available_default
+  definition enforcementMeasureAvailable under condition
+    enforcement.action = MonetaryFine
+    and defendantNonCompliant = Yes
+    consequence equals Yes
+
+  label available_compulsory exception available_default
+  definition enforcementMeasureAvailable under condition
+    enforcement.action = CompulsoryExecution
+    and defendantNonCompliant = Yes
+    consequence equals Yes
+
+  label available_seizure exception available_default
+  definition enforcementMeasureAvailable under condition
+    enforcement.action = PropertySeizure
+    and defendantNonCompliant = Yes
+    consequence equals Yes
+
+  label available_freeze exception available_default
+  definition enforcementMeasureAvailable under condition
+    enforcement.action = AccountFreeze
+    and defendantNonCompliant = Yes
+    consequence equals Yes
+```
+
+## Article 147. Court fines for non-compliance
+
+```catala
+declaration scope Article147CourtFines:
+  input defendantIsPublicAuthority content YesNo
+  input nonComplianceDurationDays content integer
+  input repeatedNonCompliance content YesNo
+  output fineAmountMinimums content integer
+  output fineCanIncrease content YesNo
+
+scope Article147CourtFines:
+# Base fine for public authority non-compliance
+  label fine_base definition fineAmountMinimums under condition
+    defendantIsPublicAuthority = Yes
+    and nonComplianceDurationDays > 0
+    consequence equals 50
+
+# Repeated non-compliance increases fine
+  label fine_repeated definition fineAmountMinimums under condition
+    defendantIsPublicAuthority = Yes
+    and repeatedNonCompliance = Yes
+    consequence equals 100
+
+  label fine_increase definition fineCanIncrease under condition
+    repeatedNonCompliance = Yes
+    consequence equals Yes
+
+  label fine_no_increase definition fineCanIncrease under condition
+    repeatedNonCompliance = No
+    consequence equals No
+```
+
+## Articles 148-149. Enforcement deadlines and appeals
+
+```catala
+declaration scope Article148EnforcementDeadline:
+  input enforcement content EnforcementMeasure
+  output enforcementDeadlineDays content integer
+
+scope Article148EnforcementDeadline:
+  label deadline_30 definition enforcementDeadlineDays under condition
+    enforcement.action = CompulsoryExecution
+    consequence equals 30
+
+  label deadline_15 definition enforcementDeadlineDays under condition
+    enforcement.action = MonetaryFine
+    consequence equals 15
+
+  label deadline_10 definition enforcementDeadlineDays under condition
+    enforcement.action = AccountFreeze
+    consequence equals 10
+
+  label deadline_default definition enforcementDeadlineDays under condition
+    enforcement.action = PropertySeizure
+    consequence equals 30
+```

@@ -1,0 +1,358 @@
+## Article 31. Cases considered by a sole judge
+
+```catala
+declaration scope Article31SoleJudge:
+  input check content CourtCompositionCheck
+  output heardBySoleJudge content YesNo
+  output compositionType content CourtCompositionType
+
+scope Article31SoleJudge:
+  label sole_default definition heardBySoleJudge equals No
+
+# Part 1: minor complexity simplified proceeding → sole judge
+  label sole_minor exception sole_default
+  definition heardBySoleJudge under condition
+    check.isMinorCase = Yes
+    and check.instanceLevel = FirstInstance
+    consequence equals Yes
+
+# Part 2: inaction challenges at first instance → sole judge
+  label sole_inaction exception sole_default
+  definition heardBySoleJudge under condition
+    check.case.disputeCategory = DisputeCategory.InactionChallenge
+    and check.instanceLevel = FirstInstance
+    consequence equals Yes
+
+# Part 3: pension and social disputes → sole judge
+  label sole_pension exception sole_default
+  definition heardBySoleJudge under condition
+    check.case.disputeCategory = PensionSocialDispute
+    and check.instanceLevel = FirstInstance
+    consequence equals Yes
+
+# Part 4: entry/exit and foreigner stay → sole judge
+  label sole_entry_exit exception sole_default
+  definition heardBySoleJudge under condition
+    check.case.disputeCategory = EntryExitDispute
+    and check.instanceLevel = FirstInstance
+    consequence equals Yes
+
+  label sole_foreigner exception sole_default
+  definition heardBySoleJudge under condition
+    check.case.disputeCategory = ForeignerStayDispute
+    and check.instanceLevel = FirstInstance
+    consequence equals Yes
+
+# Part 5: public servant disputes (individual plaintiff) → sole judge
+  label sole_public_servant exception sole_default
+  definition heardBySoleJudge under condition
+    check.case.disputeCategory = PublicServantDispute
+    and check.case.plaintiff = Individual
+    and check.instanceLevel = FirstInstance
+    consequence equals Yes
+
+# Part 6: appellate instance → sole judge for minor cases
+  label sole_appellate_minor exception sole_default
+  definition heardBySoleJudge under condition
+    check.isMinorCase = Yes
+    and check.instanceLevel = Appellate
+    consequence equals Yes
+
+  label composition_sole exception composition_default
+  definition compositionType under condition
+    heardBySoleJudge = Yes
+    consequence equals SoleJudge
+
+  label composition_default definition compositionType equals PanelOfThree
+```
+
+## Article 32. Cases considered by a panel of three judges
+
+```catala
+declaration scope Article32PanelOfThree:
+  input check content CourtCompositionCheck
+  output heardByPanelOfThree content YesNo
+
+scope Article32PanelOfThree:
+  label panel_three_default definition heardByPanelOfThree equals No
+
+# Part 1: general first instance cases → panel of three
+  label panel_three_general exception panel_three_default
+  definition heardByPanelOfThree under condition
+    check.instanceLevel = FirstInstance
+    and check.isSupremeFirstInstance = No
+    and check.isMinorCase = No
+    consequence equals Yes
+
+# Part 2: appellate instance (non-minor) → panel of three
+  label panel_three_appellate exception panel_three_default
+  definition heardByPanelOfThree under condition
+    check.instanceLevel = Appellate
+    and check.isMinorCase = No
+    consequence equals Yes
+
+# Part 3: cassation instance → panel of three
+  label panel_three_cassation exception panel_three_default
+  definition heardByPanelOfThree under condition
+    check.instanceLevel = Cassation
+    consequence equals Yes
+
+# Part 4: corruption cases at first instance → panel of three
+  label panel_three_corruption exception panel_three_default
+  definition heardByPanelOfThree under condition
+    check.involvesCorruption = Yes
+    and check.instanceLevel = FirstInstance
+    consequence equals Yes
+
+# Part 5: election cases at first instance → panel of three
+  label panel_three_election exception panel_three_default
+  definition heardByPanelOfThree under condition
+    check.isElectionCase = Yes
+    and check.instanceLevel = FirstInstance
+    consequence equals Yes
+```
+
+## Article 33. Cases considered by a panel of five judges
+
+```catala
+declaration scope Article33PanelOfFive:
+  input check content CourtCompositionCheck
+  output heardByPanelOfFive content YesNo
+
+scope Article33PanelOfFive:
+  label panel_five_default definition heardByPanelOfFive equals No
+
+# Part 1: Supreme Court first instance → panel of five
+  label panel_five_supreme exception panel_five_default
+  definition heardByPanelOfFive under condition
+    check.isSupremeFirstInstance = Yes
+    consequence equals Yes
+
+# Part 2: Supreme Court cassation for exceptional cases → panel of five
+  label panel_five_cassation exception panel_five_default
+  definition heardByPanelOfFive under condition
+    check.instanceLevel = Cassation
+    and check.involvesHighOfficial = Yes
+    consequence equals Yes
+```
+
+## Article 34. Court composition at different instances
+
+```catala
+declaration scope Article34InstanceComposition:
+  input check content CourtCompositionCheck
+  output compositionAtInstance content CourtCompositionType
+  output numberOfJudges content integer
+
+scope Article34InstanceComposition:
+# Sole judge determination
+  label comp_sole exception comp_default
+  definition compositionAtInstance under condition
+    check.instanceLevel = FirstInstance
+    and check.isMinorCase = Yes
+    and check.isSupremeFirstInstance = No
+    consequence equals SoleJudge
+
+  label comp_sole_appellate exception comp_default
+  definition compositionAtInstance under condition
+    check.instanceLevel = Appellate
+    and check.isMinorCase = Yes
+    consequence equals SoleJudge
+
+# Panel of five for Supreme first instance
+  label comp_five exception comp_default
+  definition compositionAtInstance under condition
+    check.isSupremeFirstInstance = Yes
+    consequence equals PanelOfFive
+
+# Panel of five for cassation with high officials
+  label comp_five_cassation exception comp_default
+  definition compositionAtInstance under condition
+    check.instanceLevel = Cassation
+    and check.involvesHighOfficial = Yes
+    consequence equals PanelOfFive
+
+  label comp_default definition compositionAtInstance equals PanelOfThree
+
+# Number of judges follows composition type
+  label judges_sole definition numberOfJudges under condition
+    compositionAtInstance = SoleJudge
+    consequence equals 1
+
+  label judges_three definition numberOfJudges under condition
+    compositionAtInstance = PanelOfThree
+    consequence equals 3
+
+  label judges_five definition numberOfJudges under condition
+    compositionAtInstance = PanelOfFive
+    consequence equals 5
+```
+
+## Article 35. Change in court composition
+
+```catala
+declaration scope Article35CompositionChange:
+  input judgeReplaced content YesNo
+  input replacementAvailable content YesNo
+  output caseMustBeReheard content YesNo
+
+scope Article35CompositionChange:
+  label rehear_default definition caseMustBeReheard equals No
+
+# If a judge is replaced, the case must be reheard from the beginning
+  label rehear_exception exception rehear_default
+  definition caseMustBeReheard under condition
+    judgeReplaced = Yes
+    consequence equals Yes
+```
+
+## Articles 36-41. Recusal of judges and other participants
+
+```catala
+declaration scope Article36RecusalGrounds:
+  input request content RecusalRequest
+  output recusalGroundValid content YesNo
+
+scope Article36RecusalGrounds:
+  label ground_default definition recusalGroundValid equals No
+
+# Part 1: family relationship
+  label ground_family exception ground_default
+  definition recusalGroundValid under condition
+    request.ground = FamilyRelationship
+    consequence equals Yes
+
+# Part 2: financial interest
+  label ground_financial exception ground_default
+  definition recusalGroundValid under condition
+    request.ground = FinancialInterest
+    consequence equals Yes
+
+# Part 3: previous participation as judge in same case
+  label ground_prev_judge exception ground_default
+  definition recusalGroundValid under condition
+    request.ground = PreviousParticipationAsJudge
+    consequence equals Yes
+
+# Part 4: previous participation as witness, expert, prosecutor, representative
+  label ground_prev_witness exception ground_default
+  definition recusalGroundValid under condition
+    request.ground = PreviousParticipationAsWitness
+    consequence equals Yes
+
+  label ground_prev_expert exception ground_default
+  definition recusalGroundValid under condition
+    request.ground = PreviousParticipationAsExpert
+    consequence equals Yes
+
+  label ground_prev_prosecutor exception ground_default
+  definition recusalGroundValid under condition
+    request.ground = PreviousParticipationAsProsecutor
+    consequence equals Yes
+
+  label ground_prev_representative exception ground_default
+  definition recusalGroundValid under condition
+    request.ground = PreviousParticipationAsRepresentative
+    consequence equals Yes
+
+# Part 5: subordinate relationship
+  label ground_subordinate exception ground_default
+  definition recusalGroundValid under condition
+    request.ground = SubordinateRelationship
+    consequence equals Yes
+
+# Part 6: other circumstances causing doubt
+  label ground_other exception ground_default
+  definition recusalGroundValid under condition
+    request.ground = OtherDoubtfulCircumstances
+    consequence equals Yes
+
+declaration scope Article37SelfRecusal:
+  input judgeAwareOfGround content YesNo
+  output mustSelfRecuse content YesNo
+
+scope Article37SelfRecusal:
+  label self_recuse definition mustSelfRecuse under condition
+    judgeAwareOfGround = Yes
+    consequence equals Yes
+
+  label no_self_recuse definition mustSelfRecuse under condition
+    judgeAwareOfGround = No
+    consequence equals No
+
+declaration scope Article38RecusalProcedure:
+  input request content RecusalRequest
+  output recusalDecision content RecusalDecision
+  output recusalFiledTimely content YesNo
+
+scope Article38RecusalProcedure:
+# Timeliness check
+  label timely definition recusalFiledTimely equals request.filedTimely
+
+# Decision based on grounds and timeliness
+  label decision_default definition recusalDecision equals RecusalDenied
+
+  label decision_granted exception decision_default
+  definition recusalDecision under condition
+    request.filedTimely = Yes
+    and request.groundSubstantiated = Yes
+    consequence equals RecusalGranted
+
+  label decision_self_withdrawn exception decision_default
+  definition recusalDecision under condition
+    request.subject = RecusalJudge
+    and request.filedByParticipant = PlaintiffRole
+    consequence equals SelfWithdrawn
+
+declaration scope Article40RecusalOtherParticipants:
+  input request content RecusalRequest
+  output otherParticipantRecused content YesNo
+
+scope Article40RecusalOtherParticipants:
+  label other_default definition otherParticipantRecused equals No
+
+# Secretary, expert, translator, specialist recusal
+  label other_secretary exception other_default
+  definition otherParticipantRecused under condition
+    request.subject = RecusalCourtSecretary
+    and request.groundSubstantiated = Yes
+    consequence equals Yes
+
+  label other_expert exception other_default
+  definition otherParticipantRecused under condition
+    request.subject = RecusalExpert
+    and request.groundSubstantiated = Yes
+    consequence equals Yes
+
+  label other_translator exception other_default
+  definition otherParticipantRecused under condition
+    request.subject = RecusalTranslator
+    and request.groundSubstantiated = Yes
+    consequence equals Yes
+
+  label other_specialist exception other_default
+  definition otherParticipantRecused under condition
+    request.subject = RecusalSpecialist
+    and request.groundSubstantiated = Yes
+    consequence equals Yes
+
+declaration scope Article41RecusalConsequences:
+  input recusalDecision content RecusalDecision
+  output proceedingsInvalidated content YesNo
+  output caseReassigned content YesNo
+
+scope Article41RecusalConsequences:
+  label invalidated_default definition proceedingsInvalidated equals No
+
+  label invalidated exception invalidated_default
+  definition proceedingsInvalidated under condition
+    recusalDecision = RecusalGranted
+    consequence equals Yes
+
+  label reassigned_default definition caseReassigned equals No
+
+  label reassigned exception reassigned_default
+  definition caseReassigned under condition
+    recusalDecision = RecusalGranted
+    consequence equals Yes
+```

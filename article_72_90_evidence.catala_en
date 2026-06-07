@@ -1,0 +1,315 @@
+## Article 72. Evidence in administrative cases
+
+```catala
+declaration scope Article72EvidenceOverview:
+  input evidence content EvidenceItem
+  output isEvidenceAdmissible content YesNo
+
+scope Article72EvidenceOverview:
+# Evidence must be relevant and obtained lawfully
+  label admissible_default definition isEvidenceAdmissible equals No
+
+  label admissible_both exception admissible_default
+  definition isEvidenceAdmissible under condition
+    evidence.isRelevant = Yes
+    and evidence.obtainedLawfully = Yes
+    consequence equals Yes
+
+  label inadmissible_unlawful exception admissible_default
+  definition isEvidenceAdmissible under condition
+    evidence.obtainedLawfully = No
+    consequence equals No
+```
+
+## Article 73. Types of evidence
+
+```catala
+declaration scope Article73EvidenceTypes:
+  input evidence content EvidenceItem
+  output isRecognizedEvidenceType content YesNo
+
+scope Article73EvidenceTypes:
+  label recognized_default definition isRecognizedEvidenceType equals No
+
+  label recognized_documentary exception recognized_default
+  definition isRecognizedEvidenceType under condition
+    evidence.evidenceType = DocumentaryEvidence
+    consequence equals Yes
+
+  label recognized_physical exception recognized_default
+  definition isRecognizedEvidenceType under condition
+    evidence.evidenceType = PhysicalEvidence
+    consequence equals Yes
+
+  label recognized_expert exception recognized_default
+  definition isRecognizedEvidenceType under condition
+    evidence.evidenceType = ExpertOpinion
+    consequence equals Yes
+
+  label recognized_testimony exception recognized_default
+  definition isRecognizedEvidenceType under condition
+    evidence.evidenceType = WitnessTestimony
+    consequence equals Yes
+
+  label recognized_electronic exception recognized_default
+  definition isRecognizedEvidenceType under condition
+    evidence.evidenceType = ElectronicEvidence
+    consequence equals Yes
+
+  label recognized_inquiry exception recognized_default
+  definition isRecognizedEvidenceType under condition
+    evidence.evidenceType = OfficialInquiryResponse
+    consequence equals Yes
+```
+
+## Article 74. Relevance of evidence
+
+```catala
+declaration scope Article74EvidenceRelevance:
+  input evidence content EvidenceItem
+  input relatesToCaseFacts content YesNo
+  input corroboratesOrContradicts content YesNo
+  output isRelevantEvidence content YesNo
+
+scope Article74EvidenceRelevance:
+  label relevant_default definition isRelevantEvidence equals No
+
+  label relevant_facts exception relevant_default
+  definition isRelevantEvidence under condition
+    relatesToCaseFacts = Yes
+    consequence equals Yes
+
+  label relevant_corroboration exception relevant_default
+  definition isRelevantEvidence under condition
+    corroboratesOrContradicts = Yes
+    consequence equals Yes
+```
+
+## Article 75. Admissibility of evidence
+
+```catala
+declaration scope Article75EvidenceAdmissibility:
+  input evidence content EvidenceItem
+  input obtainedByUnlawfulMeans content YesNo
+  input violatesConstitutionalRights content YesNo
+  output isFullyAdmissible content YesNo
+  output evidenceMustBeExcluded content YesNo
+
+scope Article75EvidenceAdmissibility:
+# Evidence obtained unlawfully or violating constitutional rights must be excluded
+  label exclude_unlawful definition evidenceMustBeExcluded under condition
+    obtainedByUnlawfulMeans = Yes
+    consequence equals Yes
+
+  label exclude_constitutional definition evidenceMustBeExcluded under condition
+    violatesConstitutionalRights = Yes
+    consequence equals Yes
+
+  label exclude_no definition evidenceMustBeExcluded under condition
+    obtainedByUnlawfulMeans = No
+    and violatesConstitutionalRights = No
+    consequence equals No
+
+  label admissible_yes definition isFullyAdmissible under condition
+    evidenceMustBeExcluded = No
+    and evidence.isRelevant = Yes
+    consequence equals Yes
+
+  label admissible_no definition isFullyAdmissible under condition
+    evidenceMustBeExcluded = Yes
+    consequence equals No
+```
+
+## Article 76. Burden of proof
+
+```catala
+declaration scope Article76BurdenOfProof:
+  input disputeCategory content DisputeCategory
+  input plaintiffChallengingAct content YesNo
+  input defendantPublicAuthority content YesNo
+  output whoBearsBurdenOfProof content BurdenOfProof
+
+scope Article76BurdenOfProof:
+# Default: plaintiff bears burden
+  label burden_default definition whoBearsBurdenOfProof equals BurdenPlaintiff
+
+# Individual act challenge: defendant authority must prove legality
+  label burden_defendant exception burden_default
+  definition whoBearsBurdenOfProof under condition
+    disputeCategory = IndividualActChallenge
+    and plaintiffChallengingAct = Yes
+    consequence equals BurdenDefendant
+
+# Action/inaction challenge: defendant must prove lawfulness
+  label burden_defendant_action exception burden_default
+  definition whoBearsBurdenOfProof under condition
+    disputeCategory = ActionChallenge
+    and defendantPublicAuthority = Yes
+    consequence equals BurdenDefendant
+
+  label burden_defendant_inaction exception burden_default
+  definition whoBearsBurdenOfProof under condition
+    disputeCategory = DisputeCategory.InactionChallenge
+    and defendantPublicAuthority = Yes
+    consequence equals BurdenDefendant
+
+# Normative act: plaintiff must prove unlawfulness
+  label burden_plaintiff_normative definition whoBearsBurdenOfProof under condition
+    disputeCategory = NormativeActChallenge
+    consequence equals BurdenPlaintiff
+```
+
+## Article 77. Obligation to present evidence
+
+```catala
+declaration scope Article77EvidencePresentation:
+  input deadlineType content DeadlineType
+  input evidenceSubmittedLate content YesNo
+  input goodCauseForLateSubmission content YesNo
+  output evidenceCanBeAccepted content YesNo
+
+scope Article77EvidencePresentation:
+  label accept_default definition evidenceCanBeAccepted equals No
+
+  label accept_timely exception accept_default
+  definition evidenceCanBeAccepted under condition
+    evidenceSubmittedLate = No
+    consequence equals Yes
+
+  label accept_late_good_cause exception accept_default
+  definition evidenceCanBeAccepted under condition
+    evidenceSubmittedLate = Yes
+    and goodCauseForLateSubmission = Yes
+    consequence equals Yes
+```
+
+## Articles 78-80. Written evidence
+
+```catala
+declaration scope Article78WrittenEvidence:
+  input documentContainsSealedInfo content YesNo
+  input documentOriginalAvailable content YesNo
+  input documentProperlyAuthenticated content YesNo
+  output writtenEvidenceAdmissible content YesNo
+
+scope Article78WrittenEvidence:
+  label written_default definition writtenEvidenceAdmissible equals No
+
+  label written_original exception written_default
+  definition writtenEvidenceAdmissible under condition
+    documentOriginalAvailable = Yes
+    and documentProperlyAuthenticated = Yes
+    consequence equals Yes
+
+  label written_copy exception written_default
+  definition writtenEvidenceAdmissible under condition
+    documentOriginalAvailable = No
+    and documentProperlyAuthenticated = Yes
+    consequence equals Yes
+```
+
+## Articles 81-84. Expert opinion
+
+```catala
+declaration scope Article81ExpertOpinion:
+  input expertQualified content YesNo
+  input expertIndependent content YesNo
+  input examinationWithinExpertise content YesNo
+  output expertOpinionAdmissible content YesNo
+  output mustAppointExpert content YesNo
+
+scope Article81ExpertOpinion:
+  label expert_admissible_default definition expertOpinionAdmissible equals No
+
+  label expert_admissible exception expert_admissible_default
+  definition expertOpinionAdmissible under condition
+    expertQualified = Yes
+    and expertIndependent = Yes
+    and examinationWithinExpertise = Yes
+    consequence equals Yes
+
+# Court must appoint expert when specialized knowledge required
+  label must_appoint_default definition mustAppointExpert equals No
+
+  label must_appoint exception must_appoint_default
+  definition mustAppointExpert under condition
+    examinationWithinExpertise = Yes
+    and expertQualified = Yes
+    consequence equals Yes
+```
+
+## Articles 85-87. Witness testimony
+
+```catala
+declaration scope Article85WitnessTestimony:
+  input witnessHasPersonalKnowledge content YesNo
+  input witnessIsParty content YesNo
+  input witnessIsMinor content YesNo
+  output canTestify content YesNo
+
+scope Article85WitnessTestimony:
+  label testify_default definition canTestify equals No
+
+  label testify_personal_knowledge exception testify_default
+  definition canTestify under condition
+    witnessHasPersonalKnowledge = Yes
+    and witnessIsParty = No
+    consequence equals Yes
+
+# Parties cannot be witnesses in their own case
+  label testify_party exception testify_default
+  definition canTestify under condition
+    witnessIsParty = Yes
+    consequence equals No
+
+# Minors may testify with appropriate procedure
+  label testify_minor exception testify_default
+  definition canTestify under condition
+    witnessHasPersonalKnowledge = Yes
+    and witnessIsMinor = Yes
+    consequence equals Yes
+```
+
+## Article 88. Court's official inquiry
+
+```catala
+declaration scope Article88OfficialInquiry:
+  input courtNeedsInformation content YesNo
+  input informationHeldByAuthority content YesNo
+  input authorityRefusedToProvide content YesNo
+  output courtCanRequestDirectly content YesNo
+
+scope Article88OfficialInquiry:
+  label inquiry_default definition courtCanRequestDirectly equals No
+
+  label inquiry_exception exception inquiry_default
+  definition courtCanRequestDirectly under condition
+    courtNeedsInformation = Yes
+    and informationHeldByAuthority = Yes
+    consequence equals Yes
+```
+
+## Articles 89-90. Evidence evaluation
+
+```catala
+declaration scope Article89EvidenceEvaluation:
+  input evidence content EvidenceItem
+  input contradictoryEvidenceExists content YesNo
+  input corroboratingEvidenceExists content YesNo
+  output evidenceHasSufficientWeight content YesNo
+
+scope Article89EvidenceEvaluation:
+# Court evaluates evidence according to inner conviction based on comprehensive review
+  label weight_default definition evidenceHasSufficientWeight equals No
+
+  label weight_corroborated exception weight_default
+  definition evidenceHasSufficientWeight under condition
+    corroboratingEvidenceExists = Yes
+    consequence equals Yes
+
+  label weight_uncontradicted exception weight_default
+  definition evidenceHasSufficientWeight under condition
+    contradictoryEvidenceExists = No
+    and evidence.isRelevant = Yes
+    consequence equals Yes
+```

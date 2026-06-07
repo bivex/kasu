@@ -1,0 +1,185 @@
+## Article 124. Summons to court
+
+```catala
+declaration scope Article124Summons:
+  input delivery content DocumentDelivery
+  output summonsProperlyServed content YesNo
+
+scope Article124Summons:
+  label served_default definition summonsProperlyServed equals No
+
+# Personal delivery is always proper
+  label served_personal exception served_default
+  definition summonsProperlyServed under condition
+    delivery.method = PersonalDelivery
+    and delivery.deliverySuccessful = Yes
+    consequence equals Yes
+
+# Registered mail with confirmation
+  label served_mail exception served_default
+  definition summonsProperlyServed under condition
+    delivery.method = RegisteredMail
+    and delivery.deliverySuccessful = Yes
+    consequence equals Yes
+
+# Electronic delivery with confirmation
+  label served_electronic exception served_default
+  definition summonsProperlyServed under condition
+    delivery.method = ElectronicDelivery
+    and delivery.deliverySuccessful = Yes
+    consequence equals Yes
+
+# Via representative
+  label served_representative exception served_default
+  definition summonsProperlyServed under condition
+    delivery.method = ViaRepresentative
+    and delivery.deliverySuccessful = Yes
+    consequence equals Yes
+```
+
+## Article 125. Content of summons
+
+```catala
+declaration scope Article125SummonsContent:
+  input summonsContainsCourtName content YesNo
+  input summonsContainsCaseNumber content YesNo
+  input summonsContainsHearingDate content YesNo
+  input summonsContainsHearingTime content YesNo
+  input summonsContainsHearingPlace content YesNo
+  input summonsContainsCaseSummary content YesNo
+  input summonsContainsRightsNotice content YesNo
+  output summonsMeetsRequirements content YesNo
+
+scope Article125SummonsContent:
+  label requirements_default definition summonsMeetsRequirements equals No
+
+  label requirements_met exception requirements_default
+  definition summonsMeetsRequirements under condition
+    summonsContainsCourtName = Yes
+    and summonsContainsCaseNumber = Yes
+    and summonsContainsHearingDate = Yes
+    and summonsContainsHearingTime = Yes
+    and summonsContainsHearingPlace = Yes
+    and summonsContainsCaseSummary = Yes
+    and summonsContainsRightsNotice = Yes
+    consequence equals Yes
+```
+
+## Article 126. Service of summons to participants
+
+```catala
+declaration scope Article126SummonsService:
+  input delivery content DocumentDelivery
+  input sufficientTimeBeforeHearing content YesNo
+  output summonsTimelyServed content YesNo
+
+scope Article126SummonsService:
+  label timely_default definition summonsTimelyServed equals No
+
+  label timely_served exception timely_default
+  definition summonsTimelyServed under condition
+    delivery.deliverySuccessful = Yes
+    and sufficientTimeBeforeHearing = Yes
+    consequence equals Yes
+```
+
+## Article 127. Deemed service
+
+```catala
+declaration scope Article127DeemedService:
+  input delivery content DocumentDelivery
+  input addresseeRefusedAcceptance content YesNo
+  input addresseeNotAtAddress content YesNo
+  input noticeLeftAtAddress content YesNo
+  output deemedProperlyServed content YesNo
+
+scope Article127DeemedService:
+  label deemed_default definition deemedProperlyServed equals No
+
+# Refusal to accept counts as service
+  label deemed_refused exception deemed_default
+  definition deemedProperlyServed under condition
+    addresseeRefusedAcceptance = Yes
+    consequence equals Yes
+
+# Notice left at address when addressee absent
+  label deemed_notice exception deemed_default
+  definition deemedProperlyServed under condition
+    addresseeNotAtAddress = Yes
+    and noticeLeftAtAddress = Yes
+    consequence equals Yes
+```
+
+## Article 128. Court notice board
+
+```catala
+declaration scope Article128NoticeBoard:
+  input delivery content DocumentDelivery
+  input addresseeLocationUnknown content YesNo
+  output canPostOnNoticeBoard content YesNo
+
+scope Article128NoticeBoard:
+  label notice_default definition canPostOnNoticeBoard equals No
+
+  label notice_exception exception notice_default
+  definition canPostOnNoticeBoard under condition
+    addresseeLocationUnknown = Yes
+    consequence equals Yes
+```
+
+## Article 129. Electronic service
+
+```catala
+declaration scope Article129ElectronicService:
+  input delivery content DocumentDelivery
+  input addresseeConsentedToElectronic content YesNo
+  output electronicServiceValid content YesNo
+
+scope Article129ElectronicService:
+  label electronic_default definition electronicServiceValid equals No
+
+  label electronic_consented exception electronic_default
+  definition electronicServiceValid under condition
+    delivery.method = ElectronicDelivery
+    and addresseeConsentedToElectronic = Yes
+    consequence equals Yes
+```
+
+## Articles 130-131. Consequences of failure to appear
+
+```catala
+declaration scope Article130FailureToAppear:
+  input summonsProperlyServed content YesNo
+  input plaintiffFailedToAppear content YesNo
+  input defendantFailedToAppear content YesNo
+  input plaintiffRequestedInAbsence content YesNo
+  output caseCanBeHeardInAbsence content YesNo
+  output caseCanLeaveWithoutConsideration content YesNo
+
+scope Article130FailureToAppear:
+# If properly summoned, case can proceed without absent party
+  label hear_in_absence_default definition caseCanBeHeardInAbsence equals No
+
+  label hear_plaintiff_absent exception hear_in_absence_default
+  definition caseCanBeHeardInAbsence under condition
+    plaintiffFailedToAppear = Yes
+    and summonsProperlyServed = Yes
+    and plaintiffRequestedInAbsence = Yes
+    consequence equals Yes
+
+  label hear_defendant_absent exception hear_in_absence_default
+  definition caseCanBeHeardInAbsence under condition
+    defendantFailedToAppear = Yes
+    and summonsProperlyServed = Yes
+    consequence equals Yes
+
+# Case can be left without consideration if plaintiff absent without cause
+  label leave_default definition caseCanLeaveWithoutConsideration equals No
+
+  label leave_exception exception leave_default
+  definition caseCanLeaveWithoutConsideration under condition
+    plaintiffFailedToAppear = Yes
+    and summonsProperlyServed = Yes
+    and plaintiffRequestedInAbsence = No
+    consequence equals Yes
+```

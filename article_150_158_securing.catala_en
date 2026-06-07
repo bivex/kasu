@@ -1,0 +1,266 @@
+## Article 150. Securing administrative claim
+
+```catala
+declaration scope Article150SecuringClaim:
+  input check content SecuringClaimCheck
+  output securingClaimAvailable content YesNo
+  output groundsForSecuring content YesNo
+
+scope Article150SecuringClaim:
+  label securing_default definition securingClaimAvailable equals No
+
+# Securing available when there is risk of irreparable harm
+  label securing_available exception securing_default
+  definition securingClaimAvailable under condition
+    check.irreparableHarmRisk = Yes
+    and check.measureProportionate = Yes
+    consequence equals Yes
+
+  label grounds definition groundsForSecuring under condition
+    securingClaimAvailable = Yes
+    consequence equals Yes
+
+  label no_grounds definition groundsForSecuring under condition
+    securingClaimAvailable = No
+    consequence equals No
+```
+
+## Article 151. Types of securing measures
+
+```catala
+declaration scope Article151SecuringMeasures:
+  input check content SecuringClaimCheck
+  output measureAvailable content YesNo
+  output applicableMeasure content SecuringMeasure
+
+scope Article151SecuringMeasures:
+# Stay enforcement of challenged act
+  label measure_stay_available definition measureAvailable under condition
+    check.measureRequested = StayEnforcementOfAct
+    and check.actAlreadyEnforced = No
+    consequence equals Yes
+
+# Prohibit specific actions
+  label measure_prohibit_available definition measureAvailable under condition
+    check.measureRequested = ProhibitSpecificActions
+    consequence equals Yes
+
+# Compel specific actions
+  label measure_compel_available definition measureAvailable under condition
+    check.measureRequested = CompelSpecificActions
+    consequence equals Yes
+
+# Seize property
+  label measure_seize_available definition measureAvailable under condition
+    check.measureRequested = SeizeProperty
+    and check.measureProportionate = Yes
+    consequence equals Yes
+
+# Prohibit alienation
+  label measure_alienation_available definition measureAvailable under condition
+    check.measureRequested = ProhibitAlienationOfProperty
+    consequence equals Yes
+
+# Suspend disputed decision
+  label measure_suspend_available definition measureAvailable under condition
+    check.measureRequested = SuspendDisputedDecision
+    and check.actAlreadyEnforced = Yes
+    consequence equals Yes
+
+# Map to applicable measure
+  label measure_stay definition applicableMeasure under condition
+    check.measureRequested = StayEnforcementOfAct
+    consequence equals StayEnforcementOfAct
+
+  label measure_prohibit definition applicableMeasure under condition
+    check.measureRequested = ProhibitSpecificActions
+    consequence equals ProhibitSpecificActions
+
+  label measure_compel definition applicableMeasure under condition
+    check.measureRequested = CompelSpecificActions
+    consequence equals CompelSpecificActions
+
+  label measure_seize definition applicableMeasure under condition
+    check.measureRequested = SeizeProperty
+    consequence equals SeizeProperty
+
+  label measure_alienation definition applicableMeasure under condition
+    check.measureRequested = ProhibitAlienationOfProperty
+    consequence equals ProhibitAlienationOfProperty
+
+  label measure_suspend definition applicableMeasure under condition
+    check.measureRequested = SuspendDisputedDecision
+    consequence equals SuspendDisputedDecision
+```
+
+## Article 152. Filing for securing measures
+
+```catala
+declaration scope Article152FilingSecuring:
+  input check content SecuringClaimCheck
+  input filedSimultaneouslyWithClaim content YesNo
+  input filedDuringHearing content YesNo
+  output securingCanBeFiled content YesNo
+
+scope Article152FilingSecuring:
+  label filing_default definition securingCanBeFiled equals No
+
+# Can be filed with the statement of claim
+  label filing_with_claim exception filing_default
+  definition securingCanBeFiled under condition
+    filedSimultaneouslyWithClaim = Yes
+    consequence equals Yes
+
+# Can be filed during hearing
+  label filing_during_hearing exception filing_default
+  definition securingCanBeFiled under condition
+    filedDuringHearing = Yes
+    consequence equals Yes
+```
+
+## Article 153. Court consideration of securing request
+
+```catala
+declaration scope Article153SecuringConsideration:
+  input check content SecuringClaimCheck
+  input requestFiledBeforeHearing content YesNo
+  output sameDayConsideration content YesNo
+
+scope Article153SecuringConsideration:
+# Request before hearing → considered same day
+  label same_day definition sameDayConsideration under condition
+    requestFiledBeforeHearing = Yes
+    consequence equals Yes
+
+  label not_same_day definition sameDayConsideration under condition
+    requestFiledBeforeHearing = No
+    consequence equals No
+```
+
+## Article 154. Court decision on securing
+
+```catala
+declaration scope Article154SecuringDecision:
+  input check content SecuringClaimCheck
+  output securingGranted content YesNo
+  output plaintiffMustProvideSecurity content YesNo
+
+scope Article154SecuringDecision:
+  label granted_default definition securingGranted equals No
+
+# Grant when grounds exist and measure is proportionate
+  label granted_exception exception granted_default
+  definition securingGranted under condition
+    check.irreparableHarmRisk = Yes
+    and check.measureProportionate = Yes
+    consequence equals Yes
+
+# Court may require plaintiff to provide security
+  label security_default definition plaintiffMustProvideSecurity equals No
+
+  label security_required exception security_default
+  definition plaintiffMustProvideSecurity under condition
+    securingGranted = Yes
+    and check.case.plaintiff = LegalEntity
+    consequence equals Yes
+```
+
+## Article 155. Replacing one securing measure with another
+
+```catala
+declaration scope Article155ReplacingMeasure:
+  input originalMeasureGranted content YesNo
+  input newMeasureMoreAppropriate content YesNo
+  output canReplaceMeasure content YesNo
+
+scope Article155ReplacingMeasure:
+  label replace_default definition canReplaceMeasure equals No
+
+  label replace_exception exception replace_default
+  definition canReplaceMeasure under condition
+    originalMeasureGranted = Yes
+    and newMeasureMoreAppropriate = Yes
+    consequence equals Yes
+```
+
+## Article 156. Cancellation of securing measures
+
+```catala
+declaration scope Article156Cancellation:
+  input securingGranted content YesNo
+  input caseResolved content YesNo
+  input groundsNoLongerExist content YesNo
+  input defendantRequestsCancellation content YesNo
+  output securingMustBeCancelled content YesNo
+
+scope Article156Cancellation:
+  label cancel_default definition securingMustBeCancelled equals No
+
+# Cancel when case is resolved
+  label cancel_resolved exception cancel_default
+  definition securingMustBeCancelled under condition
+    securingGranted = Yes
+    and caseResolved = Yes
+    consequence equals Yes
+
+# Cancel when grounds no longer exist
+  label cancel_grounds exception cancel_default
+  definition securingMustBeCancelled under condition
+    securingGranted = Yes
+    and groundsNoLongerExist = Yes
+    consequence equals Yes
+
+# Defendant can request cancellation
+  label cancel_defendant exception cancel_default
+  definition securingMustBeCancelled under condition
+    securingGranted = Yes
+    and defendantRequestsCancellation = Yes
+    and groundsNoLongerExist = Yes
+    consequence equals Yes
+```
+
+## Article 157. Compensation for securing measures
+
+```catala
+declaration scope Article157SecuringCompensation:
+  input securingGranted content YesNo
+  input plaintiffPrevailed content YesNo
+  input defendantSufferedDamages content YesNo
+  output plaintiffLiableForDamages content YesNo
+
+scope Article157SecuringCompensation:
+# If plaintiff loses and securing caused damages, plaintiff is liable
+  label liable_default definition plaintiffLiableForDamages equals No
+
+  label liable_exception exception liable_default
+  definition plaintiffLiableForDamages under condition
+    securingGranted = Yes
+    and plaintiffPrevailed = No
+    and defendantSufferedDamages = Yes
+    consequence equals Yes
+```
+
+## Article 158. Securing in cassation and review
+
+```catala
+declaration scope Article158SecuringHigherInstances:
+  input caseAtCassation content YesNo
+  input caseAtReview content YesNo
+  input securingNeeded content YesNo
+  output higherInstanceCanSecure content YesNo
+
+scope Article158SecuringHigherInstances:
+  label higher_default definition higherInstanceCanSecure equals No
+
+  label higher_cassation exception higher_default
+  definition higherInstanceCanSecure under condition
+    caseAtCassation = Yes
+    and securingNeeded = Yes
+    consequence equals Yes
+
+  label higher_review exception higher_default
+  definition higherInstanceCanSecure under condition
+    caseAtReview = Yes
+    and securingNeeded = Yes
+    consequence equals Yes
+```
