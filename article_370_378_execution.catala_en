@@ -1,0 +1,370 @@
+## Article 370. Obligatory nature of court decisions
+
+```catala
+declaration scope Article370DecisionObligatory:
+  input check content ExecutionProcedureCheck
+  output decisionIsMandatory content YesNo
+
+scope Article370DecisionObligatory:
+# Decision that entered into legal force is mandatory
+  label mandatory definition decisionIsMandatory under condition
+    check.decisionEnteredIntoForce = Yes
+    consequence equals Yes
+
+  label not_mandatory definition decisionIsMandatory equals No
+```
+
+## Article 371. Court decisions subject to immediate execution
+
+```catala
+declaration scope Article371ImmediateExecution:
+  input check content ImmediateExecutionCheck
+  output subjectToImmediateExecution content YesNo
+  output mayOrderImmediateExecution content YesNo
+  output threeDayHearingDeadline content YesNo
+  output rulingEntersForceOnPronouncement content YesNo
+
+scope Article371ImmediateExecution:
+# Pension payments
+  label pension definition subjectToImmediateExecution under condition
+    check.category = ImmediateExecutionCategory.PensionPayments
+    consequence equals Yes
+
+# Public service salary
+  label salary definition subjectToImmediateExecution under condition
+    check.category = ImmediateExecutionCategory.PublicServiceSalary
+    consequence equals Yes
+
+# Reinstatement to position
+  label reinstatement definition subjectToImmediateExecution under condition
+    check.category = ImmediateExecutionCategory.ReinstatementToPosition
+    consequence equals Yes
+
+# Termination of official powers
+  label termination definition subjectToImmediateExecution under condition
+    check.category = ImmediateExecutionCategory.TerminationOfOfficialPowers
+    consequence equals Yes
+
+# Voter list clarification
+  label voters definition subjectToImmediateExecution under condition
+    check.category = ImmediateExecutionCategory.VoterListClarification
+    consequence equals Yes
+
+# Assembly freedom
+  label assembly definition subjectToImmediateExecution under condition
+    check.category = ImmediateExecutionCategory.AssemblyFreedom
+    consequence equals Yes
+
+# Terrorism sanctions list
+  label terrorism definition subjectToImmediateExecution under condition
+    check.category = ImmediateExecutionCategory.TerrorismSanctionsList
+    consequence equals Yes
+
+# Simplified election cases
+  label simplified_election definition subjectToImmediateExecution under condition
+    check.appliesToSimplifiedElectionCases = Yes
+    consequence equals Yes
+
+# Tax sanctions cases
+  label tax definition subjectToImmediateExecution under condition
+    check.appliesToTaxSanctionsCases = Yes
+    consequence equals Yes
+
+# Specialized cases
+  label specialized definition subjectToImmediateExecution under condition
+    check.appliesToSpecializedCases = Yes
+    consequence equals Yes
+
+  label not_immediate definition subjectToImmediateExecution equals No
+
+# Court may order immediate execution
+  label full_debt definition mayOrderImmediateExecution under condition
+    check.isCourtOrder = Yes
+    and check.orderGround = ImmediateExecutionOrderGround.FullDebtCollection
+    consequence equals Yes
+
+  label association definition mayOrderImmediateExecution under condition
+    check.isCourtOrder = Yes
+    and check.orderGround = ImmediateExecutionOrderGround.PublicAssociationDissolution
+    consequence equals Yes
+
+  label assembly_restriction definition mayOrderImmediateExecution under condition
+    check.isCourtOrder = Yes
+    and check.orderGround = ImmediateExecutionOrderGround.AssemblyRestriction
+    consequence equals Yes
+
+  label no_order definition mayOrderImmediateExecution equals No
+
+# Three day hearing deadline
+  label three_days definition threeDayHearingDeadline equals Yes
+
+# Ruling enters force on pronouncement
+  label pronouncement definition rulingEntersForceOnPronouncement equals Yes
+```
+
+## Article 372. Procedure for executing court decisions
+
+```catala
+declaration scope Article372ExecutionProcedure:
+  input check content ExecutionProcedureCheck
+  output executionMayBeSpecifiedInDecision content YesNo
+  output decisionIsBasisForExecution content YesNo
+  output executionMayBeSuspended content YesNo
+  output enforcementByLaw content YesNo
+  output judgeDecidesAlone content YesNo
+
+scope Article372ExecutionProcedure:
+# Method, timeline and procedure may be specified in decision
+  label specified definition executionMayBeSpecifiedInDecision equals Yes
+
+# Final decision or immediate execution is basis
+  label basis definition decisionIsBasisForExecution under condition
+    check.decisionEnteredIntoForce = Yes
+    consequence equals Yes
+
+  label not_basis definition decisionIsBasisForExecution equals No
+
+# Execution may be suspended per Code
+  label suspended definition executionMayBeSuspended under condition
+    check.executionSuspended = Yes
+    consequence equals Yes
+
+  label not_suspended definition executionMayBeSuspended equals No
+
+# Enforcement by law
+  label enforced definition enforcementByLaw equals Yes
+
+# Judge decides alone
+  label judge_alone definition judgeDecidesAlone equals Yes
+```
+
+## Article 373. Referral of court decisions for execution
+
+```catala
+declaration scope Article373EnforcementDocuments:
+  input check content EnforcementDocumentCheck
+  output basedOnEnforcementWrit content YesNo
+  output fiveDayRegistrationDeadline content YesNo
+  output multipleDocumentsIssued content YesNo
+  output twoDayAmendmentRegistration content YesNo
+
+scope Article373EnforcementDocuments:
+# Execution based on enforcement writ issued by first instance
+  label writ definition basedOnEnforcementWrit under condition
+    check.issuedByFirstInstance = Yes
+    consequence equals Yes
+
+  label no_writ definition basedOnEnforcementWrit equals No
+
+# Five day registration deadline
+  label five_days definition fiveDayRegistrationDeadline under condition
+    check.fiveDaysSinceDecisionFinal = Yes
+    consequence equals Yes
+
+  label exceeded definition fiveDayRegistrationDeadline equals No
+
+# Multiple documents when needed
+  label multiple definition multipleDocumentsIssued under condition
+    check.multiplePlaintiffs = Yes
+    consequence equals Yes
+
+  label multiple_defendants definition multipleDocumentsIssued under condition
+    check.multipleDefendants = Yes
+    consequence equals Yes
+
+  label multiple_places definition multipleDocumentsIssued under condition
+    check.executionInMultiplePlaces = Yes
+    consequence equals Yes
+
+  label multiple_actions definition multipleDocumentsIssued under condition
+    check.multipleActionsRequired = Yes
+    consequence equals Yes
+
+  label single definition multipleDocumentsIssued equals No
+
+# Two day registration for amendments
+  label two_days definition twoDayAmendmentRegistration under condition
+    check.twoDaysSinceAmendmentDecision = Yes
+    consequence equals Yes
+
+  label exceeded_amendment definition twoDayAmendmentRegistration equals No
+```
+
+## Article 374. Correcting errors in enforcement document and declaring not subject to execution
+
+```catala
+declaration scope Article374ErrorCorrection:
+  input check content ErrorCorrectionCheck
+  output mayCorrectError content YesNo
+  output mayDeclareNotSubjectToExecution content YesNo
+  output tenDayHearingDeadline content YesNo
+  output mayRecoverUnjustlyReceived content YesNo
+
+scope Article374ErrorCorrection:
+# May correct error in enforcement document
+  label correct definition mayCorrectError under condition
+    check.errorInDocument = Yes
+    consequence equals Yes
+
+  label no_error definition mayCorrectError equals No
+
+# May declare not subject to execution
+  label erroneous definition mayDeclareNotSubjectToExecution under condition
+    check.issuedErroneously = Yes
+    consequence equals Yes
+
+  label ceased definition mayDeclareNotSubjectToExecution under condition
+    check.dutyObligationCeased = Yes
+    consequence equals Yes
+
+  label partially_ceased definition mayDeclareNotSubjectToExecution under condition
+    check.dutyObligationPartiallyCeased = Yes
+    consequence equals Yes
+
+  label voluntary definition mayDeclareNotSubjectToExecution under condition
+    check.voluntarilyExecuted = Yes
+    consequence equals Yes
+
+  label still_valid definition mayDeclareNotSubjectToExecution equals No
+
+# Ten day hearing deadline
+  label ten_days definition tenDayHearingDeadline under condition
+    check.tenDaysSinceApplication = Yes
+    consequence equals Yes
+
+  label exceeded definition tenDayHearingDeadline equals No
+
+# May recover unjustly received
+  label recover definition mayRecoverUnjustlyReceived under condition
+    check.collectionAlreadyOccurred = Yes
+    and check.debtorRequestsRecovery = Yes
+    consequence equals Yes
+
+  label no_recovery definition mayRecoverUnjustlyReceived equals No
+```
+
+## Article 375. Suspension of execution by cassation court
+
+```catala
+declaration scope Article375ExecutionSuspension:
+  input check content ExecutionSuspensionCheck
+  output cassationMaySuspendExecution content YesNo
+
+scope Article375ExecutionSuspension:
+# Cassation court may suspend execution during review
+  label cassation definition cassationMaySuspendExecution under condition
+    check.cassationCourtReviewing = Yes
+    consequence equals Yes
+
+  label no_suspension definition cassationMaySuspendExecution equals No
+```
+
+## Article 376. Restoration of missed deadline for enforcement document
+
+```catala
+declaration scope Article376DeadlineRestoration:
+  input check content DeadlineRestorationCheck
+  output missedDeadlineMayBeRestored content YesNo
+  output tenDayHearingDeadline content YesNo
+
+scope Article376DeadlineRestoration:
+# Missed deadline may be restored for valid reasons
+  label restored definition missedDeadlineMayBeRestored under condition
+    check.reasonsRecognizedValid = Yes
+    and check.filedWithFirstInstance = Yes
+    consequence equals Yes
+
+  label not_restored definition missedDeadlineMayBeRestored equals No
+
+# Ten day hearing deadline
+  label ten_days definition tenDayHearingDeadline under condition
+    check.tenDaysSinceApplication = Yes
+    consequence equals Yes
+
+  label exceeded definition tenDayHearingDeadline equals No
+```
+
+## Article 377. Reconciliation during execution
+
+```catala
+declaration scope Article377ExecutionReconciliation:
+  input check content ExecutionReconciliationCheck
+  output reconciliationAccepted content YesNo
+  output tenDayHearingDeadline content YesNo
+  output mayNotApproveUnlawful content YesNo
+
+scope Article377ExecutionReconciliation:
+# Reconciliation accepted when valid
+  label accepted definition reconciliationAccepted under condition
+    check.reconciliationSubmittedInWriting = Yes
+    and check.conditionsDoNotViolateThirdPartyRights = Yes
+    and check.conditionsDoNotContradictLaw = Yes
+    and check.conditionsWithinCompetence = Yes
+    consequence equals Yes
+
+  label withdrawn definition reconciliationAccepted under condition
+    check.claimantWithdrawsExecution = Yes
+    consequence equals Yes
+
+  label not_accepted definition reconciliationAccepted equals No
+
+# Ten day hearing deadline
+  label ten_days definition tenDayHearingDeadline under condition
+    check.tenDaysSinceSubmission = Yes
+    consequence equals Yes
+
+  label exceeded definition tenDayHearingDeadline equals No
+
+# May not approve if unlawful
+  label unlawful definition mayNotApproveUnlawful under condition
+    check.conditionsDoNotContradictLaw = No
+    consequence equals Yes
+
+  label third_party definition mayNotApproveUnlawful under condition
+    check.conditionsDoNotViolateThirdPartyRights = No
+    consequence equals Yes
+
+  label lawful definition mayNotApproveUnlawful equals No
+```
+
+## Article 378. Deferral and installment of execution
+
+```catala
+declaration scope Article378DeferralInstallment:
+  input check content DeferralInstallmentCheck
+  output mayDeferOrInstallment content YesNo
+  output twentyDayHearingDeadline content YesNo
+  output maxOneYearDeferral content YesNo
+
+scope Article378DeferralInstallment:
+# May defer or installment when circumstances complicate execution
+  label complicated definition mayDeferOrInstallment under condition
+    check.circumstancesComplicateExecution = Yes
+    consequence equals Yes
+
+  label execution_impossible definition mayDeferOrInstallment under condition
+    check.circumstancesMakeExecutionImpossible = Yes
+    consequence equals Yes
+
+# Authority failed to execute social payments for two months
+  label social_failure definition mayDeferOrInstallment under condition
+    check.authorityFailedToExecuteSocialPayments = Yes
+    and check.twoMonthsSinceDecisionFinal = Yes
+    consequence equals Yes
+
+  label no_deferral definition mayDeferOrInstallment equals No
+
+# Twenty day hearing deadline
+  label twenty_days definition twentyDayHearingDeadline under condition
+    check.twentyDaysSinceApplication = Yes
+    consequence equals Yes
+
+  label exceeded definition twentyDayHearingDeadline equals No
+
+# Maximum one year deferral
+  label within_year definition maxOneYearDeferral under condition
+    check.deferralWithinOneYear = Yes
+    consequence equals Yes
+
+  label exceeded_year definition maxOneYearDeferral equals No
+```

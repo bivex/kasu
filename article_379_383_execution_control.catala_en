@@ -1,0 +1,291 @@
+## Article 379. Replacement of party in enforcement proceedings
+
+```catala
+declaration scope Article379PartyReplacement:
+  input check content PartyReplacementCheck
+  output partyMayBeReplaced content YesNo
+  output tenDayHearingDeadline content YesNo
+
+scope Article379PartyReplacement:
+# Party replaced when withdrawn and successor exists
+  label replaced definition partyMayBeReplaced under condition
+    check.partyWithdrew = Yes
+    and check.successorExists = Yes
+    consequence equals Yes
+
+  label no_replacement definition partyMayBeReplaced equals No
+
+# Ten day hearing deadline
+  label ten_days definition tenDayHearingDeadline under condition
+    check.tenDaysSinceApplication = Yes
+    consequence equals Yes
+
+  label exceeded definition tenDayHearingDeadline equals No
+```
+
+## Article 380. Reversal of execution of court decisions
+
+```catala
+declaration scope Article380ExecutionReversal:
+  input check content ExecutionReversalCheck
+  output reversalByAppellateOrCassation content YesNo
+  output reversalByNewReview content YesNo
+  output reversalByExceptionalCircumstances content YesNo
+  output oneYearApplicationDeadline content YesNo
+  output twentyDayHearingDeadline content YesNo
+
+scope Article380ExecutionReversal:
+# Reversal by appellate or cassation court
+  label cassation_closed definition reversalByAppellateOrCassation under condition
+    check.cassationOrAppellateReversalGround = ReversalGround.ProceedingsClosed
+    consequence equals Yes
+
+  label cassation_without definition reversalByAppellateOrCassation under condition
+    check.cassationOrAppellateReversalGround = ReversalGround.ClaimLeftWithoutConsideration
+    consequence equals Yes
+
+  label cassation_denied definition reversalByAppellateOrCassation under condition
+    check.cassationOrAppellateReversalGround = ReversalGround.ClaimDeniedInFull
+    consequence equals Yes
+
+  label cassation_lesser definition reversalByAppellateOrCassation under condition
+    check.cassationOrAppellateReversalGround = ReversalGround.ClaimSatisfiedInLesserAmount
+    consequence equals Yes
+
+  label no_cassation_reversal definition reversalByAppellateOrCassation equals No
+
+# Reversal by new review after case returned
+  label new_closed definition reversalByNewReview under condition
+    check.newReviewReversalGround = ReversalGround.ProceedingsClosed
+    consequence equals Yes
+
+  label new_without definition reversalByNewReview under condition
+    check.newReviewReversalGround = ReversalGround.ClaimLeftWithoutConsideration
+    consequence equals Yes
+
+  label new_denied definition reversalByNewReview under condition
+    check.newReviewReversalGround = ReversalGround.ClaimDeniedInFull
+    consequence equals Yes
+
+  label new_lesser definition reversalByNewReview under condition
+    check.newReviewReversalGround = ReversalGround.ClaimSatisfiedInLesserAmount
+    consequence equals Yes
+
+  label no_new_reversal definition reversalByNewReview equals No
+
+# Reversal by exceptional circumstances review
+  label exceptional_closed definition reversalByExceptionalCircumstances under condition
+    check.exceptionalReviewReversalGround = ReversalGround.ProceedingsClosed
+    consequence equals Yes
+
+  label exceptional_without definition reversalByExceptionalCircumstances under condition
+    check.exceptionalReviewReversalGround = ReversalGround.ClaimLeftWithoutConsideration
+    consequence equals Yes
+
+  label exceptional_denied definition reversalByExceptionalCircumstances under condition
+    check.exceptionalReviewReversalGround = ReversalGround.ClaimDeniedInFull
+    consequence equals Yes
+
+  label exceptional_lesser definition reversalByExceptionalCircumstances under condition
+    check.exceptionalReviewReversalGround = ReversalGround.ClaimSatisfiedInLesserAmount
+    consequence equals Yes
+
+  label no_exceptional_reversal definition reversalByExceptionalCircumstances equals No
+
+# One year application deadline
+  label within_year definition oneYearApplicationDeadline under condition
+    check.oneYearSinceDecision = Yes
+    consequence equals Yes
+
+  label exceeded_year definition oneYearApplicationDeadline equals No
+
+# Twenty day hearing deadline
+  label twenty_days definition twentyDayHearingDeadline under condition
+    check.twentyDaysSinceApplication = Yes
+    consequence equals Yes
+
+  label exceeded definition twentyDayHearingDeadline equals No
+```
+
+## Article 381. Special reversal rules for certain categories
+
+```catala
+declaration scope Article381SpecialReversal:
+  input check content SpecialReversalCheck
+  output reversalRestrictedToFalseEvidence content YesNo
+
+scope Article381SpecialReversal:
+# Reversal restricted to false evidence for personal injury, pension, public service salary
+  label restricted definition reversalRestrictedToFalseEvidence under condition
+    (check.decisionRegardingPersonalInjury = Yes
+    or check.decisionRegardingPensionPayments = Yes
+    or check.decisionRegardingPublicServiceSalary = Yes)
+    and check.decisionBasedOnFalseEvidence = No
+    and check.decisionBasedOnForgedDocuments = No
+    consequence equals Yes
+
+  label false_evidence definition reversalRestrictedToFalseEvidence under condition
+    (check.decisionRegardingPersonalInjury = Yes
+    or check.decisionRegardingPensionPayments = Yes
+    or check.decisionRegardingPublicServiceSalary = Yes)
+    and (check.decisionBasedOnFalseEvidence = Yes
+    or check.decisionBasedOnForgedDocuments = Yes)
+    consequence equals No
+
+  label not_restricted definition reversalRestrictedToFalseEvidence equals No
+```
+
+## Article 381-1. Judicial control over execution
+
+```catala
+declaration scope Article381_1JudicialControl:
+  input check content JudicialControlCheck
+  output judicialControlByFirstInstance content YesNo
+
+scope Article381_1JudicialControl:
+# Judicial control exercised by first instance court
+  label first_instance definition judicialControlByFirstInstance under condition
+    check.firstInstanceDecided = Yes
+    consequence equals Yes
+
+  label no_control definition judicialControlByFirstInstance equals No
+```
+
+## Article 382. Application for ordering report on execution
+
+```catala
+declaration scope Article382ReportApplication:
+  input check content ReportApplicationCheck
+  output mayOrderReport content YesNo
+  output mustOrderReportForSocialPayments content YesNo
+
+scope Article382ReportApplication:
+# May order report on court initiative or beneficiary application
+  label beneficiary definition mayOrderReport under condition
+    check.filedByBeneficiary = Yes
+    and check.beneficiaryNotAuthoritySubject = Yes
+    consequence equals Yes
+
+  label court_initiative definition mayOrderReport under condition
+    check.courtInitiative = Yes
+    consequence equals Yes
+
+  label no_order definition mayOrderReport equals No
+
+# Must order report for social payment cases
+  label social definition mustOrderReportForSocialPayments under condition
+    check.caseRegardingSocialPayments = Yes
+    consequence equals Yes
+
+  label not_social definition mustOrderReportForSocialPayments equals No
+```
+
+## Article 382-1. Consideration of application for ordering report
+
+```catala
+declaration scope Article382_1ReportConsideration:
+  input check content ReportApplicationCheck
+  output tenDayWrittenDeadline content YesNo
+  output reportDeadlineBetweenTenDaysAndThreeMonths content YesNo
+
+scope Article382_1ReportConsideration:
+# Ten day written deadline
+  label ten_days definition tenDayWrittenDeadline under condition
+    check.tenDaysSinceApplication = Yes
+    consequence equals Yes
+
+  label exceeded definition tenDayWrittenDeadline equals No
+
+# Report deadline between 10 days and 3 months
+  label within_range definition reportDeadlineBetweenTenDaysAndThreeMonths under condition
+    check.minTenDaysForReport = Yes
+    and check.maxThreeMonthsForReport = Yes
+    consequence equals Yes
+
+  label outside_range definition reportDeadlineBetweenTenDaysAndThreeMonths equals No
+```
+
+## Article 382-2. Review of execution report
+
+```catala
+declaration scope Article382_2ReportReview:
+  input check content ReportReviewCheck
+  output tenDayReviewDeadline content YesNo
+
+scope Article382_2ReportReview:
+# Ten day review deadline
+  label ten_days definition tenDayReviewDeadline under condition
+    check.tenDaysSinceReport = Yes
+    consequence equals Yes
+
+  label exceeded definition tenDayReviewDeadline equals No
+```
+
+## Article 382-3. Decision following review of report
+
+```catala
+declaration scope Article382_3ReportDecision:
+  input check content ReportDecisionCheck
+  output mayAcceptOrRejectReport content YesNo
+  output mayImposeFine content YesNo
+  output maySetNewDeadline content YesNo
+
+scope Article382_3ReportDecision:
+# Accept or reject report
+  label accept definition mayAcceptOrRejectReport under condition
+    check.reportAccepted = Yes
+    consequence equals Yes
+
+  label reject definition mayAcceptOrRejectReport under condition
+    check.reportRejected = Yes
+    consequence equals Yes
+
+  label no_decision definition mayAcceptOrRejectReport equals No
+
+# May impose fine
+  label fine definition mayImposeFine under condition
+    check.reportRejected = Yes
+    consequence equals Yes
+
+  label no_fine definition mayImposeFine equals No
+
+# May set new deadline
+  label new_deadline definition maySetNewDeadline under condition
+    check.newReportDeadlineSet = Yes
+    consequence equals Yes
+
+  label no_new_deadline definition maySetNewDeadline equals No
+```
+
+## Article 383. Recognizing unlawful actions during execution
+
+```catala
+declaration scope Article383UnlawfulActions:
+  input check content UnlawfulActionCheck
+  output mayRecognizeUnlawful content YesNo
+  output tenDayApplicationDeadline content YesNo
+
+scope Article383UnlawfulActions:
+# May recognize actions as unlawful
+  label unlawful definition mayRecognizeUnlawful under condition
+    check.plaintiffFiledApplication = Yes
+    and check.applicationMeetsRequirements = Yes
+    and check.unlawfulActionsEstablished = Yes
+    consequence equals Yes
+
+  label rights_violation definition mayRecognizeUnlawful under condition
+    check.plaintiffFiledApplication = Yes
+    and check.applicationMeetsRequirements = Yes
+    and check.rightsViolationEstablished = Yes
+    consequence equals Yes
+
+  label not_unlawful definition mayRecognizeUnlawful equals No
+
+# Ten day application deadline
+  label within_deadline definition tenDayApplicationDeadline under condition
+    check.tenDaysSinceAwareOfViolation = Yes
+    and check.withinEnforcementDeadline = Yes
+    consequence equals Yes
+
+  label exceeded definition tenDayApplicationDeadline equals No
+```

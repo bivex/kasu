@@ -1,0 +1,209 @@
+## Article 384. Procedure for restoration of lost court proceedings
+
+```catala
+declaration scope Article384RestorationProcedure:
+  input check content LostProceedingsCheck
+  output restorationAvailable content YesNo
+
+scope Article384RestorationProcedure:
+# Restoration available for lost proceedings
+  label available definition restorationAvailable under condition
+    (check.proceedingsFullyOrPartiallyLost = Yes)
+    and (check.caseEndedByDecision = Yes
+    or check.proceedingsClosed = Yes)
+    consequence equals Yes
+
+  label not_available definition restorationAvailable equals No
+```
+
+## Article 385. Persons with right to apply for restoration
+
+```catala
+declaration scope Article385RestorationRight:
+  input check content LostProceedingsRightCheck
+  output participantMayApply content YesNo
+  output courtMayInitiate content YesNo
+
+scope Article385RestorationRight:
+# Case participant may apply
+  label participant definition participantMayApply under condition
+    check.isParticipant = Yes
+    consequence equals Yes
+
+  label not_participant definition participantMayApply equals No
+
+# Court may initiate restoration
+  label initiative definition courtMayInitiate under condition
+    check.courtInitiative = Yes
+    consequence equals Yes
+
+  label no_initiative definition courtMayInitiate equals No
+```
+
+## Article 386. Jurisdiction for restoration application
+
+```catala
+declaration scope Article386RestorationJurisdiction:
+  input check content LostProceedingsJurisdictionCheck
+  output filedWithFirstInstance content YesNo
+
+scope Article386RestorationJurisdiction:
+# Filed with court that heard as first instance
+  label first_instance definition filedWithFirstInstance under condition
+    check.filedWithFirstInstance = Yes
+    consequence equals Yes
+
+  label wrong_court definition filedWithFirstInstance equals No
+```
+
+## Article 387. Form and content of restoration application
+
+```catala
+declaration scope Article387RestorationForm:
+  input check content LostProceedingsFormCheck
+  output applicationInProperForm content YesNo
+  output mayBeFiledRegardlessOfStoragePeriod content YesNo
+  output filingDeadlineForExecution content YesNo
+
+scope Article387RestorationForm:
+# Application in proper written form
+  label proper definition applicationInProperForm under condition
+    check.applicationInWrittenForm = Yes
+    and check.specifiesProceedingToRestore = Yes
+    and check.preservedDocumentsAttached = Yes
+    and check.copiesForParticipantsAttached = Yes
+    consequence equals Yes
+
+  label improper definition applicationInProperForm equals No
+
+# May be filed regardless of storage period
+  label regardless definition mayBeFiledRegardlessOfStoragePeriod under condition
+    check.regardlessOfStoragePeriod = Yes
+    consequence equals Yes
+
+  label storage_limited definition mayBeFiledRegardlessOfStoragePeriod equals No
+
+# Filing deadline for execution purposes
+  label within_deadline definition filingDeadlineForExecution under condition
+    check.forExecutionPurposes = Yes
+    and check.withinEnforcementDeadline = Yes
+    consequence equals Yes
+
+  label no_execution_filing definition filingDeadlineForExecution equals No
+```
+
+## Article 388. Consequences of non-compliance, leaving without consideration, refusal to open
+
+```catala
+declaration scope Article388RestorationNoncompliance:
+  input check content LostProceedingsNoncomplianceCheck
+  output returnedIfNonCompliant content YesNo
+  output refusedIfProceedingsLostBeforeEnd content YesNo
+  output resubmissionNotPrecluded content YesNo
+
+scope Article388RestorationNoncompliance:
+# Returned if non-compliant
+  label returned definition returnedIfNonCompliant under condition
+    check.applicationNonCompliant = Yes
+    consequence equals Yes
+
+  label compliant definition returnedIfNonCompliant equals No
+
+# Refused if proceedings lost before review ended
+  label lost_before definition refusedIfProceedingsLostBeforeEnd under condition
+    check.proceedingsLostBeforeReviewEnded = Yes
+    consequence equals Yes
+
+  label deadline_expired definition refusedIfProceedingsLostBeforeEnd under condition
+    check.deadlineExpiredAndNotRestored = Yes
+    consequence equals Yes
+
+  label not_refused definition refusedIfProceedingsLostBeforeEnd equals No
+
+# Resubmission not precluded
+  label may_resubmit definition resubmissionNotPrecluded equals Yes
+```
+
+## Article 389. Consideration of restoration application
+
+```catala
+declaration scope Article389RestorationConsideration:
+  input check content LostProceedingsConsiderationCheck
+  output sufficientMaterialsForConsideration content YesNo
+
+scope Article389RestorationConsideration:
+# Sufficient materials available for consideration
+  label preserved definition sufficientMaterialsForConsideration under condition
+    check.preservedMaterialsExist = Yes
+    consequence equals Yes
+
+  label court_documents definition sufficientMaterialsForConsideration under condition
+    check.documentsFromCourtExist = Yes
+    consequence equals Yes
+
+  label enforcement definition sufficientMaterialsForConsideration under condition
+    check.enforcementMaterialsExist = Yes
+    consequence equals Yes
+
+  label other_documents definition sufficientMaterialsForConsideration under condition
+    check.otherDocumentsSufficient = Yes
+    consequence equals Yes
+
+  label registry definition sufficientMaterialsForConsideration under condition
+    check.registryDataAvailable = Yes
+    consequence equals Yes
+
+  label e_court definition sufficientMaterialsForConsideration under condition
+    check.eCourtDataAvailable = Yes
+    consequence equals Yes
+
+  label insufficient definition sufficientMaterialsForConsideration equals No
+```
+
+## Article 390. Court decision following consideration of restoration application
+
+```catala
+declaration scope Article390RestorationDecision:
+  input check content LostProceedingsDecisionCheck
+  output mayRestoreFullyOrPartially content YesNo
+  output refusesIfInsufficient content YesNo
+
+scope Article390RestorationDecision:
+# May restore fully or partially
+  label restore definition mayRestoreFullyOrPartially under condition
+    check.materialsSufficientForRestoration = Yes
+    consequence equals Yes
+
+  label no_restore definition mayRestoreFullyOrPartially equals No
+
+# Refuses if insufficient materials
+  label insufficient definition refusesIfInsufficient under condition
+    check.materialsSufficientForRestoration = No
+    consequence equals Yes
+
+  label sufficient definition refusesIfInsufficient equals No
+```
+
+## Article 391. Exemption from court costs
+
+```catala
+declaration scope Article391RestorationCosts:
+  input check content LostProceedingsCostsCheck
+  output applicantExemptFromCosts content YesNo
+  output costsIfFalseApplication content YesNo
+
+scope Article391RestorationCosts:
+# Applicant exempt from court costs
+  label exempt definition applicantExemptFromCosts under condition
+    check.applicantExemptFromCosts = Yes
+    consequence equals Yes
+
+  label not_exempt definition applicantExemptFromCosts equals No
+
+# Costs imposed if knowingly false application
+  label false_application definition costsIfFalseApplication under condition
+    check.applicationKnowinglyFalse = Yes
+    consequence equals Yes
+
+  label truthful definition costsIfFalseApplication equals No
+```

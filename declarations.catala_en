@@ -1881,4 +1881,201 @@ declaration structure ReviewDecisionCheck:
   data reviewOutcome content ReviewOutcome
   data isSupremeCourt content YesNo
   data newDecisionAppealable content YesNo
+
+# Arts 370-378: Execution of court decisions
+
+declaration enumeration ImmediateExecutionCategory:
+  -- PensionPayments
+  -- PublicServiceSalary
+  -- ReinstatementToPosition
+  -- TerminationOfOfficialPowers
+  -- VoterListClarification
+  -- AssemblyFreedom
+  -- TerrorismSanctionsList
+  -- SimplifiedElectionCases
+  -- TaxSanctionsCases
+  -- SpecializedCases
+
+declaration enumeration ImmediateExecutionOrderGround:
+  -- FullDebtCollection
+  -- PublicAssociationDissolution
+  -- AssemblyRestriction
+
+declaration structure ImmediateExecutionCheck:
+  data category content ImmediateExecutionCategory
+  data appliesToSimplifiedElectionCases content YesNo
+  data appliesToTaxSanctionsCases content YesNo
+  data appliesToSpecializedCases content YesNo
+  data isCourtOrder content YesNo
+  data orderGround content ImmediateExecutionOrderGround
+  data threeDaysSinceApplication content YesNo
+  data participantsNotified content YesNo
+
+declaration structure ExecutionProcedureCheck:
+  data executionSpecifiedInDecision content YesNo
+  data decisionEnteredIntoForce content YesNo
+  data executionSuspended content YesNo
+  data enforcementByLaw content YesNo
+
+declaration structure EnforcementDocumentCheck:
+  data issuedByFirstInstance content YesNo
+  data fiveDaysSinceDecisionFinal content YesNo
+  data multiplePlaintiffs content YesNo
+  data multipleDefendants content YesNo
+  data executionInMultiplePlaces content YesNo
+  data multipleActionsRequired content YesNo
+  data twoDaysSinceAmendmentDecision content YesNo
+
+declaration structure ErrorCorrectionCheck:
+  data errorInDocument content YesNo
+  data dutyObligationCeased content YesNo
+  data dutyObligationPartiallyCeased content YesNo
+  data voluntarilyExecuted content YesNo
+  data issuedErroneously content YesNo
+  data tenDaysSinceApplication content YesNo
+  data claimantPresent content YesNo
+  data debtorPresent content YesNo
+  data collectionAlreadyOccurred content YesNo
+  data debtorRequestsRecovery content YesNo
+
+declaration structure ExecutionSuspensionCheck:
+  data cassationCourtReviewing content YesNo
+  data cassationCourtInitiative content YesNo
+  data participantRequested content YesNo
+
+declaration structure DeadlineRestorationCheck:
+  data reasonsRecognizedValid content YesNo
+  data filedWithFirstInstance content YesNo
+  data tenDaysSinceApplication content YesNo
+
+declaration structure ExecutionReconciliationCheck:
+  data reconciliationSubmittedInWriting content YesNo
+  data conditionsDoNotViolateThirdPartyRights content YesNo
+  data conditionsDoNotContradictLaw content YesNo
+  data conditionsWithinCompetence content YesNo
+  data claimantWithdrawsExecution content YesNo
+  data tenDaysSinceSubmission content YesNo
+
+declaration structure DeferralInstallmentCheck:
+  data circumstancesComplicateExecution content YesNo
+  data circumstancesMakeExecutionImpossible content YesNo
+  data authorityFailedToExecuteSocialPayments content YesNo
+  data twoMonthsSinceDecisionFinal content YesNo
+  data respondentDegreeFault content YesNo
+  data respondentSevereIllness content YesNo
+  data respondentDifficultFinancialPosition content YesNo
+  data naturalDisaster content YesNo
+  data deferralWithinOneYear content YesNo
+  data twentyDaysSinceApplication content YesNo
+
+# Arts 379-383: Party replacement, reversal, judicial control
+
+declaration structure PartyReplacementCheck:
+  data partyWithdrew content YesNo
+  data successorExists content YesNo
+  data filedByStateExecutor content YesNo
+  data filedByInterestedPerson content YesNo
+  data tenDaysSinceApplication content YesNo
+  data beforeEnforcementProceeding content YesNo
+
+declaration enumeration ReversalGround:
+  -- ProceedingsClosed
+  -- ClaimLeftWithoutConsideration
+  -- ClaimDeniedInFull
+  -- ClaimSatisfiedInLesserAmount
+
+declaration structure ExecutionReversalCheck:
+  data cassationOrAppellateReversalGround content ReversalGround
+  data newReviewReversalGround content ReversalGround
+  data exceptionalReviewReversalGround content ReversalGround
+  data partyFiledApplication content YesNo
+  data oneYearSinceDecision content YesNo
+  data twentyDaysSinceApplication content YesNo
+  data cassationDidNotResolve content YesNo
+
+declaration structure SpecialReversalCheck:
+  data decisionRegardingPersonalInjury content YesNo
+  data decisionRegardingPensionPayments content YesNo
+  data decisionRegardingPublicServiceSalary content YesNo
+  data decisionBasedOnFalseEvidence content YesNo
+  data decisionBasedOnForgedDocuments content YesNo
+
+declaration structure JudicialControlCheck:
+  data firstInstanceDecided content YesNo
+
+declaration structure ReportApplicationCheck:
+  data filedByBeneficiary content YesNo
+  data beneficiaryNotAuthoritySubject content YesNo
+  data courtInitiative content YesNo
+  data caseRegardingSocialPayments content YesNo
+  data tenDaysSinceApplication content YesNo
+  data hearingRequested content YesNo
+  data minTenDaysForReport content YesNo
+  data maxThreeMonthsForReport content YesNo
+
+declaration structure ReportReviewCheck:
+  data reportMeetsRequirements content YesNo
+  data executionCircumstancesExplained content YesNo
+  data measuresSufficient content YesNo
+  data tenDaysSinceReport content YesNo
+
+declaration structure ReportDecisionCheck:
+  data reportAccepted content YesNo
+  data reportRejected content YesNo
+  data fineImposed content YesNo
+  data newReportDeadlineSet content YesNo
+
+declaration structure UnlawfulActionCheck:
+  data plaintiffFiledApplication content YesNo
+  data tenDaysSinceAwareOfViolation content YesNo
+  data withinEnforcementDeadline content YesNo
+  data unlawfulActionsEstablished content YesNo
+  data rightsViolationEstablished content YesNo
+  data applicationMeetsRequirements content YesNo
+
+# Arts 384-391: Restoration of lost proceedings
+
+declaration structure LostProceedingsCheck:
+  data proceedingsFullyOrPartiallyLost content YesNo
+  data caseEndedByDecision content YesNo
+  data proceedingsClosed content YesNo
+
+declaration structure LostProceedingsRightCheck:
+  data isParticipant content YesNo
+  data courtInitiative content YesNo
+
+declaration structure LostProceedingsJurisdictionCheck:
+  data filedWithFirstInstance content YesNo
+
+declaration structure LostProceedingsFormCheck:
+  data applicationInWrittenForm content YesNo
+  data specifiesProceedingToRestore content YesNo
+  data preservedDocumentsAttached content YesNo
+  data copiesForParticipantsAttached content YesNo
+  data regardlessOfStoragePeriod content YesNo
+  data forExecutionPurposes content YesNo
+  data withinEnforcementDeadline content YesNo
+
+declaration structure LostProceedingsNoncomplianceCheck:
+  data applicationNonCompliant content YesNo
+  data purposeUnrelatedToRightsProtection content YesNo
+  data applicantWithdrewApplication content YesNo
+  data proceedingsLostBeforeReviewEnded content YesNo
+  data deadlineExpiredAndNotRestored content YesNo
+
+declaration structure LostProceedingsConsiderationCheck:
+  data preservedMaterialsExist content YesNo
+  data documentsFromCourtExist content YesNo
+  data enforcementMaterialsExist content YesNo
+  data otherDocumentsSufficient content YesNo
+  data registryDataAvailable content YesNo
+  data eCourtDataAvailable content YesNo
+
+declaration structure LostProceedingsDecisionCheck:
+  data materialsSufficientForRestoration content YesNo
+  data restoredFullyOrPartially content YesNo
+
+declaration structure LostProceedingsCostsCheck:
+  data applicantExemptFromCosts content YesNo
+  data applicationKnowinglyFalse content YesNo
 ```
