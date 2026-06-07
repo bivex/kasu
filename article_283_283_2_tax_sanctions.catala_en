@@ -1,0 +1,130 @@
+## Article 283. Tax and customs cases
+
+```catala
+declaration scope Article283TaxCustomsCases:
+  input check content TaxCustomsCaseCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output appealWithinDeadline content YesNo
+  output cassationWithinDeadline content YesNo
+
+scope Article283TaxCustomsCases:
+# Tax and customs decisions can be challenged
+  label challenge_individual definition challengeAllowed under condition
+    check.actIndividual = Yes
+    consequence equals Yes
+
+  label challenge_normative definition challengeAllowed under condition
+    check.actNormative = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 30 days of notification
+  label timely_filing definition filingWithinDeadline under condition
+    check.filedWithinThirtyDays = Yes
+    consequence equals Yes
+
+  label untimely_filing definition filingWithinDeadline under condition
+    check.filedWithinThirtyDays = No
+    consequence equals No
+
+# Appeal within 5 days
+  label timely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = Yes
+    consequence equals Yes
+
+  label untimely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = No
+    consequence equals No
+
+# Cassation within 10 days
+  label timely_cassation definition cassationWithinDeadline under condition
+    check.cassationFiledWithinTenDays = Yes
+    consequence equals Yes
+
+  label untimely_cassation definition cassationWithinDeadline under condition
+    check.cassationFiledWithinTenDays = No
+    consequence equals No
+```
+
+## Article 283-1. Sanctions cases
+
+```catala
+declaration scope Article2831SanctionsCases:
+  input check content SanctionsCaseCheck
+  output sanctionsChallengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output appealWithinDeadline content YesNo
+  output cassationWithinDeadline content YesNo
+  output courtMayCancelSanctions content YesNo
+
+scope Article2831SanctionsCases:
+# Sanctions can be challenged by affected person
+  label challenge_allowed definition sanctionsChallengeAllowed under condition
+    check.filedByAffectedPerson = Yes
+    consequence equals Yes
+
+  label no_challenge definition sanctionsChallengeAllowed equals No
+
+# Filing within 60 days
+  label timely_filing definition filingWithinDeadline under condition
+    check.filedWithinSixtyDays = Yes
+    consequence equals Yes
+
+  label untimely_filing definition filingWithinDeadline under condition
+    check.filedWithinSixtyDays = No
+    consequence equals No
+
+# Appeal within 5 days
+  label timely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = Yes
+    consequence equals Yes
+
+  label untimely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = No
+    consequence equals No
+
+# Cassation within 10 days
+  label timely_cassation definition cassationWithinDeadline under condition
+    check.cassationFiledWithinTenDays = Yes
+    consequence equals Yes
+
+  label untimely_cassation definition cassationWithinDeadline under condition
+    check.cassationFiledWithinTenDays = No
+    consequence equals No
+
+# Only court may cancel sanctions
+  label court_cancel definition courtMayCancelSanctions under condition
+    check.onlyCourtMayCancelSanctions = Yes
+    consequence equals Yes
+
+  label no_cancel definition courtMayCancelSanctions equals No
+```
+
+## Article 283-2. Mobilization driving restriction cases
+
+```catala
+declaration scope Article2832MobilizationDriving:
+  input check content MobilizationDrivingCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+
+scope Article2832MobilizationDriving:
+# Driving restrictions during mobilization can be challenged
+  label challenge definition challengeAllowed under condition
+    check.drivingRestrictedDuringMobilization = Yes
+    and check.restrictionUnlawful = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 30 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinThirtyDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinThirtyDays = No
+    consequence equals No
+```

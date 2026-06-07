@@ -1,0 +1,60 @@
+## Article 280. Challenging restrictions on peaceful assembly
+
+```catala
+declaration scope Article280AssemblyRestriction:
+  input check content AssemblyCaseCheck
+  output restrictionChallengeable content YesNo
+  output restrictionUnlawful content YesNo
+  output restrictionProportionate content YesNo
+
+scope Article280AssemblyRestriction:
+# Assembly restriction decisions can be challenged
+  label challengeable definition restrictionChallengeable under condition
+    check.authorityIssuedDecision = Yes
+    consequence equals Yes
+
+  label not_challengeable definition restrictionChallengeable under condition
+    check.authorityIssuedDecision = No
+    consequence equals No
+
+# Restriction unlawful when disproportionate
+  label unlawful definition restrictionUnlawful under condition
+    check.restrictionProportionate = No
+    consequence equals Yes
+
+  label lawful definition restrictionUnlawful under condition
+    check.restrictionProportionate = Yes
+    and check.restrictionBasedOnPublicSafety = Yes
+    consequence equals No
+
+# Proportionality assessment
+  label proportionate definition restrictionProportionate under condition
+    check.restrictionProportionate = Yes
+    consequence equals Yes
+
+  label disproportionate definition restrictionProportionate under condition
+    check.restrictionProportionate = No
+    consequence equals No
+```
+
+## Article 281. Deadlines for assembly cases
+
+```catala
+declaration scope Article281AssemblyDeadlines:
+  input check content AssemblyCaseCheck
+  output considerationWithinThreeDays content YesNo
+  output appealWithinThreeDays content YesNo
+
+scope Article281AssemblyDeadlines:
+# Case must be considered within 3 days
+  label three_day_consideration definition considerationWithinThreeDays equals Yes
+
+# Appeal must be filed within 3 days of decision
+  label three_day_appeal definition appealWithinThreeDays under condition
+    check.restrictionAppealedWithinThreeDays = Yes
+    consequence equals Yes
+
+  label appeal_expired definition appealWithinThreeDays under condition
+    check.restrictionAppealedWithinThreeDays = No
+    consequence equals No
+```

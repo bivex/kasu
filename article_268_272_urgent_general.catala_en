@@ -1,0 +1,157 @@
+## Article 268. Notification about administrative cases considered as urgent
+
+```catala
+declaration scope Article268UrgentNotification:
+  input notification content UrgentCaseNotification
+  output urgentNotificationRequired content YesNo
+
+scope Article268UrgentNotification:
+# Court must notify about urgent administrative case consideration
+  label notification_required definition urgentNotificationRequired under condition
+    notification.notificationReceived = Yes
+    consequence equals Yes
+
+  label notification_default definition urgentNotificationRequired equals No
+```
+
+## Article 269. Statements in cases considered as urgent
+
+```catala
+declaration scope Article269UrgentStatements:
+  input check content UrgentStatementCheck
+  output urgentStatementAccepted content YesNo
+  output additionalRequirementsMet content YesNo
+
+scope Article269UrgentStatements:
+# Urgent case statements must meet general requirements
+  label accepted definition urgentStatementAccepted under condition
+    check.statementMeetsGeneralRequirements = Yes
+    and check.urgencyGroundsSpecified = Yes
+    consequence equals Yes
+
+  label rejected definition urgentStatementAccepted under condition
+    check.statementMeetsGeneralRequirements = No
+    consequence equals No
+
+  label no_urgency definition urgentStatementAccepted under condition
+    check.urgencyGroundsSpecified = No
+    consequence equals No
+
+  label additional_met definition additionalRequirementsMet under condition
+    check.additionalUrgencyJustification = Yes
+    consequence equals Yes
+
+  label additional_not_met definition additionalRequirementsMet under condition
+    check.additionalUrgencyJustification = No
+    consequence equals No
+```
+
+## Article 270. Deadlines in urgent proceedings
+
+```catala
+declaration scope Article270UrgentDeadlines:
+  input determination content UrgentDeadlineDetermination
+  output maxDaysForConsideration content integer
+
+scope Article270UrgentDeadlines:
+# Election cases: 5 days
+  label election_deadline definition maxDaysForConsideration under condition
+    determination.isElectionCase = Yes
+    consequence equals 5
+
+# Assembly cases: 3 days
+  label assembly_deadline definition maxDaysForConsideration under condition
+    determination.isAssemblyCase = Yes
+    consequence equals 3
+
+# Tax cases: 10 days
+  label tax_deadline definition maxDaysForConsideration under condition
+    determination.isTaxCase = Yes
+    consequence equals 10
+
+# Sanctions cases: 5 days
+  label sanctions_deadline definition maxDaysForConsideration under condition
+    determination.isSanctionsCase = Yes
+    consequence equals 5
+
+  label default_deadline definition maxDaysForConsideration equals 10
+```
+
+## Article 271. Pronouncement of decision in urgent cases
+
+```catala
+declaration scope Article271UrgentPronouncement:
+  input check content UrgentPronouncementCheck
+  output immediatePronouncementRequired content YesNo
+
+scope Article271UrgentPronouncement:
+# Decision in urgent case must be pronounced immediately
+  label immediate_required definition immediatePronouncementRequired under condition
+    check.decisionReady = Yes
+    consequence equals Yes
+
+# Election case: pronounced immediately
+  label election_immediate exception immediate_required
+  definition immediatePronouncementRequired under condition
+    check.isElectionCase = Yes
+    and check.decisionReady = Yes
+    consequence equals Yes
+
+# Assembly case: pronounced immediately
+  label assembly_immediate exception immediate_required
+  definition immediatePronouncementRequired under condition
+    check.isAssemblyCase = Yes
+    and check.decisionReady = Yes
+    consequence equals Yes
+
+  label not_ready definition immediatePronouncementRequired under condition
+    check.decisionReady = No
+    consequence equals No
+```
+
+## Article 272. Appeal in urgent cases
+
+```catala
+declaration scope Article272UrgentAppeal:
+  input check content UrgentAppealCheck
+  output appealDeadlineDays content integer
+  output cassationDeadlineDays content integer
+
+scope Article272UrgentAppeal:
+# Election case: appeal within 5 days
+  label election_appeal definition appealDeadlineDays under condition
+    check.isElectionCase = Yes
+    consequence equals 5
+
+# Assembly case: appeal within 3 days
+  label assembly_appeal definition appealDeadlineDays under condition
+    check.isAssemblyCase = Yes
+    consequence equals 3
+
+# Tax case: appeal within 5 days
+  label tax_appeal definition appealDeadlineDays under condition
+    check.isTaxCase = Yes
+    consequence equals 5
+
+# Sanctions case: appeal within 5 days
+  label sanctions_appeal definition appealDeadlineDays under condition
+    check.isSanctionsCase = Yes
+    consequence equals 5
+
+  label default_appeal definition appealDeadlineDays equals 10
+
+# Cassation deadlines
+  label election_cassation definition cassationDeadlineDays under condition
+    check.isElectionCase = Yes
+    consequence equals 5
+
+  label tax_cassation definition cassationDeadlineDays under condition
+    check.isTaxCase = Yes
+    consequence equals 10
+
+  label sanctions_cassation definition cassationDeadlineDays under condition
+    check.isSanctionsCase = Yes
+    consequence equals 10
+
+  label default_cassation definition cassationDeadlineDays equals 20
+```

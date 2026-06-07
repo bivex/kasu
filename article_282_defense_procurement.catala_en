@@ -1,0 +1,37 @@
+## Article 282. Defense procurement case proceedings
+
+```catala
+declaration scope Article282DefenseProcurement:
+  input check content DefenseProcurementCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output appealWithinDeadline content YesNo
+
+scope Article282DefenseProcurement:
+# Defense procurement decisions can be challenged
+  label challenge definition challengeAllowed under condition
+    check.defenseRelatedDecision = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed under condition
+    check.defenseRelatedDecision = No
+    consequence equals No
+
+# Filing within 30 days
+  label timely_filing definition filingWithinDeadline under condition
+    check.filedWithinThirtyDays = Yes
+    consequence equals Yes
+
+  label untimely_filing definition filingWithinDeadline under condition
+    check.filedWithinThirtyDays = No
+    consequence equals No
+
+# Appeal within 10 days
+  label timely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinTenDays = Yes
+    consequence equals Yes
+
+  label untimely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinTenDays = No
+    consequence equals No
+```

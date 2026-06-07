@@ -1,0 +1,343 @@
+## Article 289-1. Financial monitoring cases
+
+```catala
+declaration scope Article2891FinancialMonitoring:
+  input check content FinancialMonitoringCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output generalProceedingRequired content YesNo
+
+scope Article2891FinancialMonitoring:
+# Financial monitoring decisions can be challenged
+  label challenge definition challengeAllowed under condition
+    check.monitoringDecisionChallenged = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 10 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinTenDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinTenDays = No
+    consequence equals No
+
+# General proceeding required
+  label general definition generalProceedingRequired equals Yes
+```
+
+## Article 289-2. Travel restriction cases
+
+```catala
+declaration scope Article2892TravelRestriction:
+  input check content TravelRestrictionCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output appealWithinDeadline content YesNo
+
+scope Article2892TravelRestriction:
+# Travel restrictions can be challenged
+  label challenge definition challengeAllowed under condition
+    check.travelRestrictionChallenged = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 10 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinTenDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinTenDays = No
+    consequence equals No
+
+# Appeal within 5 days
+  label timely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = Yes
+    consequence equals Yes
+
+  label untimely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = No
+    consequence equals No
+```
+
+## Article 289-3. Political party prohibition cases
+
+```catala
+declaration scope Article2893PartyProhibition:
+  input check content PartyProhibitionCheck
+  output challengeAllowed content YesNo
+  output supremeCourtHasJurisdiction content YesNo
+  output generalProceedingRequired content YesNo
+
+scope Article2893PartyProhibition:
+# Political party prohibition can be challenged
+  label challenge definition challengeAllowed under condition
+    check.prohibitionGroundExists = Yes
+    and check.filedByAuthorizedBody = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Supreme Court has jurisdiction
+  label supreme definition supremeCourtHasJurisdiction under condition
+    check.supremeCourtJurisdiction = Yes
+    consequence equals Yes
+
+  label not_supreme definition supremeCourtHasJurisdiction equals No
+
+# General proceeding required
+  label general definition generalProceedingRequired equals Yes
+```
+
+## Article 289-4. Media regulation cases
+
+```catala
+declaration scope Article2894MediaRegulation:
+  input check content MediaRegulationCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output appealWithinDeadline content YesNo
+
+scope Article2894MediaRegulation:
+# Media regulation decisions can be challenged
+  label challenge definition challengeAllowed under condition
+    check.decisionChallenged = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 10 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinTenDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinTenDays = No
+    consequence equals No
+
+# Appeal within 5 days
+  label timely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = Yes
+    consequence equals Yes
+
+  label untimely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = No
+    consequence equals No
+```
+
+## Article 289-5. Political party financing cases
+
+```catala
+declaration scope Article2895PartyFinancing:
+  input check content PartyFinancingCheck
+  output challengeAllowed content YesNo
+  output supremeCourtHasJurisdiction content YesNo
+  output generalProceedingRequired content YesNo
+
+scope Article2895PartyFinancing:
+# Party financing violations can be challenged
+  label challenge definition challengeAllowed under condition
+    check.financingViolationExists = Yes
+    and check.filedByAuthorizedBody = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Supreme Court has jurisdiction
+  label supreme definition supremeCourtHasJurisdiction under condition
+    check.supremeCourtJurisdiction = Yes
+    consequence equals Yes
+
+  label not_supreme definition supremeCourtHasJurisdiction equals No
+
+# General proceeding required
+  label general definition generalProceedingRequired equals Yes
+```
+
+## Article 289-6. NSSC asset arrest cases
+
+```catala
+declaration scope Article2896NSSCAssetArrest:
+  input check content NSSCAssetArrestCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output appealWithinDeadline content YesNo
+
+scope Article2896NSSCAssetArrest:
+# NSSC asset arrest decisions can be challenged
+  label arrest_challenge definition challengeAllowed under condition
+    check.requestType = NSSCRequestType.AssetArrestChallenge
+    and check.assetArrestOrdered = Yes
+    consequence equals Yes
+
+  label extension_challenge definition challengeAllowed under condition
+    check.requestType = NSSCRequestType.AssetArrestExtensionChallenge
+    and check.arrestExtensionRequested = Yes
+    consequence equals Yes
+
+  label modification_challenge definition challengeAllowed under condition
+    check.requestType = NSSCRequestType.AssetArrestModificationChallenge
+    and check.arrestModificationRequested = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 5 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinFiveDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinFiveDays = No
+    consequence equals No
+
+# Appeal within 3 days
+  label timely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinThreeDays = Yes
+    consequence equals Yes
+
+  label untimely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinThreeDays = No
+    consequence equals No
+```
+
+## Article 289-7. Electronic communications access cases
+
+```catala
+declaration scope Article2897ElectronicCommunications:
+  input check content ElectronicCommunicationsAccessCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output generalProceedingRequired content YesNo
+
+scope Article2897ElectronicCommunications:
+# Electronic communications access authorization can be challenged
+  label challenge definition challengeAllowed under condition
+    check.accessAuthorized = Yes
+    and check.authorizationChallenged = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 3 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinThreeDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinThreeDays = No
+    consequence equals No
+
+# General proceeding required
+  label general definition generalProceedingRequired equals Yes
+```
+
+## Article 289-8. Premises access cases
+
+```catala
+declaration scope Article2898PremisesAccess:
+  input check content PremisesAccessCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output generalProceedingRequired content YesNo
+
+scope Article2898PremisesAccess:
+# Premises access order can be challenged
+  label challenge definition challengeAllowed under condition
+    check.premisesAccessOrdered = Yes
+    and check.accessChallenged = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 3 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinThreeDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinThreeDays = No
+    consequence equals No
+
+# General proceeding required
+  label general definition generalProceedingRequired equals Yes
+```
+
+## Article 289-9. Religious organization termination cases
+
+```catala
+declaration scope Article2899ReligiousOrgTermination:
+  input check content ReligiousOrgTerminationCheck
+  output terminationAllowed content YesNo
+  output supremeCourtHasJurisdiction content YesNo
+  output generalProceedingRequired content YesNo
+
+scope Article2899ReligiousOrgTermination:
+# Religious organization termination can be challenged
+  label termination definition terminationAllowed under condition
+    check.ground = ReligiousOrgGround.ProhibitedActivity
+    and check.filedByAuthorizedBody = Yes
+    consequence equals Yes
+
+  label foreign_influence definition terminationAllowed under condition
+    check.ground = ReligiousOrgGround.ForeignInfluence
+    and check.filedByAuthorizedBody = Yes
+    consequence equals Yes
+
+  label national_security definition terminationAllowed under condition
+    check.ground = ReligiousOrgGround.NationalSecurityThreat
+    and check.filedByAuthorizedBody = Yes
+    consequence equals Yes
+
+  label public_order definition terminationAllowed under condition
+    check.ground = ReligiousOrgGround.PublicOrderViolation
+    and check.filedByAuthorizedBody = Yes
+    consequence equals Yes
+
+  label no_termination definition terminationAllowed equals No
+
+# Supreme Court has jurisdiction
+  label supreme definition supremeCourtHasJurisdiction under condition
+    check.supremeCourtJurisdiction = Yes
+    consequence equals Yes
+
+  label not_supreme definition supremeCourtHasJurisdiction equals No
+
+# General proceeding required
+  label general definition generalProceedingRequired equals Yes
+```
+
+## Article 289-10. Premises and information sealing cases
+
+```catala
+declaration scope Article28910PremisesSealing:
+  input check content PremisesInformationSealingCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output generalProceedingRequired content YesNo
+
+scope Article28910PremisesSealing:
+# Premises and information sealing can be challenged
+  label challenge definition challengeAllowed under condition
+    check.sealingOrdered = Yes
+    and check.sealingChallenged = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 3 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinThreeDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinThreeDays = No
+    consequence equals No
+
+# General proceeding required
+  label general definition generalProceedingRequired equals Yes
+```

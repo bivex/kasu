@@ -980,4 +980,317 @@ declaration structure ForcedExpropriationCase:
   data vacationDeadlineSpecified content YesNo
   data financingSourceSpecified content YesNo
   data isSupremeCourtAppeal content YesNo
+
+declaration enumeration UrgentCaseCategory:
+  -- ElectionReferendumCase
+  -- PeacefulAssemblyCase
+  -- DefenseProcurementCase
+  -- TaxCustomsCase
+  -- SanctionsCase
+  -- MobilizationDrivingCase
+  -- SBUTerrorismListCase
+  -- MPTerminationCase
+  -- AdminResponsibilityCase
+  -- ExecutionServiceCase
+  -- ForeignerExpulsionCase
+  -- ForeignerDetentionCase
+  -- FinancialMonitoringCase
+  -- TravelRestrictionCase
+  -- PartyProhibitionCase
+  -- MediaRegulationCase
+  -- PartyFinancingCase
+  -- NSSCAssetArrestCase
+  -- ElectronicCommunicationsAccessCase
+  -- PremisesAccessCase
+  -- ReligiousOrgTerminationCase
+  -- PremisesInformationSealingCase
+
+declaration enumeration ElectionCommissionLevel:
+  -- CentralElectionCommission
+  -- DistrictElectionCommission
+  -- PrecinctElectionCommission
+  -- OtherElectionCommission
+
+declaration enumeration ElectionChallengeGround:
+  -- ViolationOfElectionLaw
+  -- WrongCandidateList
+  -- WrongBallotDesign
+  -- WrongVotingProcedure
+  -- WrongCountingProcedure
+  -- CommissionDecisionOutsideAuthority
+  -- CommissionInaction
+
+declaration enumeration AssemblyDecisionType:
+  -- AssemblyAllowed
+  -- AssemblyRestricted
+  -- AssemblyProhibited
+  -- AssemblyTimeRestriction
+  -- AssemblyLocationRestriction
+
+declaration enumeration TaxAuthorityRequestType:
+  -- TaxNormativeActChallenge
+  -- TaxIndividualActChallenge
+  -- CustomsNormativeActChallenge
+  -- CustomsIndividualActChallenge
+  -- TaxAuthorityActionChallenge
+  -- TaxAuthorityInactionChallenge
+
+declaration enumeration SanctionsGround:
+  -- SanctionsAgainstIndividual
+  -- SanctionsAgainstLegalEntity
+  -- AssetFreeze
+  -- TravelBan
+  -- LicenseRevocation
+  -- OtherRestrictiveMeasure
+
+declaration enumeration SBUTerrorismListGround:
+  -- InclusionInTerrorismList
+  -- RefusalToRemoveFromTerrorismList
+  -- RestrictionOfRights
+
+declaration enumeration ForeignerDetentionGround:
+  -- IdentificationNeeded
+  -- RefugeeStatusDetermination
+  -- ReadmissionProcedure
+  -- ExpulsionEnforcement
+
+declaration enumeration NSSCRequestType:
+  -- AssetArrestChallenge
+  -- AssetArrestExtensionChallenge
+  -- AssetArrestModificationChallenge
+
+declaration enumeration SpecializedProceedingCategory:
+  -- FinancialMonitoringCategory
+  -- TravelRestrictionCategory
+  -- PartyProhibitionCategory
+  -- MediaRegulationCategory
+  -- PartyFinancingCategory
+  -- NSSCAssetArrestCategory
+  -- ElectronicCommunicationsAccessCategory
+  -- PremisesAccessCategory
+  -- ReligiousOrgTerminationCategory
+  -- PremisesInformationSealingCategory
+
+declaration enumeration MediaRegulationSubject:
+  -- MediaContentRestriction
+  -- MediaLicenseDecision
+  -- MediaRegistrationDecision
+  -- MediaSanctionDecision
+
+declaration enumeration ReligiousOrgGround:
+  -- ProhibitedActivity
+  -- ForeignInfluence
+  -- NationalSecurityThreat
+  -- PublicOrderViolation
+
+declaration structure UrgentCaseNotification:
+  data caseCategory content UrgentCaseCategory
+  data notificationReceived content YesNo
+  data notificationDate content date
+  data filingDate content date
+
+declaration structure UrgentStatementCheck:
+  data caseCategory content UrgentCaseCategory
+  data statementMeetsGeneralRequirements content YesNo
+  data additionalUrgencyJustification content YesNo
+  data urgencyGroundsSpecified content YesNo
+
+declaration structure UrgentDeadlineDetermination:
+  data caseCategory content UrgentCaseCategory
+  data isElectionCase content YesNo
+  data isAssemblyCase content YesNo
+  data isTaxCase content YesNo
+  data isSanctionsCase content YesNo
+  data daysSinceFiling content integer
+
+declaration structure UrgentPronouncementCheck:
+  data caseCategory content UrgentCaseCategory
+  data decisionReady content YesNo
+  data isElectionCase content YesNo
+  data isAssemblyCase content YesNo
+
+declaration structure UrgentAppealCheck:
+  data caseCategory content UrgentCaseCategory
+  data appealFiled content YesNo
+  data isElectionCase content YesNo
+  data isAssemblyCase content YesNo
+  data isTaxCase content YesNo
+  data isSanctionsCase content YesNo
+  data daysSinceDecision content integer
+
+declaration structure ElectionCommissionChallenge:
+  data commissionLevel content ElectionCommissionLevel
+  data challengeGround content ElectionChallengeGround
+  data challengeFiledByAuthorizedPerson content YesNo
+  data challengeFiledTimely content YesNo
+  data challengeFiledBeforeVoting content YesNo
+  data votingAlreadyOccurred content YesNo
+  data caseConsequencesIrreversible content YesNo
+  data filingWithinElectionPeriod content YesNo
+  data supremeCourtJurisdiction content YesNo
+  data appellateCourtJurisdiction content YesNo
+  data localCourtJurisdiction content YesNo
+
+declaration structure ElectionCaseRelief:
+  data commissionDecisionUnlawful content YesNo
+  data commissionObligatedToAct content YesNo
+  data candidateRegistrationChallenged content YesNo
+  data electionResultChallenged content YesNo
+  data onlyCourtMayEstablishElectionResult content YesNo
+
+declaration structure ElectionCaseFiling:
+  data filedByVoter content YesNo
+  data filedByCandidate content YesNo
+  data filedByAuthorizedRepresentative content YesNo
+  data filedByProsecutor content YesNo
+  data filedWithinTenDaysOfDecision content YesNo
+  data filedWithinFiveDaysOfElection content YesNo
+
+declaration structure ElectionAppealDeadline:
+  data filedByProsecutor content YesNo
+  data filedByParty content YesNo
+  data isSupremeCourtDecision content YesNo
+  data isAppellateDecision content YesNo
+  data daysSinceDecision content integer
+
+declaration structure AssemblyCaseCheck:
+  data authorityIssuedDecision content YesNo
+  data decisionType content AssemblyDecisionType
+  data restrictionProportionate content YesNo
+  data alternativeLocationOffered content YesNo
+  data restrictionBasedOnPublicSafety content YesNo
+  data assemblyOrganizerChallenging content YesNo
+  data restrictionAppealedWithinThreeDays content YesNo
+
+declaration structure DefenseProcurementCheck:
+  data defenseRelatedDecision content YesNo
+  data procurementProcedureViolated content YesNo
+  data filedWithinThirtyDays content YesNo
+  data appealFiledWithinTenDays content YesNo
+
+declaration structure TaxCustomsCaseCheck:
+  data requestType content TaxAuthorityRequestType
+  data actIndividual content YesNo
+  data actNormative content YesNo
+  data filedWithinThirtyDays content YesNo
+  data appealFiledWithinFiveDays content YesNo
+  data cassationFiledWithinTenDays content YesNo
+
+declaration structure SanctionsCaseCheck:
+  data sanctionsGround content SanctionsGround
+  data filedByAffectedPerson content YesNo
+  data filedWithinSixtyDays content YesNo
+  data appealFiledWithinFiveDays content YesNo
+  data cassationFiledWithinTenDays content YesNo
+  data onlyCourtMayCancelSanctions content YesNo
+
+declaration structure MobilizationDrivingCheck:
+  data drivingRestrictedDuringMobilization content YesNo
+  data restrictionUnlawful content YesNo
+  data filedWithinThirtyDays content YesNo
+
+declaration structure SBUTerrorismListCheck:
+  data ground content SBUTerrorismListGround
+  data personIncludedInList content YesNo
+  data personRequestedRemoval content YesNo
+  data removalGroundsExist content YesNo
+  data filedWithinThirtyDays content YesNo
+
+declaration structure MPTerminationCheck:
+  data terminationGroundExists content YesNo
+  data procedureFollowed content YesNo
+  data supremeCourtJurisdiction content YesNo
+  data filedWithinThirtyDays content YesNo
+
+declaration structure AdminResponsibilityCheck:
+  data administrativeOffenseCase content YesNo
+  data fineOrSanctionChallenged content YesNo
+  data filedWithinTenDays content YesNo
+  data appealFiledWithinFiveDays content YesNo
+
+declaration structure ExecutionServiceCheck:
+  data executionWritChallenged content YesNo
+  data executorActionUnlawful content YesNo
+  data executorInaction content YesNo
+  data filedWithinTenDays content YesNo
+  data appealFiledWithinFiveDays content YesNo
+
+declaration structure ForeignerExpulsionCheck:
+  data expulsionOrderChallenged content YesNo
+  data filedWithinThreeMonths content YesNo
+  data expulsionWouldCauseIrreparableHarm content YesNo
+  data securingMeasureRequested content YesNo
+
+declaration structure ForeignerDetentionCheck:
+  data detentionGround content ForeignerDetentionGround
+  data detentionPeriodDays content integer
+  data detentionExtended content YesNo
+  data maxDetentionDays content integer
+  data courtAuthorizedDetention content YesNo
+  data detentionProportionate content YesNo
+  data alternativeMeasureAvailable content YesNo
+  data bailAmountSet content YesNo
+  data suretyProvided content YesNo
+
+declaration structure FinancialMonitoringCheck:
+  data monitoringDecisionChallenged content YesNo
+  data filedWithinTenDays content YesNo
+  data generalProceedingRequired content YesNo
+
+declaration structure TravelRestrictionCheck:
+  data travelRestrictionChallenged content YesNo
+  data restrictionBasedOnNationalSecurity content YesNo
+  data restrictionBasedOnPublicOrder content YesNo
+  data filedWithinTenDays content YesNo
+  data appealFiledWithinFiveDays content YesNo
+
+declaration structure PartyProhibitionCheck:
+  data prohibitionGroundExists content YesNo
+  data filedByAuthorizedBody content YesNo
+  data supremeCourtJurisdiction content YesNo
+  data generalProceedingRequired content YesNo
+
+declaration structure MediaRegulationCheck:
+  data subject content MediaRegulationSubject
+  data decisionChallenged content YesNo
+  data filedWithinTenDays content YesNo
+  data appealFiledWithinFiveDays content YesNo
+
+declaration structure PartyFinancingCheck:
+  data financingViolationExists content YesNo
+  data filedByAuthorizedBody content YesNo
+  data supremeCourtJurisdiction content YesNo
+  data generalProceedingRequired content YesNo
+
+declaration structure NSSCAssetArrestCheck:
+  data requestType content NSSCRequestType
+  data assetArrestOrdered content YesNo
+  data arrestExtensionRequested content YesNo
+  data arrestModificationRequested content YesNo
+  data filedWithinFiveDays content YesNo
+  data appealFiledWithinThreeDays content YesNo
+
+declaration structure ElectronicCommunicationsAccessCheck:
+  data accessAuthorized content YesNo
+  data authorizationChallenged content YesNo
+  data filedWithinThreeDays content YesNo
+  data generalProceedingRequired content YesNo
+
+declaration structure PremisesAccessCheck:
+  data premisesAccessOrdered content YesNo
+  data accessChallenged content YesNo
+  data filedWithinThreeDays content YesNo
+  data generalProceedingRequired content YesNo
+
+declaration structure ReligiousOrgTerminationCheck:
+  data ground content ReligiousOrgGround
+  data filedByAuthorizedBody content YesNo
+  data supremeCourtJurisdiction content YesNo
+  data generalProceedingRequired content YesNo
+
+declaration structure PremisesInformationSealingCheck:
+  data sealingOrdered content YesNo
+  data sealingChallenged content YesNo
+  data filedWithinThreeDays content YesNo
+  data generalProceedingRequired content YesNo
 ```

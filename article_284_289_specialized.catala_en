@@ -1,0 +1,247 @@
+## Article 284. SBU terrorism list cases
+
+```catala
+declaration scope Article284SBUTerrorismList:
+  input check content SBUTerrorismListCheck
+  output challengeAllowed content YesNo
+  output removalAllowed content YesNo
+  output filingWithinDeadline content YesNo
+
+scope Article284SBUTerrorismList:
+# Challenge to inclusion in terrorism list
+  label inclusion_challenge definition challengeAllowed under condition
+    check.ground = SBUTerrorismListGround.InclusionInTerrorismList
+    and check.personIncludedInList = Yes
+    consequence equals Yes
+
+# Challenge to refusal to remove
+  label removal_challenge definition challengeAllowed under condition
+    check.ground = SBUTerrorismListGround.RefusalToRemoveFromTerrorismList
+    consequence equals Yes
+
+# Challenge to restriction of rights
+  label restriction_challenge definition challengeAllowed under condition
+    check.ground = SBUTerrorismListGround.RestrictionOfRights
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Removal allowed when grounds exist
+  label removal definition removalAllowed under condition
+    check.personRequestedRemoval = Yes
+    and check.removalGroundsExist = Yes
+    consequence equals Yes
+
+  label no_removal definition removalAllowed equals No
+
+# Filing within 30 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinThirtyDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinThirtyDays = No
+    consequence equals No
+```
+
+## Article 285. MP termination cases
+
+```catala
+declaration scope Article285MPTermination:
+  input check content MPTerminationCheck
+  output challengeAllowed content YesNo
+  output supremeCourtHasJurisdiction content YesNo
+  output filingWithinDeadline content YesNo
+
+scope Article285MPTermination:
+# MP termination can be challenged
+  label challenge definition challengeAllowed under condition
+    check.terminationGroundExists = Yes
+    and check.procedureFollowed = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Supreme Court has jurisdiction
+  label supreme definition supremeCourtHasJurisdiction under condition
+    check.supremeCourtJurisdiction = Yes
+    consequence equals Yes
+
+  label not_supreme definition supremeCourtHasJurisdiction equals No
+
+# Filing within 30 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinThirtyDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinThirtyDays = No
+    consequence equals No
+```
+
+## Article 286. Administrative responsibility cases
+
+```catala
+declaration scope Article286AdminResponsibility:
+  input check content AdminResponsibilityCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output appealWithinDeadline content YesNo
+
+scope Article286AdminResponsibility:
+# Administrative offense decisions can be challenged
+  label challenge definition challengeAllowed under condition
+    check.administrativeOffenseCase = Yes
+    and check.fineOrSanctionChallenged = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 10 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinTenDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinTenDays = No
+    consequence equals No
+
+# Appeal within 5 days
+  label timely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = Yes
+    consequence equals Yes
+
+  label untimely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = No
+    consequence equals No
+```
+
+## Article 287. Execution service cases
+
+```catala
+declaration scope Article287ExecutionService:
+  input check content ExecutionServiceCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output appealWithinDeadline content YesNo
+
+scope Article287ExecutionService:
+# Execution writ or executor action can be challenged
+  label writ_challenge definition challengeAllowed under condition
+    check.executionWritChallenged = Yes
+    consequence equals Yes
+
+  label action_challenge definition challengeAllowed under condition
+    check.executorActionUnlawful = Yes
+    consequence equals Yes
+
+  label inaction_challenge definition challengeAllowed under condition
+    check.executorInaction = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 10 days
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinTenDays = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinTenDays = No
+    consequence equals No
+
+# Appeal within 5 days
+  label timely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = Yes
+    consequence equals Yes
+
+  label untimely_appeal definition appealWithinDeadline under condition
+    check.appealFiledWithinFiveDays = No
+    consequence equals No
+```
+
+## Article 288. Foreigner expulsion cases
+
+```catala
+declaration scope Article288ForeignerExpulsion:
+  input check content ForeignerExpulsionCheck
+  output challengeAllowed content YesNo
+  output filingWithinDeadline content YesNo
+  output securingMeasureAvailable content YesNo
+
+scope Article288ForeignerExpulsion:
+# Expulsion order can be challenged
+  label challenge definition challengeAllowed under condition
+    check.expulsionOrderChallenged = Yes
+    consequence equals Yes
+
+  label no_challenge definition challengeAllowed equals No
+
+# Filing within 3 months
+  label timely definition filingWithinDeadline under condition
+    check.filedWithinThreeMonths = Yes
+    consequence equals Yes
+
+  label untimely definition filingWithinDeadline under condition
+    check.filedWithinThreeMonths = No
+    consequence equals No
+
+# Securing measure available when irreparable harm
+  label securing definition securingMeasureAvailable under condition
+    check.expulsionWouldCauseIrreparableHarm = Yes
+    and check.securingMeasureRequested = Yes
+    consequence equals Yes
+
+  label no_securing definition securingMeasureAvailable equals No
+```
+
+## Article 289. Foreigner detention cases
+
+```catala
+declaration scope Article289ForeignerDetention:
+  input check content ForeignerDetentionCheck
+  output detentionAuthorized content YesNo
+  output detentionWithinLimit content YesNo
+  output extensionAllowed content YesNo
+  output alternativeMeasureAvailable content YesNo
+
+scope Article289ForeignerDetention:
+# Court must authorize detention
+  label authorized definition detentionAuthorized under condition
+    check.courtAuthorizedDetention = Yes
+    and check.detentionProportionate = Yes
+    consequence equals Yes
+
+  label unauthorized definition detentionAuthorized under condition
+    check.courtAuthorizedDetention = No
+    consequence equals No
+
+  label disproportionate definition detentionAuthorized under condition
+    check.detentionProportionate = No
+    consequence equals No
+
+# Detention within time limit
+  label within_limit definition detentionWithinLimit under condition
+    check.detentionPeriodDays <= check.maxDetentionDays
+    consequence equals Yes
+
+  label exceeded definition detentionWithinLimit under condition
+    check.detentionPeriodDays > check.maxDetentionDays
+    consequence equals No
+
+# Extension allowed only with court authorization
+  label extension definition extensionAllowed under condition
+    check.detentionExtended = Yes
+    and check.courtAuthorizedDetention = Yes
+    consequence equals Yes
+
+  label no_extension definition extensionAllowed equals No
+
+# Alternative measures: bail or surety
+  label alternative definition alternativeMeasureAvailable under condition
+    check.bailAmountSet = Yes
+    or check.suretyProvided = Yes
+    consequence equals Yes
+
+  label no_alternative definition alternativeMeasureAvailable equals No
+```

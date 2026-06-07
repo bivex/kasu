@@ -1,0 +1,176 @@
+## Article 273. Cases on challenging decisions of election commissions
+
+```catala
+declaration scope Article273ElectionCommissionChallenge:
+  input challenge content ElectionCommissionChallenge
+  output challengeHasStanding content YesNo
+  output challengeTimely content YesNo
+
+scope Article273ElectionCommissionChallenge:
+# Standing: voter, candidate, authorized representative, or prosecutor
+  label standing_voter definition challengeHasStanding under condition
+    challenge.challengeFiledByAuthorizedPerson = Yes
+    consequence equals Yes
+
+  label standing_default definition challengeHasStanding equals No
+
+# Timely when filed within election period
+  label timely_election definition challengeTimely under condition
+    challenge.filingWithinElectionPeriod = Yes
+    and challenge.challengeFiledTimely = Yes
+    consequence equals Yes
+
+  label untimely definition challengeTimely under condition
+    challenge.challengeFiledTimely = No
+    consequence equals No
+
+  label timely_default definition challengeTimely equals No
+```
+
+## Article 274. Jurisdiction over election commission challenges
+
+```catala
+declaration scope Article274ElectionJurisdiction:
+  input challenge content ElectionCommissionChallenge
+  output localCourtHasJurisdiction content YesNo
+  output appellateCourtHasJurisdiction content YesNo
+  output supremeCourtHasJurisdiction content YesNo
+
+scope Article274ElectionJurisdiction:
+# Local court for precinct commission decisions
+  label local_jurisdiction definition localCourtHasJurisdiction under condition
+    challenge.commissionLevel = ElectionCommissionLevel.PrecinctElectionCommission
+    consequence equals Yes
+
+# Appellate court for district commission decisions
+  label appellate_jurisdiction definition appellateCourtHasJurisdiction under condition
+    challenge.commissionLevel = ElectionCommissionLevel.DistrictElectionCommission
+    and challenge.appellateCourtJurisdiction = Yes
+    consequence equals Yes
+
+# Supreme Court for CEC decisions
+  label supreme_jurisdiction definition supremeCourtHasJurisdiction under condition
+    challenge.commissionLevel = ElectionCommissionLevel.CentralElectionCommission
+    consequence equals Yes
+
+  label no_local definition localCourtHasJurisdiction equals No
+
+  label no_appellate definition appellateCourtHasJurisdiction equals No
+
+  label no_supreme definition supremeCourtHasJurisdiction equals No
+```
+
+## Article 275. Challenging CEC decisions on candidate registration
+
+```catala
+declaration scope Article275CandidateRegistration:
+  input challenge content ElectionCommissionChallenge
+  input relief content ElectionCaseRelief
+  output registrationChallengeAllowed content YesNo
+
+scope Article275CandidateRegistration:
+# CEC registration decisions challenged in Supreme Court
+  label registration_challenge definition registrationChallengeAllowed under condition
+    challenge.commissionLevel = ElectionCommissionLevel.CentralElectionCommission
+    and relief.candidateRegistrationChallenged = Yes
+    consequence equals Yes
+
+  label registration_default definition registrationChallengeAllowed equals No
+```
+
+## Article 276. Court consideration of election cases
+
+```catala
+declaration scope Article276ElectionCaseConsideration:
+  input challenge content ElectionCommissionChallenge
+  output caseConsideredImmediately content YesNo
+  output fiveDayDeadlineApplies content YesNo
+
+scope Article276ElectionCaseConsideration:
+# Election cases considered immediately or within 5 days
+  label considered_immediately definition caseConsideredImmediately under condition
+    challenge.challengeFiledBeforeVoting = Yes
+    consequence equals Yes
+
+  label considered_five_days definition caseConsideredImmediately under condition
+    challenge.challengeFiledBeforeVoting = No
+    consequence equals No
+
+# Five-day deadline applies to all election cases
+  label five_day definition fiveDayDeadlineApplies equals Yes
+```
+
+## Article 277. Court decision in election cases
+
+```catala
+declaration scope Article277ElectionDecision:
+  input relief content ElectionCaseRelief
+  output mayObligateCommission content YesNo
+  output mayEstablishElectionResult content YesNo
+
+scope Article277ElectionDecision:
+# Court may obligate commission to perform action
+  label obligate definition mayObligateCommission under condition
+    relief.commissionDecisionUnlawful = Yes
+    consequence equals Yes
+
+# Only court may establish election result when challenged
+  label establish_result definition mayEstablishElectionResult under condition
+    relief.electionResultChallenged = Yes
+    and relief.onlyCourtMayEstablishElectionResult = Yes
+    consequence equals Yes
+
+  label no_obligate definition mayObligateCommission equals No
+
+  label no_establish definition mayEstablishElectionResult equals No
+```
+
+## Article 278. Filing deadlines for election cases
+
+```catala
+declaration scope Article278ElectionFilingDeadlines:
+  input filing content ElectionCaseFiling
+  output filingWithinDeadline content YesNo
+
+scope Article278ElectionFilingDeadlines:
+# Filing within 10 days of commission decision
+  label ten_day definition filingWithinDeadline under condition
+    filing.filedWithinTenDaysOfDecision = Yes
+    consequence equals Yes
+
+# Filing within 5 days of election for election result challenges
+  label five_day definition filingWithinDeadline under condition
+    filing.filedWithinFiveDaysOfElection = Yes
+    consequence equals Yes
+
+  label filing_default definition filingWithinDeadline equals No
+```
+
+## Article 279. Appeal deadlines in election cases
+
+```catala
+declaration scope Article279ElectionAppealDeadlines:
+  input deadline content ElectionAppealDeadline
+  output appealWithinDeadline content YesNo
+  output cassationWithinDeadline content YesNo
+
+scope Article279ElectionAppealDeadlines:
+# Appeal: 5 days from decision
+  label appeal_five_days definition appealWithinDeadline under condition
+    deadline.daysSinceDecision <= 5
+    consequence equals Yes
+
+# Cassation: 5 days from appellate decision
+  label cassation_five_days definition cassationWithinDeadline under condition
+    deadline.isSupremeCourtDecision = No
+    and deadline.daysSinceDecision <= 5
+    consequence equals Yes
+
+  label appeal_expired definition appealWithinDeadline under condition
+    deadline.daysSinceDecision > 5
+    consequence equals No
+
+  label cassation_expired definition cassationWithinDeadline under condition
+    deadline.daysSinceDecision > 5
+    consequence equals No
+```
