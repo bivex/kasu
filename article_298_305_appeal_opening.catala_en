@@ -1,0 +1,240 @@
+## Article 298. Leaving appeal without motion, returning appeal
+
+```catala
+declaration scope Article298AppealLeaveReturn:
+  input leaveCheck content AppealLeaveCheck
+  input returnCheck content AppealReturnCheck
+  output leftWithoutMotion content YesNo
+  output returned content YesNo
+  output fiveDayDeadlineForLeaveDecision content YesNo
+
+scope Article298AppealLeaveReturn:
+# Left without motion when requirements not met or deadline expired without restoration
+  label leave_requirements definition leftWithoutMotion under condition
+    leaveCheck.complaintMeetsRequirements = No
+    consequence equals Yes
+
+  label leave_deadline definition leftWithoutMotion under condition
+    leaveCheck.deadlineExpired = Yes
+    and leaveCheck.restorationRequested = No
+    consequence equals Yes
+
+  label leave_restoration_invalid definition leftWithoutMotion under condition
+    leaveCheck.deadlineExpired = Yes
+    and leaveCheck.restorationRequested = Yes
+    and leaveCheck.restorationGroundsValid = No
+    consequence equals Yes
+
+  label no_leave definition leftWithoutMotion equals No
+
+# Returned when filed by incapable person, unsigned, withdrawn, or wrong court
+  label return_incapable definition returned under condition
+    returnCheck.returnGround = AppealReturnGround.FiledByIncapablePerson
+    consequence equals Yes
+
+  label return_unsigned definition returned under condition
+    returnCheck.returnGround = AppealReturnGround.NotSigned
+    consequence equals Yes
+
+  label return_unauthorized definition returned under condition
+    returnCheck.returnGround = AppealReturnGround.SignedByUnauthorizedPerson
+    consequence equals Yes
+
+  label return_withdrawn definition returned under condition
+    returnCheck.returnGround = AppealReturnGround.WithdrawnBeforeOpening
+    consequence equals Yes
+
+  label return_wrong_court definition returned under condition
+    returnCheck.returnGround = AppealReturnGround.FiledToWrongCourt
+    consequence equals Yes
+
+  label no_return definition returned equals No
+
+# Five day deadline for leave decision
+  label five_days definition fiveDayDeadlineForLeaveDecision equals Yes
+```
+
+## Article 299. Refusal to open appeal proceedings
+
+```catala
+declaration scope Article299AppealRefusal:
+  input check content AppealRefusalCheck
+  output refusalToOpenProceedings content YesNo
+
+scope Article299AppealRefusal:
+# Refuse when decision not appealable
+  label not_appealable definition refusalToOpenProceedings under condition
+    check.decisionNotAppealable = Yes
+    consequence equals Yes
+
+# Refuse when previous closure with withdrawal exists
+  label previous_closure definition refusalToOpenProceedings under condition
+    check.previousClosureWithWithdrawal = Yes
+    consequence equals Yes
+
+# Refuse when previous refusal for same person same decision
+  label previous_refusal definition refusalToOpenProceedings under condition
+    check.previousRefusalSamePerson = Yes
+    consequence equals Yes
+
+# Refuse when deadline expired without restoration
+  label deadline_expired definition refusalToOpenProceedings under condition
+    check.deadlineExpiredWithoutRestoration = Yes
+    consequence equals Yes
+
+# One year absolute deadline for prosecutor/authority (except when not notified)
+  label one_year_absolute definition refusalToOpenProceedings under condition
+    check.oneYearSinceFullDecision = Yes
+    and check.isProsecutorOrAuthority = Yes
+    and check.authorityNotNotifiedOfCase = No
+    consequence equals Yes
+
+  label no_refusal definition refusalToOpenProceedings equals No
+```
+
+## Article 300. Opening appeal proceedings
+
+```catala
+declaration scope Article300AppealOpening:
+  input check content AppealOpeningCheck
+  output proceedingsOpened content YesNo
+  output decisionWithinFiveDays content YesNo
+  output challengedDecisionStayed content YesNo
+
+scope Article300AppealOpening:
+# Open when no grounds for leave, return, or refusal
+  label open definition proceedingsOpened under condition
+    check.noGroundsForLeave = Yes
+    and check.noGroundsForReturn = Yes
+    and check.noGroundsForRefusal = Yes
+    consequence equals Yes
+
+  label not_opened definition proceedingsOpened equals No
+
+# Decision within 5 days
+  label five_days definition decisionWithinFiveDays equals Yes
+
+# Stay challenged decision when deadline was restored
+  label stayed definition challengedDecisionStayed under condition
+    check.deadlineExpired = Yes
+    and check.deadlineRestored = Yes
+    consequence equals Yes
+
+  label not_stayed definition challengedDecisionStayed equals No
+```
+
+## Article 301. Sending copies to participants
+
+```catala
+declaration scope Article301SendingCopies:
+  output copiesMustBeSentToParticipants content YesNo
+
+scope Article301SendingCopies:
+# Court sends copies of appeal complaint to all participants
+  label must_send definition copiesMustBeSentToParticipants equals Yes
+```
+
+## Article 302. Joining appeal complaint
+
+```catala
+declaration scope Article302JoiningAppeal:
+  input check content AppealJoinCheck
+  output joiningAllowed content YesNo
+
+scope Article302JoiningAppeal:
+# Participants and affected non-participants may join before review starts
+  label join_participant definition joiningAllowed under condition
+    check.filedByParticipant = Yes
+    and check.filedBeforeAppealReviewStarted = Yes
+    and check.courtFeePaid = Yes
+    consequence equals Yes
+
+  label join_nonparticipant definition joiningAllowed under condition
+    check.filedByNonParticipantWithRights = Yes
+    and check.filedBeforeAppealReviewStarted = Yes
+    and check.courtFeePaid = Yes
+    consequence equals Yes
+
+  label no_join definition joiningAllowed equals No
+```
+
+## Article 303. Supplementing, amending, recalling appeal complaint
+
+```catala
+declaration scope Article303AppealAmendment:
+  input check content AppealAmendmentCheck
+  output amendmentAllowed content YesNo
+  output recallAllowed content YesNo
+
+scope Article303AppealAmendment:
+# May supplement or amend within appeal deadline
+  label amend definition amendmentAllowed under condition
+    check.withinAppealDeadline = Yes
+    and check.copiesSentToOtherParticipants = Yes
+    consequence equals Yes
+
+  label no_amend_deadline definition amendmentAllowed under condition
+    check.withinAppealDeadline = No
+    consequence equals No
+
+  label no_amend_copies definition amendmentAllowed under condition
+    check.copiesSentToOtherParticipants = No
+    consequence equals No
+
+# May recall before opening of proceedings
+  label recall definition recallAllowed under condition
+    check.withdrawnBeforeOpening = Yes
+    consequence equals Yes
+
+  label no_recall definition recallAllowed equals No
+```
+
+## Article 304. Response to appeal complaint
+
+```catala
+declaration scope Article304AppealResponse:
+  input check content AppealResponseCheck
+  output responseAccepted content YesNo
+
+scope Article304AppealResponse:
+# Response accepted when filed within court-set deadline
+  label accepted definition responseAccepted under condition
+    check.filedWithinCourtDeadline = Yes
+    consequence equals Yes
+
+  label not_accepted definition responseAccepted under condition
+    check.filedWithinCourtDeadline = No
+    consequence equals No
+```
+
+## Article 305. Closure of appeal proceedings
+
+```catala
+declaration scope Article305AppealClosure:
+  input check content AppealClosureCheck
+  output appealProceedingsClosed content YesNo
+
+scope Article305AppealClosure:
+# Close when complaint withdrawn after opening (unless joined persons object)
+  label withdrawal definition appealProceedingsClosed under condition
+    check.closureGround = AppealClosureGround.WithdrawalAfterOpening
+    and check.otherJoinedPersonsObject = No
+    consequence equals Yes
+
+  label withdrawal_objected definition appealProceedingsClosed under condition
+    check.closureGround = AppealClosureGround.WithdrawalAfterOpening
+    and check.otherJoinedPersonsObject = Yes
+    consequence equals No
+
+# Close when unsigned or incapable discovered after opening
+  label incapable definition appealProceedingsClosed under condition
+    check.closureGround = AppealClosureGround.UnsignedOrIncapableAfterOpening
+    consequence equals Yes
+
+# Close when non-participant's rights not actually affected
+  label not_affected definition appealProceedingsClosed under condition
+    check.closureGround = AppealClosureGround.NonParticipantRightsNotAffected
+    consequence equals Yes
+
+  label no_closure definition appealProceedingsClosed equals No
+```

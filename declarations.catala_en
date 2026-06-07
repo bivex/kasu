@@ -1293,4 +1293,279 @@ declaration structure PremisesInformationSealingCheck:
   data sealingChallenged content YesNo
   data filedWithinThreeDays content YesNo
   data generalProceedingRequired content YesNo
+
+declaration enumeration ExemplaryCaseRefusalGround:
+  -- SubmissionNonCompliant
+  -- SignificantFactualDifferences
+
+declaration enumeration TypicalCaseCassationGround:
+  -- CourtDidNotRecognizeTypical
+  -- CourtDidNotApplySupremeCourtConclusions
+  -- CaseDoesNotMatchTypicalFeatures
+
+declaration structure ExemplaryCaseSubmission:
+  data multipleTypicalCasesPending content YesNo
+  data submissionJustified content YesNo
+  data caseMaterialsAttached content YesNo
+  data significantFactualDifferences content YesNo
+  data submissionMeetsRequirements content YesNo
+
+declaration structure ExemplaryCaseDecision:
+  data typicalCaseFeaturesSpecified content YesNo
+  data circumstancesForTypicalApplicationSpecified content YesNo
+  data differentiatingCircumstancesSpecified content YesNo
+  data grandChamberReviewAvailable content YesNo
+
+declaration structure TypicalCaseProceeding:
+  data supremeCourtOpenedExemplaryProceeding content YesNo
+  data exemplaryDecisionEnteredIntoForce content YesNo
+  data caseMatchesTypicalFeatures content YesNo
+  data cassationGround content TypicalCaseCassationGround
+
+declaration enumeration SeparatelyAppealableRuling:
+  -- EvidenceSecuringRuling
+  -- ClaimSecuringRuling
+  -- ClaimReturnRuling
+  -- RefusalToOpenProceedings
+  -- CaseTransferRuling
+  -- DeadlineRestorationRefusal
+  -- ReconciliationApproval
+  -- ExpertiseAppointment
+  -- CostDetermination
+  -- SuspensionRuling
+  -- LeaveWithoutConsiderationRuling
+  -- ClosureRuling
+  -- CorrectionRuling
+  -- AdditionalDecisionRefusal
+  -- ClarificationRuling
+  -- ExtraordinaryReviewRefusal
+  -- ExecutionDeadlineRestorationRefusal
+  -- ExecutionDeferralRuling
+  -- ProceduralSuccessionRuling
+  -- ExecutionReversalRuling
+  -- WritCorrectionRuling
+  -- SeparateRulingAppeal
+  -- ProceduralFineRuling
+  -- ExecutionControlRuling
+  -- LostProceedingRestorationRefusal
+  -- ExecutionReportRuling
+  -- ExecutionReportAcceptanceRuling
+
+declaration enumeration AppealReturnGround:
+  -- FiledByIncapablePerson
+  -- NotSigned
+  -- SignedByUnauthorizedPerson
+  -- WithdrawnBeforeOpening
+  -- FiledToWrongCourt
+
+declaration enumeration AppealRefusalGround:
+  -- DecisionNotAppealable
+  -- PreviousClosureWithWithdrawal
+  -- PreviousRefusalSamePerson
+  -- DeadlineExpiredWithoutRestoration
+  -- OneYearAbsoluteDeadline
+
+declaration enumeration AppealClosureGround:
+  -- WithdrawalAfterOpening
+  -- UnsignedOrIncapableAfterOpening
+  -- NonParticipantRightsNotAffected
+
+declaration enumeration AppealOutcome:
+  -- LeaveUnsatisfiedDecisionUnchanged
+  -- CancelAndNewDecision
+  -- CancelAndCloseOrLeaveWithoutConsideration
+  -- InvalidateAndClose
+  -- CancelAndRedirectToAnotherCourt
+  -- CancelOwnPostanova
+
+declaration enumeration AppealCancellationGround:
+  -- IncompleteFindings
+  -- UnprovenCircumstances
+  -- ConclusionsDontMatchCircumstances
+  -- WrongSubstantiveLaw
+  -- ProceduralViolation
+
+declaration enumeration MandatoryProceduralViolation:
+  -- UnauthorizedCourtComposition
+  -- JudgeShouldHaveBeenRecused
+  -- ParticipantNotProperlyNotified
+  -- RightsOfNonParticipantAffected
+  -- DecisionNotSigned
+  -- DecisionByWrongJudges
+  -- SimplifiedUsedInsteadOfGeneral
+
+declaration structure AppealCourtDetermination:
+  data firstInstanceCourtLevel content CourtLevel
+  data firstInstanceIsSupremeCourt content YesNo
+  data isSanctionsCase content YesNo
+  data isHACCAppeal content YesNo
+
+declaration structure AppealRightCheck:
+  data isCaseParticipant content YesNo
+  data courtDecidedRightsOfNonParticipant content YesNo
+  data appealingResolution content YesNo
+  data appealingSeparatelyAppealableRuling content YesNo
+  data rulingSubject content SeparatelyAppealableRuling
+
+declaration structure AppealDeadlineDetermination:
+  data appealingResolution content YesNo
+  data daysSincePronouncement content integer
+  data daysSinceFullDecisionComposed content integer
+  data abbreviatedDecisionPronounced content YesNo
+  data writtenProceeding content YesNo
+  data fullDecisionServedToAppellant content YesNo
+  data daysSinceServiceOfFullDecision content integer
+  data goodCauseForDelay content YesNo
+  data isProsecutorOrAuthority content YesNo
+  data oneYearSinceFullDecision content YesNo
+  data authorityNotNotifiedOfCase content YesNo
+
+declaration structure AppealComplianceCheck:
+  data complaintInWrittenForm content YesNo
+  data courtFeePaid content YesNo
+  data copiesForAllParticipants content YesNo
+  data groundsSpecified content YesNo
+  data dateOfCopyReceiptSpecified content YesNo
+  data newEvidenceJustified content YesNo
+  data electronicCabinetRequired content YesNo
+  data electronicCabinetRegistered content YesNo
+
+declaration structure AppealLeaveCheck:
+  data complaintMeetsRequirements content YesNo
+  data deadlineExpired content YesNo
+  data restorationRequested content YesNo
+  data restorationGroundsValid content YesNo
+  data tenDaysSinceLeaveRuling content integer
+
+declaration structure AppealReturnCheck:
+  data returnGround content AppealReturnGround
+  data filedByIncapablePerson content YesNo
+  data notSigned content YesNo
+  data signedByUnauthorizedPerson content YesNo
+  data withdrawnBeforeOpening content YesNo
+  data filedToWrongCourt content YesNo
+
+declaration structure AppealRefusalCheck:
+  data refusalGround content AppealRefusalGround
+  data decisionNotAppealable content YesNo
+  data previousClosureWithWithdrawal content YesNo
+  data previousRefusalSamePerson content YesNo
+  data deadlineExpiredWithoutRestoration content YesNo
+  data oneYearSinceFullDecision content YesNo
+  data isProsecutorOrAuthority content YesNo
+  data authorityNotNotifiedOfCase content YesNo
+  data fiveDaysSinceComplaintOrCure content integer
+
+declaration structure AppealOpeningCheck:
+  data noGroundsForLeave content YesNo
+  data noGroundsForReturn content YesNo
+  data noGroundsForRefusal content YesNo
+  data fiveDaysSinceComplaint content integer
+  data deadlineExpired content YesNo
+  data deadlineRestored content YesNo
+
+declaration structure AppealJoinCheck:
+  data filedByParticipant content YesNo
+  data filedByNonParticipantWithRights content YesNo
+  data filedBeforeAppealReviewStarted content YesNo
+  data courtFeePaid content YesNo
+  data hearingParticipationRequested content YesNo
+
+declaration structure AppealAmendmentCheck:
+  data withinAppealDeadline content YesNo
+  data copiesSentToOtherParticipants content YesNo
+  data withdrawnBeforeOpening content YesNo
+
+declaration structure AppealResponseCheck:
+  data filedWithinCourtDeadline content YesNo
+  data groundsSpecified content YesNo
+  data hearingParticipationRequested content YesNo
+
+declaration structure AppealClosureCheck:
+  data closureGround content AppealClosureGround
+  data withdrawnAfterOpening content YesNo
+  data otherJoinedPersonsObject content YesNo
+  data unsignedOrIncapableAfterOpening content YesNo
+  data nonParticipantRightsNotAffected content YesNo
+
+declaration structure AppealPreparationCheck:
+  data nonParticipantRightsAffected content YesNo
+  data newEvidenceRequested content YesNo
+  data newEvidenceJustificationValid content YesNo
+  data writtenProceedingAppropriate content YesNo
+  data unresolvedProtocolRemarks content YesNo
+  data unresolvedAdditionalDecision content YesNo
+
+declaration structure AppealReviewScope:
+  data withinComplaintGrounds content YesNo
+  data mandatoryProceduralViolationFound content YesNo
+  data wrongSubstantiveLawFound content YesNo
+  data newEvidenceJustificationProvided content YesNo
+  data newClaimsNotRaisedInFirstInstance content YesNo
+
+declaration structure AppealTimelineCheck:
+  data appealingResolution content YesNo
+  data daysSinceOpening content integer
+  data extensionRequested content YesNo
+  data extensionDays content integer
+
+declaration structure AppealWrittenProceedingCheck:
+  data noParticipantRequestsHearing content YesNo
+  data noParticipantAppeared content YesNo
+  data firstInstanceWasWrittenSimplified content YesNo
+  data grandChamberAppeal content YesNo
+  data caseCanBeDecidedOnExistingEvidence content YesNo
+
+declaration structure AppealNonAppearanceCheck:
+  data participantProperlyNotified content YesNo
+  data goodCauseForAbsence content YesNo
+  data participationMandatory content YesNo
+
+declaration structure AppealReconciliationCheck:
+  data plaintiffWithdrewClaim content YesNo
+  data partiesReconciled content YesNo
+  data withdrawalOrReconciliationValid content YesNo
+
+declaration structure AppealPowersCheck:
+  data appealGroundSubstantiated content YesNo
+  data firstInstanceCorrect content YesNo
+  data cancellationGroundExists content YesNo
+  data jurisdictionViolation content YesNo
+  data closureOrLeaveWithoutConsiderationGround content YesNo
+  data rulingObstructsFurtherProceeding content YesNo
+
+declaration structure AppealCancellationCheck:
+  data cancellationGround content AppealCancellationGround
+  data mandatoryViolation content MandatoryProceduralViolation
+
+declaration structure AppealRedirectCheck:
+  data jurisdictionViolation content YesNo
+  data territorialJurisdictionViolation content YesNo
+  data appellantDidNotRaiseJurisdiction content YesNo
+  data appellantHadGoodCause content YesNo
+
+declaration structure AppealClosureWithRedirectCheck:
+  data closureOrLeaveGroundExists content YesNo
+  data administrativeJurisdictionViolation content YesNo
+  data deathOrTerminationAfterDecision content YesNo
+  data transferToCorrectJurisdictionRequested content YesNo
+
+declaration structure AppealCancelRulingCheck:
+  data rulingObstructsProceeding content YesNo
+  data incompleteFindings content YesNo
+  data unprovenCircumstances content YesNo
+  data conclusionsDontMatchCircumstances content YesNo
+  data wrongLawOrProceduralViolation content YesNo
+
+declaration structure LateAppealCheck:
+  data complaintArrivedAfterReviewEnded content YesNo
+  data complainantNotPresentAtReview content YesNo
+  data groundsNotPreviouslyConsidered content YesNo
+
+declaration structure AppealEntryIntoForceCheck:
+  data isResolution content YesNo
+  data isRuling content YesNo
+  data pronouncedInSession content YesNo
+  data allParticipantsAbsent content YesNo
+  data isWrittenProceeding content YesNo
 ```

@@ -1,0 +1,110 @@
+## Article 290. Exemplary case proceedings
+
+```catala
+declaration scope Article290ExemplaryCase:
+  input submission content ExemplaryCaseSubmission
+  output submissionToSupremeCourtAllowed content YesNo
+  output openingAllowed content YesNo
+  output openingRefused content YesNo
+  output simplifiedProceedingApplies content YesNo
+  output panelOfFiveRequired content YesNo
+  output decisionWithinTenDays content YesNo
+  output publicationRequired content YesNo
+  output allInterestedPartiesDeemedNotified content YesNo
+  output grandChamberReviewAvailable content YesNo
+
+scope Article290ExemplaryCase:
+# Court may submit to Supreme Court when multiple typical cases pending
+  label submission_allowed definition submissionToSupremeCourtAllowed under condition
+    submission.multipleTypicalCasesPending = Yes
+    and submission.submissionJustified = Yes
+    consequence equals Yes
+
+  label submission_not_allowed definition submissionToSupremeCourtAllowed equals No
+
+# Opening allowed when submission compliant
+  label opening definition openingAllowed under condition
+    submission.submissionMeetsRequirements = Yes
+    and submission.significantFactualDifferences = No
+    consequence equals Yes
+
+# Refuse opening when submission non-compliant or factual differences
+  label refusal_noncompliant definition openingRefused under condition
+    submission.submissionMeetsRequirements = No
+    consequence equals Yes
+
+  label refusal_differences definition openingRefused under condition
+    submission.significantFactualDifferences = Yes
+    consequence equals Yes
+
+  label no_refusal definition openingRefused equals No
+
+# Exemplary cases follow simplified proceeding rules
+  label simplified definition simplifiedProceedingApplies equals Yes
+
+# Panel of at least 5 judges required
+  label five_judges definition panelOfFiveRequired equals Yes
+
+# Opening question decided within 10 days
+  label ten_days definition decisionWithinTenDays equals Yes
+
+# Publication required on official portal and national media 10 days before hearing
+  label must_publish definition publicationRequired equals Yes
+
+# All interested parties deemed notified upon publication
+  label deemed_notified definition allInterestedPartiesDeemedNotified equals Yes
+
+# Grand Chamber reviews Supreme Court exemplary decisions as appeal
+  label grand_chamber definition grandChamberReviewAvailable equals Yes
+```
+
+## Article 291. Typical case proceedings
+
+```catala
+declaration scope Article291TypicalCase:
+  input proceeding content TypicalCaseProceeding
+  output maySuspendProceeding content YesNo
+  output mustResumeAfterExemplaryDecision content YesNo
+  output mustConsiderSupremeCourtConclusions content YesNo
+  output cassationGroundExists content YesNo
+
+scope Article291TypicalCase:
+# Court may suspend typical case when exemplary proceeding opened
+  label may_suspend definition maySuspendProceeding under condition
+    proceeding.supremeCourtOpenedExemplaryProceeding = Yes
+    consequence equals Yes
+
+  label no_suspension definition maySuspendProceeding under condition
+    proceeding.supremeCourtOpenedExemplaryProceeding = No
+    consequence equals No
+
+# Must resume from day exemplary decision enters into force
+  label must_resume definition mustResumeAfterExemplaryDecision under condition
+    proceeding.exemplaryDecisionEnteredIntoForce = Yes
+    consequence equals Yes
+
+# Court must consider Supreme Court legal conclusions in typical case
+  label must_consider definition mustConsiderSupremeCourtConclusions under condition
+    proceeding.caseMatchesTypicalFeatures = Yes
+    and proceeding.exemplaryDecisionEnteredIntoForce = Yes
+    consequence equals Yes
+
+  label no_obligation definition mustConsiderSupremeCourtConclusions under condition
+    proceeding.caseMatchesTypicalFeatures = No
+    consequence equals No
+
+# Cassation grounds for typical cases
+  label cassation_not_recognized definition cassationGroundExists under condition
+    proceeding.cassationGround = TypicalCaseCassationGround.CourtDidNotRecognizeTypical
+    consequence equals Yes
+
+  label cassation_not_applied definition cassationGroundExists under condition
+    proceeding.cassationGround = TypicalCaseCassationGround.CourtDidNotApplySupremeCourtConclusions
+    consequence equals Yes
+
+  label cassation_not_matching definition cassationGroundExists under condition
+    proceeding.cassationGround = TypicalCaseCassationGround.CaseDoesNotMatchTypicalFeatures
+    consequence equals Yes
+
+  label no_cassation definition cassationGroundExists equals No
+```

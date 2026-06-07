@@ -1,0 +1,246 @@
+## Article 306. Preparation for appeal review
+
+```catala
+declaration scope Article306AppealPreparation:
+  input check content AppealPreparationCheck
+  output mayInvolveNonParticipant content YesNo
+  output newEvidenceAdmissible content YesNo
+  output writtenProceedingPossible content YesNo
+
+scope Article306AppealPreparation:
+# May involve non-participant whose rights affected
+  label involve definition mayInvolveNonParticipant under condition
+    check.nonParticipantRightsAffected = Yes
+    consequence equals Yes
+
+  label no_involve definition mayInvolveNonParticipant equals No
+
+# New evidence admissible when justification valid
+  label evidence_admissible definition newEvidenceAdmissible under condition
+    check.newEvidenceRequested = Yes
+    and check.newEvidenceJustificationValid = Yes
+    consequence equals Yes
+
+  label evidence_inadmissible definition newEvidenceAdmissible under condition
+    check.newEvidenceRequested = Yes
+    and check.newEvidenceJustificationValid = No
+    consequence equals No
+
+# Written proceeding possible when case can be decided on existing evidence
+  label written definition writtenProceedingPossible under condition
+    check.writtenProceedingAppropriate = Yes
+    consequence equals Yes
+
+  label not_written definition writtenProceedingPossible equals No
+```
+
+## Article 307. Scheduling appeal review
+
+```catala
+declaration scope Article307AppealScheduling:
+  output caseScheduledAfterPreparation content YesNo
+
+scope Article307AppealScheduling:
+# Case scheduled for review after preparatory actions
+  label scheduled definition caseScheduledAfterPreparation equals Yes
+```
+
+## Article 308. Scope of appeal review
+
+```catala
+declaration scope Article308AppealScope:
+  input check content AppealReviewScope
+  output reviewWithinComplaintGrounds content YesNo
+  output mayGoBeyondComplaintGrounds content YesNo
+  output newClaimsProhibited content YesNo
+
+scope Article308AppealScope:
+# Review within complaint grounds
+  label within_grounds definition reviewWithinComplaintGrounds under condition
+    check.withinComplaintGrounds = Yes
+    consequence equals Yes
+
+# May go beyond complaint grounds for mandatory procedural violations or wrong law
+  label beyond_grounds definition mayGoBeyondComplaintGrounds under condition
+    check.mandatoryProceduralViolationFound = Yes
+    or check.wrongSubstantiveLawFound = Yes
+    consequence equals Yes
+
+  label not_beyond definition mayGoBeyondComplaintGrounds equals No
+
+# New claims not raised in first instance are prohibited
+  label no_new_claims definition newClaimsProhibited under condition
+    check.newClaimsNotRaisedInFirstInstance = Yes
+    consequence equals Yes
+
+  label no_new_issues definition newClaimsProhibited under condition
+    check.newClaimsNotRaisedInFirstInstance = No
+    consequence equals No
+```
+
+## Article 309. Timeline for appeal review
+
+```catala
+declaration scope Article309AppealTimeline:
+  input check content AppealTimelineCheck
+  output withinTimeLimit content YesNo
+  output extensionAllowed content YesNo
+
+scope Article309AppealTimeline:
+# Resolution: 60 days from opening
+  label resolution_timeline definition withinTimeLimit under condition
+    check.appealingResolution = Yes
+    and check.daysSinceOpening <= 60
+    consequence equals Yes
+
+  label resolution_exceeded definition withinTimeLimit under condition
+    check.appealingResolution = Yes
+    and check.daysSinceOpening > 60
+    consequence equals No
+
+# Ruling: 30 days from opening
+  label ruling_timeline definition withinTimeLimit under condition
+    check.appealingResolution = No
+    and check.daysSinceOpening <= 30
+    consequence equals Yes
+
+  label ruling_exceeded definition withinTimeLimit under condition
+    check.appealingResolution = No
+    and check.daysSinceOpening > 30
+    consequence equals No
+
+# Extension up to 15 days in exceptional cases
+  label extension definition extensionAllowed under condition
+    check.extensionRequested = Yes
+    and check.extensionDays <= 15
+    consequence equals Yes
+
+  label no_extension definition extensionAllowed equals No
+```
+
+## Article 310. Appeal review in court hearing
+
+```catala
+declaration scope Article310AppealHearing:
+  output panelOfThreeRequired content YesNo
+  output simplifiedProceedingRulesApply content YesNo
+  output appellantSpeaksFirst content YesNo
+
+scope Article310AppealHearing:
+# Panel of three judges
+  label three_judges definition panelOfThreeRequired equals Yes
+
+# Simplified proceeding rules apply
+  label simplified_rules definition simplifiedProceedingRulesApply equals Yes
+
+# Appellant speaks first
+  label appellant_first definition appellantSpeaksFirst equals Yes
+```
+
+## Article 311. Written appeal proceeding
+
+```catala
+declaration scope Article311AppealWritten:
+  input check content AppealWrittenProceedingCheck
+  output writtenProceedingAllowed content YesNo
+
+scope Article311AppealWritten:
+# Written proceeding when no hearing requested, no one appeared, or first instance was written simplified
+  label no_request definition writtenProceedingAllowed under condition
+    check.noParticipantRequestsHearing = Yes
+    and check.caseCanBeDecidedOnExistingEvidence = Yes
+    consequence equals Yes
+
+  label no_appearance definition writtenProceedingAllowed under condition
+    check.noParticipantAppeared = Yes
+    and check.caseCanBeDecidedOnExistingEvidence = Yes
+    consequence equals Yes
+
+  label written_first_instance definition writtenProceedingAllowed under condition
+    check.firstInstanceWasWrittenSimplified = Yes
+    consequence equals Yes
+
+# Grand Chamber may also proceed in writing
+  label grand_chamber definition writtenProceedingAllowed under condition
+    check.grandChamberAppeal = Yes
+    and check.caseCanBeDecidedOnExistingEvidence = Yes
+    consequence equals Yes
+
+  label not_allowed definition writtenProceedingAllowed equals No
+```
+
+## Article 312. Appeal against first instance rulings
+
+```catala
+declaration scope Article312AppealAgainstRulings:
+  output rulingAppealFollowsGeneralRules content YesNo
+  output certainRulingsReviewedInWriting content YesNo
+
+scope Article312AppealAgainstRulings:
+# Ruling appeals follow general appeal rules with specific features
+  label general_rules definition rulingAppealFollowsGeneralRules equals Yes
+
+# Certain rulings reviewed in written proceeding
+  label written_review definition certainRulingsReviewedInWriting equals Yes
+```
+
+## Article 313. Consequences of non-appearance
+
+```catala
+declaration scope Article313AppealNonAppearance:
+  input check content AppealNonAppearanceCheck
+  output reviewPostponed content YesNo
+  output reviewProceedsWithoutParticipant content YesNo
+
+scope Article313AppealNonAppearance:
+# Postpone when participant not properly notified
+  label not_notified definition reviewPostponed under condition
+    check.participantProperlyNotified = No
+    consequence equals Yes
+
+# Postpone when good cause for absence
+  label good_cause definition reviewPostponed under condition
+    check.participantProperlyNotified = Yes
+    and check.goodCauseForAbsence = Yes
+    consequence equals Yes
+
+# Proceed when properly notified and no good cause
+  label proceed definition reviewProceedsWithoutParticipant under condition
+    check.participantProperlyNotified = Yes
+    and check.goodCauseForAbsence = No
+    and check.participationMandatory = No
+    consequence equals Yes
+
+  label not_postponed definition reviewPostponed equals No
+
+  label must_attend definition reviewProceedsWithoutParticipant under condition
+    check.participationMandatory = Yes
+    and check.goodCauseForAbsence = No
+    consequence equals No
+```
+
+## Article 314. Claim withdrawal and reconciliation during appeal
+
+```catala
+declaration scope Article314AppealReconciliation:
+  input check content AppealReconciliationCheck
+  output withdrawalOrReconciliationAllowed content YesNo
+  output firstInstanceDecisionInvalidated content YesNo
+
+scope Article314AppealReconciliation:
+# Plaintiff may withdraw, parties may reconcile at any time before appeal ends
+  label allowed definition withdrawalOrReconciliationAllowed under condition
+    check.withdrawalOrReconciliationValid = Yes
+    consequence equals Yes
+
+  label not_allowed definition withdrawalOrReconciliationAllowed under condition
+    check.withdrawalOrReconciliationValid = No
+    consequence equals No
+
+# First instance decision invalidated upon withdrawal or reconciliation
+  label invalidated definition firstInstanceDecisionInvalidated under condition
+    check.withdrawalOrReconciliationValid = Yes
+    consequence equals Yes
+
+  label not_invalidated definition firstInstanceDecisionInvalidated equals No
+```

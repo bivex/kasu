@@ -1,0 +1,191 @@
+## Article 292. Court of appeal instance
+
+```catala
+declaration scope Article292AppealCourt:
+  input determination content AppealCourtDetermination
+  output appellateAdministrativeCourtHasJurisdiction content YesNo
+  output supremeCourtHasAppellateJurisdiction content YesNo
+  output grandChamberHasAppellateJurisdiction content YesNo
+  output haccAppealPanelHasJurisdiction content YesNo
+
+scope Article292AppealCourt:
+# Appellate administrative court reviews local court decisions
+  label appellate_court definition appellateAdministrativeCourtHasJurisdiction under condition
+    determination.firstInstanceCourtLevel = CourtLevel.LocalCourt
+    consequence equals Yes
+
+# Supreme Court reviews appellate court first-instance decisions
+  label supreme_court definition supremeCourtHasAppellateJurisdiction under condition
+    determination.firstInstanceIsSupremeCourt = No
+    and determination.firstInstanceCourtLevel = CourtLevel.AppellateCourt
+    consequence equals Yes
+
+# Grand Chamber reviews Supreme Court first-instance decisions
+  label grand_chamber definition grandChamberHasAppellateJurisdiction under condition
+    determination.firstInstanceIsSupremeCourt = Yes
+    consequence equals Yes
+
+# HACC Appeal Panel for sanctions cases
+  label hacc definition haccAppealPanelHasJurisdiction under condition
+    determination.isSanctionsCase = Yes
+    and determination.isHACCAppeal = Yes
+    consequence equals Yes
+
+  label no_appellate definition appellateAdministrativeCourtHasJurisdiction equals No
+
+  label no_supreme definition supremeCourtHasAppellateJurisdiction equals No
+
+  label no_grand definition grandChamberHasAppellateJurisdiction equals No
+
+  label no_hacc definition haccAppealPanelHasJurisdiction equals No
+```
+
+## Article 293. Right to appeal
+
+```catala
+declaration scope Article293RightToAppeal:
+  input check content AppealRightCheck
+  output hasRightToAppealResolution content YesNo
+  output hasRightToAppealRulingSeparately content YesNo
+  output nonParticipantAcquiresParticipantRights content YesNo
+
+scope Article293RightToAppeal:
+# Case participants may appeal resolution
+  label participant_appeal definition hasRightToAppealResolution under condition
+    check.isCaseParticipant = Yes
+    consequence equals Yes
+
+# Non-participant whose rights were decided may appeal
+  label nonparticipant_appeal definition hasRightToAppealResolution under condition
+    check.courtDecidedRightsOfNonParticipant = Yes
+    consequence equals Yes
+
+  label no_right definition hasRightToAppealResolution equals No
+
+# Rulings may be appealed separately only if listed in Art 294
+  label separate_appeal definition hasRightToAppealRulingSeparately under condition
+    check.appealingSeparatelyAppealableRuling = Yes
+    consequence equals Yes
+
+  label no_separate definition hasRightToAppealRulingSeparately equals No
+
+# Non-participant whose rights decided acquires participant rights
+  label acquires_rights definition nonParticipantAcquiresParticipantRights under condition
+    check.courtDecidedRightsOfNonParticipant = Yes
+    consequence equals Yes
+
+  label no_acquisition definition nonParticipantAcquiresParticipantRights equals No
+```
+
+## Article 294. Separately appealable rulings
+
+```catala
+declaration scope Article294SeparatelyAppealableRulings:
+  input rulingSubject content SeparatelyAppealableRuling
+  output canBeAppealedSeparately content YesNo
+
+scope Article294SeparatelyAppealableRulings:
+# All listed rulings can be appealed separately from resolution
+  label appealable definition canBeAppealedSeparately equals Yes
+```
+
+## Article 295. Appeal deadlines
+
+```catala
+declaration scope Article295AppealDeadlines:
+  input deadline content AppealDeadlineDetermination
+  output appealWithinDeadline content YesNo
+  output deadlineMayBeRestored content YesNo
+  output oneYearAbsoluteDeadlineApplies content YesNo
+
+scope Article295AppealDeadlines:
+# Resolution: 30 days from pronouncement or full decision composition
+  label resolution_thirty definition appealWithinDeadline under condition
+    deadline.appealingResolution = Yes
+    and deadline.daysSincePronouncement <= 30
+    consequence equals Yes
+
+# If abbreviated, count from full decision composition
+  label resolution_abbreviated definition appealWithinDeadline under condition
+    deadline.appealingResolution = Yes
+    and deadline.abbreviatedDecisionPronounced = Yes
+    and deadline.daysSinceFullDecisionComposed <= 30
+    consequence equals Yes
+
+# Written proceeding: count from full decision composition
+  label resolution_written definition appealWithinDeadline under condition
+    deadline.appealingResolution = Yes
+    and deadline.writtenProceeding = Yes
+    and deadline.daysSinceFullDecisionComposed <= 30
+    consequence equals Yes
+
+# Ruling: 15 days
+  label ruling_fifteen definition appealWithinDeadline under condition
+    deadline.appealingResolution = No
+    and deadline.daysSincePronouncement <= 15
+    consequence equals Yes
+
+# Restoration when full decision not served on day of pronouncement
+  label restoration_service definition deadlineMayBeRestored under condition
+    deadline.fullDecisionServedToAppellant = No
+    consequence equals Yes
+
+# Restoration for good cause
+  label restoration_good_cause definition deadlineMayBeRestored under condition
+    deadline.goodCauseForDelay = Yes
+    consequence equals Yes
+
+# One year absolute deadline for prosecutor/authority
+  label one_year definition oneYearAbsoluteDeadlineApplies under condition
+    deadline.isProsecutorOrAuthority = Yes
+    and deadline.oneYearSinceFullDecision = Yes
+    consequence equals Yes
+
+  label no_one_year definition oneYearAbsoluteDeadlineApplies under condition
+    deadline.isProsecutorOrAuthority = Yes
+    and deadline.oneYearSinceFullDecision = No
+    consequence equals No
+
+  label deadline_expired definition appealWithinDeadline equals No
+
+  label no_restoration definition deadlineMayBeRestored equals No
+```
+
+## Article 296. Form and content of appeal complaint
+
+```catala
+declaration scope Article296AppealForm:
+  input check content AppealComplianceCheck
+  output complaintMeetsFormRequirements content YesNo
+
+scope Article296AppealForm:
+# Complaint must meet all formal requirements
+  label compliant definition complaintMeetsFormRequirements under condition
+    check.complaintInWrittenForm = Yes
+    and check.courtFeePaid = Yes
+    and check.groundsSpecified = Yes
+    consequence equals Yes
+
+  label not_compliant definition complaintMeetsFormRequirements under condition
+    check.complaintInWrittenForm = No
+    consequence equals No
+
+  label no_fee definition complaintMeetsFormRequirements under condition
+    check.courtFeePaid = No
+    consequence equals No
+
+  label no_grounds definition complaintMeetsFormRequirements under condition
+    check.groundsSpecified = No
+    consequence equals No
+```
+
+## Article 297. Filing procedure
+
+```catala
+declaration scope Article297AppealFiling:
+  output filedDirectlyWithAppealCourt content YesNo
+
+scope Article297AppealFiling:
+# Appeal complaint filed directly with appeal court
+  label direct_filing definition filedDirectlyWithAppealCourt equals Yes
+```
