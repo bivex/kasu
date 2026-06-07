@@ -71,7 +71,7 @@ scope Article12ProceedingForm:
   # Part 6.4: business termination → minor
   label business_minor exception minor_default
   definition isMinorComplexityCase under condition
-    check.case.disputeCategory = BusinessTermination
+    check.case.disputeCategory = DisputeCategory.BusinessTermination
     consequence equals Yes
 
   # Part 6.5: entry/exit → minor
@@ -98,7 +98,7 @@ scope Article12ProceedingForm:
   # Part 6.7: debt collection → minor
   label debt_minor exception minor_default
   definition isMinorComplexityCase under condition
-    check.case.disputeCategory = DebtCollectionBasedOnAct
+    check.case.disputeCategory = DisputeCategory.DebtCollectionDispute
     consequence equals Yes
 
   # Part 6.8: typical cases → minor

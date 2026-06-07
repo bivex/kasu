@@ -88,6 +88,7 @@ declaration enumeration DisputeCategory:
   -- PensionSocialDispute
   -- BusinessTermination
   -- CorruptionRelatedDispute
+  -- DebtCollectionDispute
   -- OtherPublicLaw
 
 declaration enumeration CourtLevel:

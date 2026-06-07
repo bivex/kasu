@@ -5,7 +5,7 @@ declaration scope Article4PublicLawDispute:
   input defendant content SubjectOfAuthority
   input involvesAdministrativeServices content YesNo
   input involvesElectionProcess content YesNo
-  input isPublicLawDispute content YesNo
+  output isPublicLawDispute content YesNo
 
 scope Article4PublicLawDispute:
   label authority_dispute exception not_dispute_default
