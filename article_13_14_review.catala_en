@@ -4,7 +4,7 @@
 declaration scope Article13AppealRights:
   input isCaseParticipant content YesNo
   input courtDecidedTheirRights content YesNo
-  input firstInstanceDecisionContent YesNo
+  input firstInstanceDecision content YesNo
   input hasAppellateReview content YesNo
   output hasRightToAppeal content YesNo
   output hasRightToCassation content YesNo

@@ -46,7 +46,7 @@ scope Article5RightToCourtProtection:
   label inaction_exception exception method_available_default
   definition protectionMethodAvailable under condition
     protectionMethod = CompelAction
-    and disputeCategory = InactionChallenge
+    and disputeCategory = DisputeCategory.InactionChallenge
     consequence equals Yes
 
   label competence_exception exception method_available_default

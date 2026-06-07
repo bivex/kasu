@@ -32,9 +32,22 @@ scope Article10Openness:
 
   label not_closed definition closedHearingRequired equals No
 
-  label reopened_exception exception closed_required_exception
+  label reopened_exception exception open_default
   definition hearingIsOpen under condition
-    infoAlreadyPublic = Yes
+    involvesStateSecret = Yes
+    and infoAlreadyPublic = Yes
+    consequence equals Yes
+
+  label reopened_other exception open_default
+  definition hearingIsOpen under condition
+    involvesOtherProtectedInfo = Yes
+    and infoAlreadyPublic = Yes
+    consequence equals Yes
+
+  label reopened_personal exception open_default
+  definition hearingIsOpen under condition
+    involvesPersonalFamilyLife = Yes
+    and infoAlreadyPublic = Yes
     consequence equals Yes
 
   label may_attend definition anyPersonMayAttend equals hearingIsOpen

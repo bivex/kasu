@@ -59,7 +59,7 @@ scope Article12ProceedingForm:
   # Part 6.2: inaction challenge → minor
   label inaction_minor exception minor_default
   definition isMinorComplexityCase under condition
-    check.case.disputeCategory = InactionChallenge
+    check.case.disputeCategory = DisputeCategory.InactionChallenge
     consequence equals Yes
 
   # Part 6.3: pension/social disputes → minor

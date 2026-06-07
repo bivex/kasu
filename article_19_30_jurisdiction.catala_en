@@ -189,7 +189,7 @@ scope Article20CourtLevel:
 # Part 1.6: minor complexity simplified → local
   label local_minor exception local_default
   definition isLocalCourtCase under condition
-    check.case.disputeCategory = InactionChallenge
+    check.case.disputeCategory = DisputeCategory.InactionChallenge
     consequence equals Yes
 
 # District courts handle general cases
@@ -304,7 +304,7 @@ scope Article22FirstInstance:
     check.case.disputeCategory = PensionSocialDispute
     or check.case.disputeCategory = EntryExitDispute
     or check.case.disputeCategory = ForeignerStayDispute
-    or check.case.disputeCategory = InactionChallenge
+    or check.case.disputeCategory = DisputeCategory.InactionChallenge
     consequence equals LocalAdministrative
 
   label first_default definition firstInstanceCourtSpecialization equals DistrictAdministrative
@@ -365,7 +365,7 @@ scope Article25VenueChoice:
 # Inaction challenge → plaintiff's location or where inaction should occur
   label choice_inaction exception choice_default
   definition plaintiffCanChooseVenue under condition
-    venue.check.case.disputeCategory = InactionChallenge
+    venue.check.case.disputeCategory = DisputeCategory.InactionChallenge
     consequence equals Yes
 
   label venue_choice exception venue_default
