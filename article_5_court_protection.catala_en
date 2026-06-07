@@ -1,0 +1,92 @@
+## Article 5. Right to appeal to court and methods of judicial protection
+
+```catala
+declaration scope Article5RightToCourtProtection:
+  input plaintiff content ApplicantType
+  input rightsViolated content YesNo
+  input freedomsViolated content YesNo
+  input lawfulInterestsViolated content YesNo
+  input disputeCategory content DisputeCategory
+  input protectionMethod content ProtectionMethod
+  input defendantIsSubjectOfAuthority content YesNo
+  output hasRightToCourt content YesNo
+  output protectionMethodAvailable content YesNo
+  output waiverInvalid content YesNo
+  output foreignerEqualProtection content YesNo
+
+scope Article5RightToCourtProtection:
+  label right_default definition hasRightToCourt equals No
+
+  label rights_violated_exception exception right_default
+  definition hasRightToCourt under condition
+    (rightsViolated = Yes or freedomsViolated = Yes or lawfulInterestsViolated = Yes)
+    and defendantIsSubjectOfAuthority = Yes
+    consequence equals Yes
+
+  label method_available_default definition protectionMethodAvailable equals No
+
+  label normative_act_exception exception method_available_default
+  definition protectionMethodAvailable under condition
+    protectionMethod = DeclareNormativeActUnlawful
+    and disputeCategory = NormativeActChallenge
+    consequence equals Yes
+
+  label individual_act_exception exception method_available_default
+  definition protectionMethodAvailable under condition
+    protectionMethod = CancelIndividualAct
+    and disputeCategory = IndividualActChallenge
+    consequence equals Yes
+
+  label action_exception exception method_available_default
+  definition protectionMethodAvailable under condition
+    protectionMethod = ProhibitAction
+    and disputeCategory = ActionChallenge
+    consequence equals Yes
+
+  label inaction_exception exception method_available_default
+  definition protectionMethodAvailable under condition
+    protectionMethod = CompelAction
+    and disputeCategory = InactionChallenge
+    consequence equals Yes
+
+  label competence_exception exception method_available_default
+  definition protectionMethodAvailable under condition
+    protectionMethod = EstablishCompetence
+    and disputeCategory = CompetenceDispute
+    consequence equals Yes
+
+  label compensation_exception exception method_available_default
+  definition protectionMethodAvailable under condition
+    protectionMethod = CompelActionAndCompensation
+    and disputeCategory = CompensationClaim
+    consequence equals Yes
+
+  label waiver_always_invalid definition waiverInvalid equals Yes
+
+  label foreigner_equal_protection definition foreignerEqualProtection equals Yes
+```
+
+## Article 6. Rule of law in court
+
+```catala
+declaration scope Article6RuleOfLaw:
+  input legislationIncomplete content YesNo
+  input legislationUnclear content YesNo
+  input legislationContradictory content YesNo
+  input legislationAbsent content YesNo
+  output canRefuseToHear content YesNo
+  output canApplyConstitutionDirectly content YesNo
+
+scope Article6RuleOfLaw:
+  label cannot_refuse definition canRefuseToHear equals No
+
+  label constitution_direct_exception exception no_direct
+  definition canApplyConstitutionDirectly under condition
+    legislationIncomplete = Yes
+    or legislationUnclear = Yes
+    or legislationContradictory = Yes
+    or legislationAbsent = Yes
+    consequence equals Yes
+
+  label no_direct definition canApplyConstitutionDirectly equals No
+```

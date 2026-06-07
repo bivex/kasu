@@ -1,0 +1,94 @@
+## Article 7. Sources of law applied by court
+
+```catala
+declaration scope Article7SourcesOfLaw:
+  input normInconsistentWithConstitution content YesNo
+  input normInconsistentWithLaw content YesNo
+  input internationalTreatyApplies content YesNo
+  input noApplicableLaw content YesNo
+  input similarLawExists content YesNo
+  output mustApplyHigherNorm content YesNo
+  output mustApplyConstitution content YesNo
+  output mustApplyInternationalTreaty content YesNo
+  output applyAnalogy content YesNo
+  output analogyType content integer
+
+scope Article7SourcesOfLaw:
+  label apply_higher_exception exception no_higher
+  definition mustApplyHigherNorm under condition
+    normInconsistentWithConstitution = Yes
+    or normInconsistentWithLaw = Yes
+    consequence equals Yes
+
+  label no_higher definition mustApplyHigherNorm equals No
+
+  label constitution_exception exception no_constitution
+  definition mustApplyConstitution under condition
+    normInconsistentWithConstitution = Yes
+    consequence equals Yes
+
+  label no_constitution definition mustApplyConstitution equals No
+
+  label treaty_exception exception no_treaty
+  definition mustApplyInternationalTreaty under condition
+    internationalTreatyApplies = Yes
+    consequence equals Yes
+
+  label no_treaty definition mustApplyInternationalTreaty equals No
+
+  label analogy_exception exception no_analogy
+  definition applyAnalogy under condition
+    noApplicableLaw = Yes
+    consequence equals Yes
+
+  label no_analogy definition applyAnalogy equals No
+
+  label analogy_law definition analogyType equals 0
+
+  label analogy_law_exception exception analogy_law
+  definition analogyType under condition
+    applyAnalogy = Yes and similarLawExists = Yes
+    consequence equals 1
+
+  label analogy_right_exception exception analogy_law
+  definition analogyType under condition
+    applyAnalogy = Yes and similarLawExists = No
+    consequence equals 2
+```
+
+## Article 8. Equality of participants
+
+```catala
+declaration scope Article8Equality:
+  output allParticipantsEqual content YesNo
+  output noPrivilegesAllowed content YesNo
+
+scope Article8Equality:
+  definition allParticipantsEqual equals Yes
+  definition noPrivilegesAllowed equals Yes
+```
+
+## Article 9. Adversarial principle, disposition and official clarification
+
+```catala
+declaration scope Article9AdversarialPrinciple:
+  input plaintiffWantsToWithdraw content YesNo
+  input hasAdministrativeCapacity content YesNo
+  output courtCanExceedClaims content YesNo
+  output plaintiffControlsClaims content YesNo
+  output courtMustInvestigate content YesNo
+
+scope Article9AdversarialPrinciple:
+  label exceed_for_protection definition courtCanExceedClaims equals Yes
+
+  label plaintiff_controls definition plaintiffControlsClaims equals Yes
+
+  label no_capacity_exception exception has_capacity
+  definition plaintiffControlsClaims under condition
+    hasAdministrativeCapacity = No
+    consequence equals No
+
+  label has_capacity definition plaintiffControlsClaims equals Yes
+
+  label court_investigates definition courtMustInvestigate equals Yes
+```

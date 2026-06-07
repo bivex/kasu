@@ -1,0 +1,148 @@
+## Article 12. Forms of administrative proceedings
+
+```catala
+declaration scope Article12ProceedingForm:
+  input check content SimplifiedProceedingCheck
+  input plaintiff content ApplicantType
+  output proceedingForm content ProceedingForm
+  output isMinorComplexityCase content YesNo
+  output mustUseGeneralProceeding content YesNo
+  output canUseSimplifiedProceeding content YesNo
+
+scope Article12ProceedingForm:
+  label must_general_default definition mustUseGeneralProceeding equals No
+
+  # Part 4.1: normative act challenge → general only
+  label normative_act_general exception must_general_default
+  definition mustUseGeneralProceeding under condition
+    check.case.disputeCategory = NormativeActChallenge
+    consequence equals Yes
+
+  # Part 4.2: compensation > 100 minimums → general
+  label large_compensation_general exception must_general_default
+  definition mustUseGeneralProceeding under condition
+    check.case.disputeCategory = CompensationClaim
+    and check.case.disputeAmountMinimums > 100
+    consequence equals Yes
+
+  # Part 4.3: forced expropriation → general
+  label expropriation_general exception must_general_default
+  definition mustUseGeneralProceeding under condition
+    check.isForcedExpropriation = Yes
+    consequence equals Yes
+
+  # Part 4.4: large monetary dispute → general
+  label large_monetary_general exception must_general_default
+  definition mustUseGeneralProceeding under condition
+    check.case.disputeCategory = IndividualActChallenge
+    and check.case.disputeAmountMinimums > 500
+    and plaintiff = LegalEntity
+    consequence equals Yes
+
+  label large_monetary_individual_general exception must_general_default
+  definition mustUseGeneralProceeding under condition
+    check.case.disputeCategory = IndividualActChallenge
+    and check.case.disputeAmountMinimums > 80
+    and not (plaintiff = LegalEntity)
+    consequence equals Yes
+
+  # Part 4.5: rehabilitation commission → general
+  label rehabilitation_general exception must_general_default
+  definition mustUseGeneralProceeding under condition
+    check.case.disputeCategory = OtherPublicLaw
+    and check.isCorruptionOfficial = Yes
+    consequence equals Yes
+
+  # Determine minor complexity
+  label minor_default definition isMinorComplexityCase equals No
+
+  # Part 6.2: inaction challenge → minor
+  label inaction_minor exception minor_default
+  definition isMinorComplexityCase under condition
+    check.case.disputeCategory = InactionChallenge
+    consequence equals Yes
+
+  # Part 6.3: pension/social disputes → minor
+  label pension_minor exception minor_default
+  definition isMinorComplexityCase under condition
+    check.case.disputeCategory = PensionSocialDispute
+    consequence equals Yes
+
+  # Part 6.4: business termination → minor
+  label business_minor exception minor_default
+  definition isMinorComplexityCase under condition
+    check.case.disputeCategory = BusinessTermination
+    consequence equals Yes
+
+  # Part 6.5: entry/exit → minor
+  label entry_exit_minor exception minor_default
+  definition isMinorComplexityCase under condition
+    check.case.disputeCategory = EntryExitDispute
+    consequence equals Yes
+
+  # Part 6.6: small monetary dispute → minor
+  label small_money_legal_minor exception minor_default
+  definition isMinorComplexityCase under condition
+    check.case.disputeCategory = IndividualActChallenge
+    and check.case.disputeAmountMinimums <= 100
+    and plaintiff = LegalEntity
+    consequence equals Yes
+
+  label small_money_individual_minor exception minor_default
+  definition isMinorComplexityCase under condition
+    check.case.disputeCategory = IndividualActChallenge
+    and check.case.disputeAmountMinimums <= 30
+    and not (plaintiff = LegalEntity)
+    consequence equals Yes
+
+  # Part 6.7: debt collection → minor
+  label debt_minor exception minor_default
+  definition isMinorComplexityCase under condition
+    check.case.disputeCategory = DebtCollectionBasedOnAct
+    consequence equals Yes
+
+  # Part 6.8: typical cases → minor
+  label typical_minor exception minor_default
+  definition isMinorComplexityCase under condition
+    check.isTypicalCase = Yes
+    consequence equals Yes
+
+  # Part 6.9: normative act reproduction → minor
+  label reproduction_minor exception minor_default
+  definition isMinorComplexityCase under condition
+    check.isNormativeReproduction = Yes
+    consequence equals Yes
+
+  # Part 6.11: foreigner stay → minor
+  label foreigner_minor exception minor_default
+  definition isMinorComplexityCase under condition
+    check.case.disputeCategory = ForeignerStayDispute
+    consequence equals Yes
+
+  # Part 6.1: public servant (non-corruption) → minor
+  label public_servant_minor exception minor_default
+  definition isMinorComplexityCase under condition
+    check.case.disputeCategory = PublicServantDispute
+    and check.isCorruptionOfficial = No
+    consequence equals Yes
+
+  # Final proceeding form determination
+  label can_simplified_default definition canUseSimplifiedProceeding equals No
+
+  label can_simplified_exception exception can_simplified_default
+  definition canUseSimplifiedProceeding under condition
+    mustUseGeneralProceeding = No and isMinorComplexityCase = Yes
+    consequence equals Yes
+
+  label form_general exception form_simplified
+  definition proceedingForm under condition
+    mustUseGeneralProceeding = Yes
+    consequence equals General
+
+  label form_simplified exception form_default_general
+  definition proceedingForm under condition
+    canUseSimplifiedProceeding = Yes
+    consequence equals Simplified
+
+  label form_default_general definition proceedingForm equals General
+```

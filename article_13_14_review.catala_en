@@ -1,0 +1,54 @@
+## Article 13. Right to review and appeal of court decisions
+
+```catala
+declaration scope Article13AppealRights:
+  input isCaseParticipant content YesNo
+  input courtDecidedTheirRights content YesNo
+  input firstInstanceDecisionContent YesNo
+  input hasAppellateReview content YesNo
+  output hasRightToAppeal content YesNo
+  output hasRightToCassation content YesNo
+  output cassationWithoutAppealAllowed content YesNo
+
+scope Article13AppealRights:
+  label appeal_participant definition hasRightToAppeal equals isCaseParticipant
+
+  label appeal_nonparticipant exception no_appeal_nonparticipant
+  definition hasRightToAppeal under condition
+    isCaseParticipant = No and courtDecidedTheirRights = Yes
+    consequence equals Yes
+
+  label no_appeal_nonparticipant definition hasRightToAppeal equals isCaseParticipant
+
+  label cassation_default definition hasRightToCassation equals No
+
+  label cassation_allowed exception cassation_default
+  definition hasRightToCassation under condition
+    hasAppellateReview = Yes
+    and (isCaseParticipant = Yes or courtDecidedTheirRights = Yes)
+    consequence equals Yes
+
+  label no_cassation_skip definition cassationWithoutAppealAllowed equals No
+```
+
+## Article 14. Binding nature of court decisions
+
+```catala
+declaration scope Article14BindingDecisions:
+  input decisionEnteredIntoForce content YesNo
+  output isBinding content YesNo
+  output noncomplianceHasConsequences content YesNo
+  output nonParticipantsCanStillAppeal content YesNo
+
+scope Article14BindingDecisions:
+  label binding_exception exception not_yet_binding
+  definition isBinding under condition
+    decisionEnteredIntoForce = Yes
+    consequence equals Yes
+
+  label not_yet_binding definition isBinding equals No
+
+  label noncompliance definition noncomplianceHasConsequences equals Yes
+
+  label can_appeal definition nonParticipantsCanStillAppeal equals Yes
+```

@@ -1,0 +1,105 @@
+## Article 15. Language of proceedings
+
+```catala
+declaration scope Article15Language:
+  input usesStateLanguage content YesNo
+  input participantNeedsInterpreter content YesNo
+  output languageCompliant content YesNo
+  output interpreterRequired content YesNo
+  output canUseNativeLanguage content YesNo
+
+scope Article15Language:
+  label compliant_default definition languageCompliant equals No
+
+  label state_lang_exception exception compliant_default
+  definition languageCompliant under condition
+    usesStateLanguage = Yes
+    consequence equals Yes
+
+  label interpreter definition interpreterRequired equals participantNeedsInterpreter
+
+  label native_language definition canUseNativeLanguage equals Yes
+```
+
+## Article 16. Legal aid
+
+```catala
+declaration scope Article16LegalAid:
+  input participantWantsLawyer content YesNo
+  input qualifiesForFreeAid content YesNo
+  output canUseLawyer content YesNo
+  output representationMustBeAdvocate content YesNo
+  output freeAidAvailable content YesNo
+
+scope Article16LegalAid:
+  definition canUseLawyer equals Yes
+
+  definition representationMustBeAdvocate equals Yes
+
+  label free_aid_exception exception no_free_aid
+  definition freeAidAvailable under condition
+    qualifiesForFreeAid = Yes
+    consequence equals Yes
+
+  label no_free_aid definition freeAidAvailable equals No
+```
+
+## Article 17. Pre-trial dispute resolution
+
+```catala
+declaration scope Article17PreTrialResolution:
+  input preTrialRequiredByLaw content YesNo
+  input voluntaryAttemptMade content YesNo
+  input rightsViolationByOtherParty content YesNo
+  output preTrialRequired content YesNo
+  output mustRestoreRights content YesNo
+
+scope Article17PreTrialResolution:
+  label required_by_law_default definition preTrialRequired equals No
+
+  label required_by_law_exception exception required_by_law_default
+  definition preTrialRequired under condition
+    preTrialRequiredByLaw = Yes
+    consequence equals Yes
+
+  label must_restore definition mustRestoreRights equals rightsViolationByOtherParty
+```
+
+## Article 18. Unified court information and communication system
+
+```catala
+declaration scope Article18ElectronicSystem:
+  input isAdvocate content YesNo
+  input isStateBody content YesNo
+  input isLegalEntity content YesNo
+  input hasReligiousObjection content YesNo
+  input eCabinetRegistered content YesNo
+  output mustRegisterECabinet content YesNo
+  output documentsServedElectronically content YesNo
+  output canStillFilePaper content YesNo
+  output automatedCaseAssignment content YesNo
+
+scope Article18ElectronicSystem:
+  label must_register_default definition mustRegisterECabinet equals No
+
+  label advocate_must_register exception must_register_default
+  definition mustRegisterECabinet under condition
+    isAdvocate = Yes and hasReligiousObjection = No
+    consequence equals Yes
+
+  label state_body_must_register exception must_register_default
+  definition mustRegisterECabinet under condition
+    isStateBody = Yes
+    consequence equals Yes
+
+  label legal_entity_must_register exception must_register_default
+  definition mustRegisterECabinet under condition
+    isLegalEntity = Yes
+    consequence equals Yes
+
+  label electronic_service definition documentsServedElectronically equals eCabinetRegistered
+
+  label paper_allowed definition canStillFilePaper equals Yes
+
+  label automated definition automatedCaseAssignment equals Yes
+```

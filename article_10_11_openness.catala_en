@@ -1,0 +1,74 @@
+## Article 10. Public nature of court proceedings
+
+```catala
+declaration scope Article10Openness:
+  input involvesStateSecret content YesNo
+  input involvesOtherProtectedInfo content YesNo
+  input involvesPersonalFamilyLife content YesNo
+  input infoAlreadyPublic content YesNo
+  output hearingIsOpen content YesNo
+  output closedHearingRequired content YesNo
+  output anyPersonMayAttend content YesNo
+  output photoVideoAllowedWithoutPermission content YesNo
+  output broadcastRequiresPermission content YesNo
+  output videoConferenceBroadcastMandatory content YesNo
+
+scope Article10Openness:
+  label open_default definition hearingIsOpen equals Yes
+
+  label closed_exception exception open_default
+  definition hearingIsOpen under condition
+    involvesStateSecret = Yes
+    or involvesOtherProtectedInfo = Yes
+    or involvesPersonalFamilyLife = Yes
+    consequence equals No
+
+  label closed_required_exception exception not_closed
+  definition closedHearingRequired under condition
+    involvesStateSecret = Yes
+    or involvesOtherProtectedInfo = Yes
+    or involvesPersonalFamilyLife = Yes
+    consequence equals Yes
+
+  label not_closed definition closedHearingRequired equals No
+
+  label reopened_exception exception closed_required_exception
+  definition hearingIsOpen under condition
+    infoAlreadyPublic = Yes
+    consequence equals Yes
+
+  label may_attend definition anyPersonMayAttend equals hearingIsOpen
+
+  label photo_video definition photoVideoAllowedWithoutPermission equals hearingIsOpen
+
+  label broadcast_permission definition broadcastRequiresPermission equals Yes
+
+  label videoconf_mandatory definition videoConferenceBroadcastMandatory equals Yes
+```
+
+## Article 11. Openness of case information
+
+```catala
+declaration scope Article11InformationAccess:
+  input isCaseParticipant content YesNo
+  input caseDecidedTheirRights content YesNo
+  input hearingIsClosed content YesNo
+  output canAccessCaseInfo content YesNo
+  output canAccessCaseMaterials content YesNo
+  output canGetCopies content YesNo
+  output personalDataMustBeAnonymized content YesNo
+
+scope Article11InformationAccess:
+  label participant_access definition canAccessCaseInfo equals Yes
+
+  label non_participant_materials exception no_materials
+  definition canAccessCaseMaterials under condition
+    isCaseParticipant = No and caseDecidedTheirRights = Yes
+    consequence equals Yes
+
+  label no_materials definition canAccessCaseMaterials equals isCaseParticipant
+
+  label copies_access definition canGetCopies equals canAccessCaseMaterials
+
+  label anonymize definition personalDataMustBeAnonymized equals Yes
+```
