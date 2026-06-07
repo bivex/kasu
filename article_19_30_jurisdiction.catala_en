@@ -1,0 +1,509 @@
+## Article 19. Subject matter jurisdiction of administrative courts
+
+```catala
+declaration scope Article19SubjectJurisdiction:
+  input check content JurisdictionCheck
+  output underAdministrativeJurisdiction content YesNo
+  output excludedFromJurisdiction content YesNo
+
+scope Article19SubjectJurisdiction:
+  label under_admin_default definition underAdministrativeJurisdiction equals No
+
+# Part 2.1: normative acts of public law nature
+  label normative_acts exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = NormativeActsPublicLaw
+    consequence equals Yes
+
+# Part 2.2: individual acts affecting rights/duties
+  label individual_acts exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = IndividualActsRightsDuties
+    consequence equals Yes
+
+# Part 2.3: actions or inaction
+  label actions_inaction exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = ActionsOrInaction
+    consequence equals Yes
+
+# Part 2.4: competence disputes
+  label competence exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = CompetenceDisputes
+    consequence equals Yes
+
+# Part 2.5: public service disputes
+  label public_services exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = PublicServiceDisputes
+    consequence equals Yes
+
+# Part 2.6: election and referendum disputes
+  label election_referendum exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = ElectionReferendumDisputes
+    consequence equals Yes
+
+# Part 2.7: antimonopoly disputes
+  label antimonopoly exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = AntimonopolyDisputes
+    consequence equals Yes
+
+# Part 2.8: public procurement disputes
+  label public_procurement exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = PublicProcurementDisputes
+    consequence equals Yes
+
+# Part 2.9: licensing and permitting
+  label licensing exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = LicensingPermitting
+    consequence equals Yes
+
+# Part 2.10: tax, duty, customs disputes
+  label tax_duty exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = TaxDutyCustomsDisputes
+    consequence equals Yes
+
+# Part 2.11: land and expropriation disputes
+  label land_expropriation exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = LandExpropriationDisputes
+    consequence equals Yes
+
+# Part 2.12: social protection and pension
+  label social_pension exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = SocialProtectionPension
+    consequence equals Yes
+
+# Part 2.13: public servant disputes
+  label public_servant exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = PublicServantDisputes
+    consequence equals Yes
+
+# Part 2.14: forced expropriation and compensation
+  label forced_expropriation exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = ForcedExpropriationCompensation
+    consequence equals Yes
+
+# Part 2.15: political party registration
+  label political_party exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = PoliticalPartyRegistration
+    consequence equals Yes
+
+# Part 2.16: notary enforcement disputes
+  label notary_enforcement exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = NotaryEnforcementDisputes
+    consequence equals Yes
+
+# Part 2.17: other public law disputes
+  label other_public_law exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    check.disputeSubjectCategory = OtherPublicLawDisputes
+    consequence equals Yes
+
+# Exclusions (Part 3)
+  label excluded_default definition excludedFromJurisdiction equals No
+
+  label excluded_civil exception excluded_default
+  definition excludedFromJurisdiction under condition
+    check.involvesCivilContract = Yes
+    consequence equals Yes
+
+  label excluded_labor exception excluded_default
+  definition excludedFromJurisdiction under condition
+    check.involvesLaborDispute = Yes
+    consequence equals Yes
+
+  label excluded_criminal exception excluded_default
+  definition excludedFromJurisdiction under condition
+    check.involvesCriminalProceeding = Yes
+    consequence equals Yes
+
+  label excluded_commercial exception excluded_default
+  definition excludedFromJurisdiction under condition
+    check.involvesCommercialDispute = Yes
+    consequence equals Yes
+
+  label exclusion_overrides_jurisdiction exception under_admin_default
+  definition underAdministrativeJurisdiction under condition
+    excludedFromJurisdiction = Yes
+    consequence equals No
+```
+
+## Article 20. Court levels for first instance
+
+```catala
+declaration scope Article20CourtLevel:
+  input check content JurisdictionCheck
+  output courtLevel content CourtLevel
+  output isLocalCourtCase content YesNo
+  output isDistrictCourtCase content YesNo
+  output isAntiCorruptionCourtCase content YesNo
+  output isSupremeCourtFirstInstance content YesNo
+
+scope Article20CourtLevel:
+# Local courts handle 6 specific categories
+  label local_default definition isLocalCourtCase equals No
+
+# Part 1.1: election disputes → local
+  label local_election exception local_default
+  definition isLocalCourtCase under condition
+    check.involvesElectionDispute = Yes
+    consequence equals Yes
+
+# Part 1.2: public servant acceptance → local
+  label local_public_servant_accept exception local_default
+  definition isLocalCourtCase under condition
+    check.case.disputeCategory = PublicServantDispute
+    and check.case.plaintiff = Individual
+    consequence equals Yes
+
+# Part 1.3: social protection/pension → local
+  label local_social exception local_default
+  definition isLocalCourtCase under condition
+    check.case.disputeCategory = PensionSocialDispute
+    consequence equals Yes
+
+# Part 1.4: entry/exit territory → local
+  label local_entry_exit exception local_default
+  definition isLocalCourtCase under condition
+    check.case.disputeCategory = EntryExitDispute
+    consequence equals Yes
+
+# Part 1.5: foreigner stay → local
+  label local_foreigner exception local_default
+  definition isLocalCourtCase under condition
+    check.case.disputeCategory = ForeignerStayDispute
+    consequence equals Yes
+
+# Part 1.6: minor complexity simplified → local
+  label local_minor exception local_default
+  definition isLocalCourtCase under condition
+    check.case.disputeCategory = InactionChallenge
+    consequence equals Yes
+
+# District courts handle general cases
+  label district_default definition isDistrictCourtCase equals No
+
+  label district_general exception district_default
+  definition isDistrictCourtCase under condition
+    isLocalCourtCase = No
+    and isAntiCorruptionCourtCase = No
+    and isSupremeCourtFirstInstance = No
+    consequence equals Yes
+
+# Higher Anti-Corruption Court
+  label anticorruption_default definition isAntiCorruptionCourtCase equals No
+
+  label anticorruption_exception exception anticorruption_default
+  definition isAntiCorruptionCourtCase under condition
+    check.involvesCorruptionOfficial = Yes
+    and check.case.disputeCategory = CorruptionRelatedDispute
+    consequence equals Yes
+
+# Supreme Court as first instance for high-level officials
+  label supreme_first_default definition isSupremeCourtFirstInstance equals No
+
+  label supreme_first_exception exception supreme_first_default
+  definition isSupremeCourtFirstInstance under condition
+    check.involvesHighLevelOfficial = Yes
+    consequence equals Yes
+
+# Final court level determination
+  label level_supreme exception level_default
+  definition courtLevel under condition
+    isSupremeCourtFirstInstance = Yes
+    consequence equals SupremeCourt
+
+  label level_anticorruption exception level_default
+  definition courtLevel under condition
+    isAntiCorruptionCourtCase = Yes
+    consequence equals HigherAntiCorruptionCourt
+
+  label level_local exception level_default
+  definition courtLevel under condition
+    isLocalCourtCase = Yes
+    consequence equals LocalCourt
+
+  label level_default definition courtLevel equals DistrictCourt
+```
+
+## Article 21. Related claims and consolidation
+
+```catala
+declaration scope Article21RelatedClaims:
+  input check content JurisdictionCheck
+  output relatedClaimRule content RelatedClaimRule
+  output canJoinRelatedClaims content YesNo
+
+scope Article21RelatedClaims:
+  label join_default definition canJoinRelatedClaims equals No
+
+  label join_allowed exception join_default
+  definition canJoinRelatedClaims under condition
+    check.hasRelatedClaim = Yes
+    and check.relatedClaimFiledAfterDecision = No
+    consequence equals Yes
+
+  label join_rule_default definition relatedClaimRule equals FileSeparately
+
+  label join_to_existing exception join_rule_default
+  definition relatedClaimRule under condition
+    canJoinRelatedClaims = Yes
+    and check.relatedClaimInSameCase = Yes
+    consequence equals JoinToExistingCase
+
+  label cannot_join_after_decision exception join_rule_default
+  definition relatedClaimRule under condition
+    check.relatedClaimFiledAfterDecision = Yes
+    consequence equals CannotJoinAfterDecision
+```
+
+## Article 22. First instance jurisdiction details
+
+```catala
+declaration scope Article22FirstInstance:
+  input check content JurisdictionCheck
+  output firstInstanceCourtSpecialization content CourtSpecialization
+  output appellateCourtForElection content YesNo
+
+scope Article22FirstInstance:
+# Supreme Court handles: President, PM, ministers, MPs, judges of CC, SC, HACC
+  label first_supreme exception first_default
+  definition firstInstanceCourtSpecialization under condition
+    check.involvesHighLevelOfficial = Yes
+    consequence equals SupremeAdministrative
+
+# HACC handles corruption cases
+  label first_anticorruption exception first_default
+  definition firstInstanceCourtSpecialization under condition
+    check.involvesCorruptionOfficial = Yes
+    consequence equals DistrictAdministrative
+
+# Kyiv appellate handles CEC and political party cases
+  label election_appellate_default definition appellateCourtForElection equals No
+
+  label election_appellate exception election_appellate_default
+  definition appellateCourtForElection under condition
+    check.involvesCEC = Yes or check.involvesPoliticalParty = Yes
+    consequence equals Yes
+
+# Local courts for minor cases
+  label first_local exception first_default
+  definition firstInstanceCourtSpecialization under condition
+    check.case.disputeCategory = PensionSocialDispute
+    or check.case.disputeCategory = EntryExitDispute
+    or check.case.disputeCategory = ForeignerStayDispute
+    or check.case.disputeCategory = InactionChallenge
+    consequence equals LocalAdministrative
+
+  label first_default definition firstInstanceCourtSpecialization equals DistrictAdministrative
+```
+
+## Article 23. Appellate instance courts
+
+```catala
+declaration scope Article23AppellateInstance:
+  input check content JurisdictionCheck
+  output appellateSpecialization content CourtSpecialization
+
+scope Article23AppellateInstance:
+# Sixth Appellate handles CEC/political party appeals
+  label appellate_sixth exception appellate_default
+  definition appellateSpecialization under condition
+    check.involvesCEC = Yes or check.involvesPoliticalParty = Yes
+    consequence equals SixthAppellate
+
+  label appellate_default definition appellateSpecialization equals AppellateAdministrative
+```
+
+## Article 24. Cassation instance
+
+```catala
+declaration scope Article24CassationInstance:
+  output cassationHandledBySupreme content YesNo
+  output cassationCourtSpecialization content CourtSpecialization
+
+scope Article24CassationInstance:
+  label cassation_supreme definition cassationHandledBySupreme equals Yes
+  label cassation_court definition cassationCourtSpecialization equals SupremeAdministrative
+```
+
+## Article 25. Venue by plaintiff's choice
+
+```catala
+declaration scope Article25VenueChoice:
+  input venue content VenueDetermination
+  output venueBasis content VenueBasis
+  output plaintiffCanChooseVenue content YesNo
+
+scope Article25VenueChoice:
+  label choice_default definition plaintiffCanChooseVenue equals No
+
+# Individual act challenge → plaintiff's location or defendant's location
+  label choice_individual_act exception choice_default
+  definition plaintiffCanChooseVenue under condition
+    venue.check.case.disputeCategory = IndividualActChallenge
+    consequence equals Yes
+
+# Action challenge → where action occurred or plaintiff's location
+  label choice_action exception choice_default
+  definition plaintiffCanChooseVenue under condition
+    venue.check.case.disputeCategory = ActionChallenge
+    consequence equals Yes
+
+# Inaction challenge → plaintiff's location or where inaction should occur
+  label choice_inaction exception choice_default
+  definition plaintiffCanChooseVenue under condition
+    venue.check.case.disputeCategory = InactionChallenge
+    consequence equals Yes
+
+  label venue_choice exception venue_default
+  definition venueBasis under condition
+    plaintiffCanChooseVenue = Yes
+    consequence equals PlaintiffChoice
+
+  label venue_default definition venueBasis equals DefendantLocation
+```
+
+## Article 26. Venue by defendant's location
+
+```catala
+declaration scope Article26VenueDefendant:
+  input venue content VenueDetermination
+  output venueByDefendantLocation content YesNo
+
+scope Article26VenueDefendant:
+  label defendant_venue_default definition venueByDefendantLocation equals Yes
+
+  label defendant_venue_not exception defendant_venue_default
+  definition venueByDefendantLocation under condition
+    venue.actIssuedInKyiv = Yes
+    and venue.check.defendantIsNationalLevel = Yes
+    consequence equals No
+```
+
+## Article 27. Exclusive venue (Kyiv district court)
+
+```catala
+declaration scope Article27ExclusiveVenue:
+  input venue content VenueDetermination
+  output exclusiveKyivVenue content YesNo
+
+scope Article27ExclusiveVenue:
+  label exclusive_default definition exclusiveKyivVenue equals No
+
+# National-level normative acts → Kyiv district court
+  label exclusive_national_normative exception exclusive_default
+  definition exclusiveKyivVenue under condition
+    venue.check.case.disputeCategory = NormativeActChallenge
+    and venue.check.defendantIsNationalLevel = Yes
+    consequence equals Yes
+
+# National-level individual acts issued in Kyiv
+  label exclusive_national_individual exception exclusive_default
+  definition exclusiveKyivVenue under condition
+    venue.check.case.disputeCategory = IndividualActChallenge
+    and venue.check.defendantIsNationalLevel = Yes
+    and venue.actIssuedInKyiv = Yes
+    consequence equals Yes
+
+# CEC and political party cases
+  label exclusive_cec exception exclusive_default
+  definition exclusiveKyivVenue under condition
+    venue.check.involvesCEC = Yes or venue.check.involvesPoliticalParty = Yes
+    consequence equals Yes
+```
+
+## Article 28. Cases involving courts or judges
+
+```catala
+declaration scope Article28CourtJudgeCases:
+  input check content JurisdictionCheck
+  output involvesCourtOrJudge content YesNo
+  output venueForCourtJudgeCase content VenueBasis
+
+scope Article28CourtJudgeCases:
+  label court_judge_check definition involvesCourtOrJudge equals check.involvesCourtOrJudge
+
+  label court_judge_venue exception court_judge_default
+  definition venueForCourtJudgeCase under condition
+    involvesCourtOrJudge = Yes
+    consequence equals CourtOrJudgeTransfer
+
+  label court_judge_default definition venueForCourtJudgeCase equals DesignatedByLaw
+```
+
+## Article 29. Transfer of cases between courts
+
+```catala
+declaration scope Article29CaseTransfer:
+  input check content JurisdictionCheck
+  output transferAllowed content CaseTransferDecision
+  output transferReason content CaseTransferReason
+
+scope Article29CaseTransfer:
+  label transfer_default definition transferAllowed equals TransferDenied
+
+# No proceedings within 10 days → transfer
+  label transfer_delay exception transfer_default
+  definition transferAllowed under condition
+    check.noProceedingsWithin10Days = Yes
+    consequence equals TransferAllowed
+
+  label transfer_delay_reason definition transferReason under condition
+    check.noProceedingsWithin10Days = Yes
+    consequence equals NoProceedingsWithin10Days
+
+# Case belongs elsewhere → transfer
+  label transfer_wrong_court exception transfer_default
+  definition transferAllowed under condition
+    check.caseBelongsElsewhere = Yes
+    consequence equals TransferAllowed
+
+  label transfer_wrong_court_reason definition transferReason under condition
+    check.caseBelongsElsewhere = Yes
+    consequence equals CaseBelongsElsewhere
+
+# Fair trial concerns → transfer
+  label transfer_fair_trial exception transfer_default
+  definition transferAllowed under condition
+    check.needFairTrial = Yes
+    consequence equals TransferAllowed
+
+  label transfer_fair_trial_reason definition transferReason under condition
+    check.needFairTrial = Yes
+    consequence equals EnsureFairTrial
+
+# Defendant relocated → transfer
+  label transfer_relocated exception transfer_default
+  definition transferAllowed under condition
+    check.defendantRelocated = Yes
+    consequence equals TransferAllowed
+
+  label transfer_relocated_reason definition transferReason under condition
+    check.defendantRelocated = Yes
+    consequence equals DefendantRelocated
+```
+
+## Article 30. Prohibition of jurisdiction disputes
+
+```catala
+declaration scope Article30JurisdictionProhibition:
+  output courtCannotDisputeJurisdiction content YesNo
+  output caseAcceptedByAllCourtsProceeds content YesNo
+
+scope Article30JurisdictionProhibition:
+  label no_dispute definition courtCannotDisputeJurisdiction equals Yes
+  label case_proceeds definition caseAcceptedByAllCourtsProceeds equals Yes
+```

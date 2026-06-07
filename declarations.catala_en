@@ -90,6 +90,68 @@ declaration enumeration DisputeCategory:
   -- CorruptionRelatedDispute
   -- OtherPublicLaw
 
+declaration enumeration CourtLevel:
+  -- LocalCourt
+  -- DistrictCourt
+  -- AppellateCourt
+  -- HigherAntiCorruptionCourt
+  -- SupremeCourt
+
+declaration enumeration CourtSpecialization:
+  -- LocalGeneral
+  -- LocalAdministrative
+  -- DistrictAdministrative
+  -- AppellateAdministrative
+  -- SixthAppellate
+  -- SupremeAdministrative
+
+declaration enumeration VenueBasis:
+  -- PlaintiffChoice
+  -- DefendantLocation
+  -- ExclusiveKyiv
+  -- CourtOrJudgeTransfer
+  -- DesignatedByLaw
+
+declaration enumeration SubjectJurisdictionCategory:
+  -- NormativeActsPublicLaw
+  -- IndividualActsRightsDuties
+  -- ActionsOrInaction
+  -- CompetenceDisputes
+  -- PublicServiceDisputes
+  -- ElectionReferendumDisputes
+  -- AntimonopolyDisputes
+  -- PublicProcurementDisputes
+  -- LicensingPermitting
+  -- TaxDutyCustomsDisputes
+  -- LandExpropriationDisputes
+  -- SocialProtectionPension
+  -- PublicServantDisputes
+  -- ForcedExpropriationCompensation
+  -- PoliticalPartyRegistration
+  -- NotaryEnforcementDisputes
+  -- OtherPublicLawDisputes
+  -- ExcludedCivilContract
+  -- ExcludedLaborDispute
+  -- ExcludedCriminalProceeding
+  -- ExcludedCommercialDispute
+
+declaration enumeration RelatedClaimRule:
+  -- JoinToExistingCase
+  -- FileSeparately
+  -- CannotJoinAfterDecision
+
+declaration enumeration CaseTransferReason:
+  -- NoProceedingsWithin10Days
+  -- CaseBelongsElsewhere
+  -- EnsureFairTrial
+  -- DefendantRelocated
+  -- CourtCannotProceed
+
+declaration enumeration CaseTransferDecision:
+  -- TransferAllowed
+  -- TransferDenied
+  -- MustAcceptTransfer
+
 declaration enumeration MinorCaseType:
   -- PublicServantAcceptance
   -- InactionChallenge
@@ -134,4 +196,37 @@ declaration structure SimplifiedProceedingCheck:
   data isCorruptionOfficial content YesNo
   data claimsCompensationAboveThreshold content YesNo
   data isForcedExpropriation content YesNo
+
+declaration structure JurisdictionCheck:
+  data case content AdministrativeCase
+  data disputeSubjectCategory content SubjectJurisdictionCategory
+  data involvesCivilContract content YesNo
+  data involvesLaborDispute content YesNo
+  data involvesCriminalProceeding content YesNo
+  data involvesCommercialDispute content YesNo
+  data defendantIsNationalLevel content YesNo
+  data defendantIsRegionalLevel content YesNo
+  data defendantIsLocalLevel content YesNo
+  data involvesHighLevelOfficial content YesNo
+  data involvesCorruptionOfficial content YesNo
+  data involvesElectionDispute content YesNo
+  data involvesPoliticalParty content YesNo
+  data involvesCEC content YesNo
+  data involvesNotaryEnforcement content YesNo
+  data involvesCourtOrJudge content YesNo
+  data hasRelatedClaim content YesNo
+  data relatedClaimInSameCase content YesNo
+  data relatedClaimFiledAfterDecision content YesNo
+  data noProceedingsWithin10Days content YesNo
+  data caseBelongsElsewhere content YesNo
+  data needFairTrial content YesNo
+  data defendantRelocated content YesNo
+
+declaration structure VenueDetermination:
+  data check content JurisdictionCheck
+  data plaintiffLocationRegion content YesNo
+  data plaintiffResidenceKnown content YesNo
+  data actIssuedInKyiv content YesNo
+  data actionOccurredInKyiv content YesNo
+  data defendantRegisteredInKyiv content YesNo
 ```
