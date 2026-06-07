@@ -1,0 +1,115 @@
+## Article 229. Recording court hearing with technical means
+
+```catala
+declaration scope Article229Recording:
+  input recording content CourtRecording
+  output recordingRequired content YesNo
+  output videoRecordingAllowed content YesNo
+
+scope Article229Recording:
+# Audio recording is mandatory during hearings
+  label audio_required definition recordingRequired under condition
+    recording.allParticipantsAbsent = No
+    consequence equals Yes
+
+  label audio_not_required definition recordingRequired under condition
+    recording.allParticipantsAbsent = Yes
+    consequence equals No
+
+# Video recording when court has capability and no participant objects
+  label video_allowed definition videoRecordingAllowed under condition
+    recording.technicalCapabilityExists = Yes
+    and recording.anyParticipantObjects = No
+    consequence equals Yes
+
+  label video_not_allowed definition videoRecordingAllowed under condition
+    recording.technicalCapabilityExists = No
+    consequence equals No
+```
+
+## Article 230. Court hearing protocol
+
+```catala
+declaration scope Article230Protocol:
+  input protocol content CourtProtocol
+  output protocolMustBeSignedNextDay content YesNo
+
+scope Article230Protocol:
+  label sign_deadline definition protocolMustBeSignedNextDay equals Yes
+```
+
+## Article 231. Remarks on technical recording and protocol
+
+```catala
+declaration scope Article231Remarks:
+  input protocol content CourtProtocol
+  input remarksFiledWithinFiveDays content YesNo
+  input deadlineMissed content YesNo
+  output remarksCanBeConsidered content YesNo
+
+scope Article231Remarks:
+  label remarks_default definition remarksCanBeConsidered equals No
+
+  label remarks_timely exception remarks_default
+  definition remarksCanBeConsidered under condition
+    remarksFiledWithinFiveDays = Yes
+    consequence equals Yes
+
+# Remarks left without consideration if deadline missed
+  label remarks_untimely exception remarks_default
+  definition remarksCanBeConsidered under condition
+    deadlineMissed = Yes
+    consequence equals No
+```
+
+## Article 232. Reproduction and copying of technical recording
+
+```catala
+declaration scope Article232RecordingAccess:
+  input participantRequestsCopy content YesNo
+  output copyCanBeProvided content YesNo
+
+scope Article232RecordingAccess:
+  label copy_default definition copyCanBeProvided equals No
+
+  label copy_available exception copy_default
+  definition copyCanBeProvided under condition
+    participantRequestsCopy = Yes
+    consequence equals Yes
+```
+
+## Articles 233-234. Protocol for separate procedural action
+
+```catala
+declaration scope Article233SeparateProtocol:
+  input actionOutsideCourtroom content YesNo
+  input protocolSignedByJudge content YesNo
+  input protocolSignedBySecretary content YesNo
+  output separateProtocolRequired content YesNo
+
+scope Article233SeparateProtocol:
+  label protocol_required definition separateProtocolRequired under condition
+    actionOutsideCourtroom = Yes
+    consequence equals Yes
+
+  label protocol_not_required definition separateProtocolRequired under condition
+    actionOutsideCourtroom = No
+    consequence equals No
+```
+
+## Article 235. Remarks on separate action protocol
+
+```catala
+declaration scope Article235SeparateRemarks:
+  input remarksFiledWithinFiveDays content YesNo
+  input deadlineMissed content YesNo
+  output remarksCanBeConsidered content YesNo
+
+scope Article235SeparateRemarks:
+  label remarks_default definition remarksCanBeConsidered equals No
+
+  label remarks_timely exception remarks_default
+  definition remarksCanBeConsidered under condition
+    remarksFiledWithinFiveDays = Yes
+    consequence equals Yes
+```

@@ -1,0 +1,70 @@
+## Article 225. Judicial debates
+
+```catala
+declaration scope Article225JudicialDebates:
+  input debates content JudicialDebates
+  output debatesValid content YesNo
+
+scope Article225JudicialDebates:
+  label debates_default definition debatesValid equals No
+
+# Debates valid when only researched evidence is referenced and equal time granted
+  label debates_valid exception debates_default
+  definition debatesValid under condition
+    debates.debatesHeld = Yes
+    and debates.onlyResearchedEvidence = Yes
+    and debates.equalTimeGranted = Yes
+    and debates.plaintiffSpokeFirst = Yes
+    consequence equals Yes
+```
+
+## Article 226. Returning to fact-finding
+
+```catala
+declaration scope Article226ReturnToFactFinding:
+  input newCircumstancesNeedClarification content YesNo
+  input newEvidenceNeedsExamination content YesNo
+  output mustReturnToFactFinding content YesNo
+
+scope Article226ReturnToFactFinding:
+  label return_default definition mustReturnToFactFinding equals No
+
+  label return_needed exception return_default
+  definition mustReturnToFactFinding under condition
+    newCircumstancesNeedClarification = Yes
+    or newEvidenceNeedsExamination = Yes
+    consequence equals Yes
+```
+
+## Article 227. Decision stage
+
+```catala
+declaration scope Article227DecisionStage:
+  input decision content CourtDecisionStage
+  input caseComplexityRequiresPostponement content YesNo
+  output maxPostponementDays content integer
+  output canPostponeDecision content YesNo
+
+scope Article227DecisionStage:
+# Maximum 10 days postponement in exceptional cases
+  label max_postponement definition maxPostponementDays equals 10
+
+  label postpone_default definition canPostponeDecision equals No
+
+  label postpone_exception exception postpone_default
+  definition canPostponeDecision under condition
+    caseComplexityRequiresPostponement = Yes
+    and decision.postponementDays <= 10
+    consequence equals Yes
+```
+
+## Article 228. Secrecy of court decision
+
+```catala
+declaration scope Article228DecisionSecrecy:
+  input decision content CourtDecisionStage
+  output secrecyRequired content YesNo
+
+scope Article228DecisionSecrecy:
+  label secrecy definition secrecyRequired equals Yes
+```

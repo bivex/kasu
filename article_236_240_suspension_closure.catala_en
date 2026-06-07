@@ -1,0 +1,328 @@
+## Article 236. Suspension of proceedings (mandatory grounds)
+
+```catala
+declaration scope Article236MandatorySuspension:
+  input suspension content ProceedingSuspension
+  output proceedingsMustBeSuspended content YesNo
+
+scope Article236MandatorySuspension:
+  label suspend_default definition proceedingsMustBeSuspended equals No
+
+# Death or liquidation with succession
+  label suspend_succession exception suspend_default
+  definition proceedingsMustBeSuspended under condition
+    suspension.mandatoryGround = MandatorySuspensionGround.DeathOrLiquidationWithSuccession
+    consequence equals Yes
+
+# Need legal representative
+  label suspend_representative exception suspend_default
+  definition proceedingsMustBeSuspended under condition
+    suspension.mandatoryGround = MandatorySuspensionGround.NeedLegalRepresentative
+    consequence equals Yes
+
+# Objective impossibility due to other case
+  label suspend_impossibility exception suspend_default
+  definition proceedingsMustBeSuspended under condition
+    suspension.mandatoryGround = MandatorySuspensionGround.ObjectiveImpossibilityOtherCase
+    consequence equals Yes
+
+# Both parties request reconciliation time
+  label suspend_reconciliation exception suspend_default
+  definition proceedingsMustBeSuspended under condition
+    suspension.mandatoryGround = MandatorySuspensionGround.BothPartiesRequestReconciliation
+    consequence equals Yes
+
+# Party in military service
+  label suspend_military exception suspend_default
+  definition proceedingsMustBeSuspended under condition
+    suspension.mandatoryGround = MandatorySuspensionGround.PartyInMilitaryService
+    consequence equals Yes
+
+# Judicial dispute resolution pending
+  label suspend_resolution exception suspend_default
+  definition proceedingsMustBeSuspended under condition
+    suspension.mandatoryGround = MandatorySuspensionGround.JudicialDisputeResolutionPending
+    consequence equals Yes
+```
+
+## Article 236. Suspension of proceedings (discretionary grounds)
+
+```catala
+declaration scope Article236DiscretionarySuspension:
+  input suspension content ProceedingSuspension
+  input personalParticipationRequired content YesNo
+  output proceedingsCanBeSuspended content YesNo
+
+scope Article236DiscretionarySuspension:
+  label discretionary_default definition proceedingsCanBeSuspended equals No
+
+# Illness of participant
+  label suspend_illness exception discretionary_default
+  definition proceedingsCanBeSuspended under condition
+    suspension.discretionaryGround = DiscretionarySuspensionGround.ParticipantIllness
+    and personalParticipationRequired = Yes
+    consequence equals Yes
+
+# Long business trip
+  label suspend_trip exception discretionary_default
+  definition proceedingsCanBeSuspended under condition
+    suspension.discretionaryGround = DiscretionarySuspensionGround.ParticipantLongBusinessTrip
+    and personalParticipationRequired = Yes
+    consequence equals Yes
+
+# Alternative or military service
+  label suspend_service exception discretionary_default
+  definition proceedingsCanBeSuspended under condition
+    suspension.discretionaryGround = DiscretionarySuspensionGround.ParticipantAlternativeService
+    consequence equals Yes
+
+# Expertise appointed
+  label suspend_expertise exception discretionary_default
+  definition proceedingsCanBeSuspended under condition
+    suspension.discretionaryGround = DiscretionarySuspensionGround.ExpertiseAppointed
+    consequence equals Yes
+
+# Cassation review of similar case
+  label suspend_cassation exception discretionary_default
+  definition proceedingsCanBeSuspended under condition
+    suspension.discretionaryGround = DiscretionarySuspensionGround.CassationReviewSimilarCase
+    consequence equals Yes
+
+# Court commission pending
+  label suspend_commission exception discretionary_default
+  definition proceedingsCanBeSuspended under condition
+    suspension.discretionaryGround = DiscretionarySuspensionGround.CourtCommissionPending
+    consequence equals Yes
+
+# Foreign court request
+  label suspend_foreign exception discretionary_default
+  definition proceedingsCanBeSuspended under condition
+    suspension.discretionaryGround = DiscretionarySuspensionGround.ForeignCourtRequestPending
+    consequence equals Yes
+
+# Exemplary case pending
+  label suspend_exemplary exception discretionary_default
+  definition proceedingsCanBeSuspended under condition
+    suspension.discretionaryGround = DiscretionarySuspensionGround.ExemplaryCasePending
+    consequence equals Yes
+
+# Evidence temporarily seized
+  label suspend_seizure exception discretionary_default
+  definition proceedingsCanBeSuspended under condition
+    suspension.discretionaryGround = DiscretionarySuspensionGround.EvidenceTemporarilySeized
+    consequence equals Yes
+```
+
+## Article 236. No suspension when representative acts
+
+```catala
+declaration scope Article236NoSuspensionRepresentative:
+  input suspension content ProceedingSuspension
+  output suspensionProhibited content YesNo
+
+scope Article236NoSuspensionRepresentative:
+  label prohibit_default definition suspensionProhibited equals No
+
+  label prohibit_representative exception prohibit_default
+  definition suspensionProhibited under condition
+    suspension.participantHasRepresentative = Yes
+    and suspension.discretionaryGround = DiscretionarySuspensionGround.ParticipantIllness
+    consequence equals Yes
+
+  label prohibit_trip_representative exception prohibit_default
+  definition suspensionProhibited under condition
+    suspension.participantHasRepresentative = Yes
+    and suspension.discretionaryGround = DiscretionarySuspensionGround.ParticipantLongBusinessTrip
+    consequence equals Yes
+```
+
+## Article 237. Resumption of proceedings
+
+```catala
+declaration scope Article237Resumption:
+  input suspension content ProceedingSuspension
+  input circumstancesEliminated content YesNo
+  output proceedingsCanBeResumed content YesNo
+
+scope Article237Resumption:
+  label resume_default definition proceedingsCanBeResumed equals No
+
+  label resume_available exception resume_default
+  definition proceedingsCanBeResumed under condition
+    circumstancesEliminated = Yes
+    and suspension.suspensionResumedWithinTenDays = Yes
+    consequence equals Yes
+```
+
+## Article 238. Closure of proceedings
+
+```catala
+declaration scope Article238Closure:
+  input closure content ProceedingClosure
+  output proceedingsMustBeClosed content YesNo
+  output costsMustBeAllocated content YesNo
+
+scope Article238Closure:
+  label closure_default definition proceedingsMustBeClosed equals No
+
+# Not administrative jurisdiction
+  label closure_jurisdiction exception closure_default
+  definition proceedingsMustBeClosed under condition
+    closure.closureGround = ProceedingClosureGround.NotAdministrativeJurisdiction
+    consequence equals Yes
+
+# Plaintiff withdrew claim
+  label closure_withdrawal exception closure_default
+  definition proceedingsMustBeClosed under condition
+    closure.closureGround = ProceedingClosureGround.PlaintiffWithdrewClaim
+    consequence equals Yes
+
+# Parties reconciled
+  label closure_reconciliation exception closure_default
+  definition proceedingsMustBeClosed under condition
+    closure.closureGround = ProceedingClosureGround.PartiesReconciled
+    consequence equals Yes
+
+# Same case already closed
+  label closure_res_judicata exception closure_default
+  definition proceedingsMustBeClosed under condition
+    closure.closureGround = ProceedingClosureGround.SameCaseAlreadyClosed
+    consequence equals Yes
+
+# Death without succession
+  label closure_death exception closure_default
+  definition proceedingsMustBeClosed under condition
+    closure.closureGround = ProceedingClosureGround.DeathWithoutSuccession
+    consequence equals Yes
+
+# Normative act already invalidated
+  label closure_normative exception closure_default
+  definition proceedingsMustBeClosed under condition
+    closure.closureGround = ProceedingClosureGround.NormativeActAlreadyInvalidated
+    consequence equals Yes
+
+# Individual act already cancelled
+  label closure_individual exception closure_default
+  definition proceedingsMustBeClosed under condition
+    closure.closureGround = ProceedingClosureGround.IndividualActAlreadyCancelled
+    consequence equals Yes
+
+# Violations corrected by defendant
+  label closure_corrected exception closure_default
+  definition proceedingsMustBeClosed under condition
+    closure.closureGround = ProceedingClosureGround.ViolationsCorrectedByDefendant
+    consequence equals Yes
+
+  label costs_on_closure definition costsMustBeAllocated under condition
+    proceedingsMustBeClosed = Yes
+    consequence equals Yes
+```
+
+## Article 239. Consequences of closure
+
+```catala
+declaration scope Article239ClosureConsequences:
+  input closure content ProceedingClosure
+  output repeatedFilingProhibited content YesNo
+  output defendantMayFileSeparately content YesNo
+  output courtMustExplainJurisdiction content YesNo
+
+scope Article239ClosureConsequences:
+# Repeated filing prohibited after closure
+  label repeated_prohibited definition repeatedFilingProhibited under condition
+    closure.closureGround != ProceedingClosureGround.PlaintiffWithdrewClaim
+    consequence equals Yes
+
+  label repeated_allowed definition repeatedFilingProhibited under condition
+    closure.closureGround = ProceedingClosureGround.PlaintiffWithdrewClaim
+    consequence equals No
+
+# Defendant may still file even after plaintiff withdrawal
+  label defendant_right definition defendantMayFileSeparately under condition
+    closure.closureGround = ProceedingClosureGround.PlaintiffWithdrewClaim
+    consequence equals Yes
+```
+
+## Article 240. Leaving claim without consideration
+
+```catala
+declaration scope Article240LeaveWithoutConsideration:
+  input claim content ClaimWithoutConsideration
+  input claimFiledBeforeMeritsStarted content YesNo
+  output claimLeftWithoutConsideration content YesNo
+  output costsCanBeAllocated content YesNo
+
+scope Article240LeaveWithoutConsideration:
+  label leave_default definition claimLeftWithoutConsideration equals No
+
+# Plaintiff lacks procedural capacity
+  label leave_capacity exception leave_default
+  definition claimLeftWithoutConsideration under condition
+    claim.ground = ClaimWithoutConsiderationGround.PlaintiffLacksProceduralCapacity
+    consequence equals Yes
+
+# Claim not properly signed
+  label leave_unsigned exception leave_default
+  definition claimLeftWithoutConsideration under condition
+    claim.ground = ClaimWithoutConsiderationGround.ClaimNotSigned
+    consequence equals Yes
+
+# Duplicate case pending
+  label leave_duplicate exception leave_default
+  definition claimLeftWithoutConsideration under condition
+    claim.ground = ClaimWithoutConsiderationGround.DuplicateCasePending
+    consequence equals Yes
+
+# Plaintiff repeatedly absent
+  label leave_absent exception leave_default
+  definition claimLeftWithoutConsideration under condition
+    claim.ground = ClaimWithoutConsiderationGround.PlaintiffRepeatedlyAbsent
+    consequence equals Yes
+
+# Plaintiff requests leave without consideration
+  label leave_request exception leave_default
+  definition claimLeftWithoutConsideration under condition
+    claim.ground = ClaimWithoutConsiderationGround.PlaintiffRequestsLeaveWithoutConsideration
+    consequence equals Yes
+
+# Protected person objects
+  label leave_objection exception leave_default
+  definition claimLeftWithoutConsideration under condition
+    claim.ground = ClaimWithoutConsiderationGround.ProtectedPersonObjects
+    consequence equals Yes
+
+# Claim deficiencies not cured
+  label leave_deficiencies exception leave_default
+  definition claimLeftWithoutConsideration under condition
+    claim.ground = ClaimWithoutConsiderationGround.ClaimDeficienciesNotCured
+    consequence equals Yes
+
+# Plaintiff failed to submit evidence
+  label leave_evidence exception leave_default
+  definition claimLeftWithoutConsideration under condition
+    claim.ground = ClaimWithoutConsiderationGround.PlaintiffFailedToSubmitEvidence
+    consequence equals Yes
+
+# Duplicate claim same court
+  label leave_duplicate_court exception leave_default
+  definition claimLeftWithoutConsideration under condition
+    claim.ground = ClaimWithoutConsiderationGround.DuplicateClaimSameCourt
+    consequence equals Yes
+```
+
+## Article 240. Re-filing after leaving without consideration
+
+```catala
+declaration scope Article240Refiling:
+  input claim content ClaimWithoutConsideration
+  input groundCured content YesNo
+  output refilingAllowed content YesNo
+
+scope Article240Refiling:
+  label refiling_default definition refilingAllowed equals No
+
+  label refiling_allowed exception refiling_default
+  definition refilingAllowed under condition
+    groundCured = Yes
+    consequence equals Yes
+```

@@ -584,4 +584,122 @@ declaration structure MeritsConsideration:
   data deadlineToCompleteDays content integer
   data allEvidenceExamined content YesNo
   data closingArgumentsCompleted content YesNo
+
+declaration enumeration DebateSpeakerOrder:
+  -- PlaintiffFirst
+  -- DefendantSecond
+  -- ThirdPartyWithClaimsThird
+  -- ThirdPartyWithoutClaimsAfterAlly
+
+declaration enumeration DecisionStage:
+  -- DebatesOngoing
+  -- ProceedingToDecision
+  -- DecisionPostponed
+  -- ProceedingsResumed
+  -- DecisionAdopted
+
+declaration enumeration RecordingMethod:
+  -- AudioRecording
+  -- VideoRecording
+  -- NoRecordingAllAbsent
+  -- NoRecordingWrittenProceedings
+
+declaration enumeration ProtocolStatus:
+  -- NotStarted
+  -- BeingCompiled
+  -- SignedNextDay
+  -- ElectronicSigned
+  -- RemarksSubmitted
+  -- RemarksReviewed
+
+declaration enumeration MandatorySuspensionGround:
+  -- DeathOrLiquidationWithSuccession
+  -- NeedLegalRepresentative
+  -- ObjectiveImpossibilityOtherCase
+  -- BothPartiesRequestReconciliation
+  -- PartyInMilitaryService
+  -- JudicialDisputeResolutionPending
+
+declaration enumeration DiscretionarySuspensionGround:
+  -- ParticipantIllness
+  -- ParticipantLongBusinessTrip
+  -- ParticipantAlternativeService
+  -- ExpertiseAppointed
+  -- CassationReviewSimilarCase
+  -- CourtCommissionPending
+  -- ForeignCourtRequestPending
+  -- ExemplaryCasePending
+  -- EvidenceTemporarilySeized
+
+declaration enumeration ProceedingClosureGround:
+  -- NotAdministrativeJurisdiction
+  -- PlaintiffWithdrewClaim
+  -- PartiesReconciled
+  -- SameCaseAlreadyClosed
+  -- DeathWithoutSuccession
+  -- NormativeActAlreadyInvalidated
+  -- IndividualActAlreadyCancelled
+  -- ViolationsCorrectedByDefendant
+
+declaration enumeration ClaimWithoutConsiderationGround:
+  -- PlaintiffLacksProceduralCapacity
+  -- ClaimNotSigned
+  -- DuplicateCasePending
+  -- PlaintiffRepeatedlyAbsent
+  -- PlaintiffRequestsLeaveWithoutConsideration
+  -- ProtectedPersonObjects
+  -- ClaimDeficienciesNotCured
+  -- DeadlineGroundsFromArticle123
+  -- PlaintiffFailedToSubmitEvidence
+  -- DuplicateClaimSameCourt
+
+declaration enumeration ProceedingStatus:
+  -- Active
+  -- Suspended
+  -- Closed
+  -- LeftWithoutConsideration
+
+declaration structure JudicialDebates:
+  data debatesHeld content YesNo
+  data equalTimeGranted content YesNo
+  data plaintiffSpokeFirst content YesNo
+  data onlyResearchedEvidence content YesNo
+  data presidingSetDuration content YesNo
+
+declaration structure CourtDecisionStage:
+  data stage content DecisionStage
+  data postponementDays content integer
+  data proceedingsResumed content YesNo
+  data secretDeliberation content YesNo
+
+declaration structure CourtRecording:
+  data method content RecordingMethod
+  data recordingConducted content YesNo
+  data technicalCapabilityExists content YesNo
+  data anyParticipantObjects content YesNo
+  data allParticipantsAbsent content YesNo
+
+declaration structure CourtProtocol:
+  data status content ProtocolStatus
+  data remarksSubmittedWithinFiveDays content YesNo
+  data remarksReviewedWithinFiveDays content YesNo
+
+declaration structure ProceedingSuspension:
+  data status content ProceedingStatus
+  data mandatoryGround content MandatorySuspensionGround
+  data discretionaryGround content DiscretionarySuspensionGround
+  data participantHasRepresentative content YesNo
+  data groundExistedBeforePreparatoryEnded content YesNo
+  data suspensionResumedWithinTenDays content YesNo
+
+declaration structure ProceedingClosure:
+  data status content ProceedingStatus
+  data closureGround content ProceedingClosureGround
+  data costsAllocated content YesNo
+  data courtFeeReturned content YesNo
+
+declaration structure ClaimWithoutConsideration:
+  data ground content ClaimWithoutConsiderationGround
+  data groundCured content YesNo
+  data filedBeforeMeritsStarted content YesNo
 ```
