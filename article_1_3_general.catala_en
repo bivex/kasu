@@ -1,0 +1,96 @@
+## Article 1. Purpose of the Code of Administrative Court Procedure
+
+```catala
+declaration scope Article1Purpose:
+  output codeEstablishesJurisdiction content YesNo
+  output codeEstablishesCourtProcedure content YesNo
+
+scope Article1Purpose:
+  definition codeEstablishesJurisdiction equals Yes
+  definition codeEstablishesCourtProcedure equals Yes
+```
+
+## Article 2. Tasks and fundamental principles of administrative proceedings
+
+```catala
+declaration scope Article2ReviewCriteria:
+  input hasLegalBasis content YesNo
+  input withinAuthority content YesNo
+  input properMethod content YesNo
+  input properPurpose content YesNo
+  input justified content YesNo
+  input impartial content YesNo
+  input inGoodFaith content YesNo
+  input proportionate content YesNo
+  input withParticipation content YesNo
+  input timely content YesNo
+  output allCriteriaMet content YesNo
+  output anyCriterionFailed content YesNo
+
+scope Article2ReviewCriteria:
+  definition allCriteriaMet equals Yes
+
+  label criteria_failed exception all_criteria_met_default
+  definition allCriteriaMet under condition
+    hasLegalBasis = No
+    or withinAuthority = No
+    or properMethod = No
+    or properPurpose = No
+    or justified = No
+    or impartial = No
+    or inGoodFaith = No
+    or proportionate = No
+    or withParticipation = No
+    or timely = No
+    consequence equals No
+
+  label all_criteria_met_default definition allCriteriaMet equals Yes
+
+  label any_failed_exception exception no_failures
+  definition anyCriterionFailed under condition
+    hasLegalBasis = No
+    or withinAuthority = No
+    or properMethod = No
+    or properPurpose = No
+    or justified = No
+    or impartial = No
+    or inGoodFaith = No
+    or proportionate = No
+    or withParticipation = No
+    or timely = No
+    consequence equals Yes
+
+  label no_failures definition anyCriterionFailed equals No
+```
+
+## Article 3. Legislation on administrative court proceedings
+
+```catala
+declaration scope Article3LegislationHierarchy:
+  input constitutionApplies content YesNo
+  input internationalTreatyApplies content YesNo
+  input codeProvisionApplies content YesNo
+  input lawProvisionApplies content YesNo
+  input subordinateActApplies content YesNo
+  input legislationIncomplete content YesNo
+  input lawNarrowsRights content YesNo
+  output applicableNormRank content integer
+  output hasRetroactiveEffect content YesNo
+
+scope Article3LegislationHierarchy:
+  label constitution_rank definition applicableNormRank equals 1
+
+  label international_exception exception code_rank
+  definition applicableNormRank under condition
+    internationalTreatyApplies = Yes
+    consequence equals 2
+
+  label code_rank definition applicableNormRank equals 3
+
+  label no_retroactivity_default definition hasRetroactiveEffect equals No
+
+  label no_retroactivity_exception exception no_retroactivity_default
+  definition hasRetroactiveEffect under condition
+    lawNarrowsRights = Yes
+    consequence equals No
+```

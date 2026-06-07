@@ -1,0 +1,44 @@
+## Article 4. Key definitions as Catala scopes
+
+```catala
+declaration scope Article4PublicLawDispute:
+  input defendant content SubjectOfAuthority
+  input involvesAdministrativeServices content YesNo
+  input involvesElectionProcess content YesNo
+  input isPublicLawDispute content YesNo
+
+scope Article4PublicLawDispute:
+  label authority_dispute exception not_dispute_default
+  definition isPublicLawDispute under condition
+    defendant.actsInPublicCapacity = Yes
+    consequence equals Yes
+
+  label service_dispute exception not_dispute_default
+  definition isPublicLawDispute under condition
+    involvesAdministrativeServices = Yes
+    consequence equals Yes
+
+  label election_dispute exception not_dispute_default
+  definition isPublicLawDispute under condition
+    involvesElectionProcess = Yes
+    consequence equals Yes
+
+  label not_dispute_default definition isPublicLawDispute equals No
+
+declaration scope Article4SubjectOfAuthorityCheck:
+  input entity content SubjectOfAuthority
+  output isSubjectOfAuthority content YesNo
+
+scope Article4SubjectOfAuthorityCheck:
+  label authority_check_exception exception not_authority_default
+  definition isSubjectOfAuthority under condition
+    entity.kind = StateBody
+    or entity.kind = LocalSelfGov
+    or entity.kind = MilitaryAuthority
+    or entity.kind = Official
+    or entity.kind = DelegatedPowers
+    or entity.kind = AdministrativeServiceProvider
+    consequence equals Yes
+
+  label not_authority_default definition isSubjectOfAuthority equals No
+```

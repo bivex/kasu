@@ -1,0 +1,137 @@
+```catala
+declaration enumeration YesNo:
+  -- No
+  -- Yes
+
+declaration enumeration CourtInstance:
+  -- FirstInstance
+  -- Appellate
+  -- Cassation
+  -- Supreme
+
+declaration enumeration CourtDecisionType:
+  -- Resolution
+  -- Postanova
+  -- Ruling
+
+declaration enumeration ProtectionMethod:
+  -- DeclareNormativeActUnlawful
+  -- CancelIndividualAct
+  -- ProhibitAction
+  -- CompelAction
+  -- EstablishCompetence
+  -- CompelActionAndCompensation
+
+declaration enumeration ProceedingForm:
+  -- Simplified
+  -- General
+
+declaration enumeration CaseComplexity:
+  -- Minor
+  -- Standard
+  -- Typical
+  -- Exemplary
+
+declaration enumeration ReviewCriterion:
+  -- LegalBasis
+  -- WithinAuthority
+  -- ProperMethod
+  -- ProperPurpose
+  -- Justified
+  -- Impartial
+  -- InGoodFaith
+  -- Proportionate
+  -- WithParticipation
+  -- Timely
+
+declaration enumeration ApplicantType:
+  -- Individual
+  -- LegalEntity
+  -- ForeignIndividual
+  -- ForeignLegalEntity
+  -- StatelessPerson
+  -- StateBodyPlaintiff
+
+declaration enumeration PreTrialStatus:
+  -- NotRequired
+  -- RequiredByLaw
+  -- VoluntaryAttempt
+  -- NoAttempt
+
+declaration enumeration AppealGround:
+  -- IncompleteFindings
+  -- WrongLawApplied
+  -- WrongLawInterpreted
+  -- ProceduralViolation
+  -- NewEvidence
+
+declaration enumeration SubjectOfAuthorityKind:
+  -- StateBody
+  -- LocalSelfGov
+  -- MilitaryAuthority
+  -- Official
+  -- DelegatedPowers
+  -- AdministrativeServiceProvider
+
+declaration enumeration DisputeCategory:
+  -- NormativeActChallenge
+  -- IndividualActChallenge
+  -- ActionChallenge
+  -- InactionChallenge
+  -- CompetenceDispute
+  -- CompensationClaim
+  -- PublicServiceDispute
+  -- ElectionDispute
+  -- PublicServantDispute
+  -- EntryExitDispute
+  -- ForeignerStayDispute
+  -- PensionSocialDispute
+  -- BusinessTermination
+  -- CorruptionRelatedDispute
+  -- OtherPublicLaw
+
+declaration enumeration MinorCaseType:
+  -- PublicServantAcceptance
+  -- InactionChallenge
+  -- PensionSocialPayment
+  -- BusinessTerminationCase
+  -- EntryExitTerritory
+  -- SmallMonetaryDispute
+  -- DebtCollectionBasedOnAct
+  -- TypicalCase
+  -- NormativeActReproduction
+  -- ForeignerStay
+  -- OtherMinor
+
+declaration structure SubjectOfAuthority:
+  data kind content SubjectOfAuthorityKind
+  data actsInPublicCapacity content YesNo
+  data providesAdministrativeServices content YesNo
+
+declaration structure AdministrativeCase:
+  data plaintiff content ApplicantType
+  data defendant content SubjectOfAuthority
+  data disputeCategory content DisputeCategory
+  data protectionMethod content ProtectionMethod
+  data proceedingForm content ProceedingForm
+  data filedDate content date
+  data disputeAmountMinimums content integer
+  data preTrialStatus content PreTrialStatus
+  data hasPreTrialAttempt content YesNo
+  data isPublicServiceDispute content YesNo
+  data isElectionDispute content YesNo
+
+declaration structure CourtReviewResult:
+  data criterion content ReviewCriterion
+  data satisfied content YesNo
+
+declaration structure SimplifiedProceedingCheck:
+  data case content AdministrativeCase
+  data isMinorComplexity content YesNo
+  data disputeBelowFinancialThreshold content YesNo
+  data isTypicalCase content YesNo
+  data isNormativeReproduction content YesNo
+  data isCorruptionOfficial content YesNo
+  data claimsCompensationAboveThreshold content YesNo
+  data isForcedExpropriation content YesNo
+```
