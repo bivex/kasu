@@ -6,25 +6,26 @@ declaration scope Article241DecisionType:
   output requiredDecisionType content CourtDecisionType
 
 scope Article241DecisionType:
-# Procedural questions resolved by rulings
-  label ruling_for_procedural definition requiredDecisionType equals CourtDecisionType.Ruling under condition
-    determination.isProceduralQuestion = Yes
-    consequence equals CourtDecisionType.Ruling
+# Default: procedural questions resolved by rulings
+  label decision_default definition requiredDecisionType equals CourtDecisionType.Ruling
 
-# First instance concludes with decision
-  label decision_first_instance definition requiredDecisionType equals CourtDecisionType.Resolution under condition
+# First instance concludes with decision (resolution)
+  label decision_first_instance exception decision_default
+  definition requiredDecisionType under condition
     determination.instanceLevel = CourtInstance.FirstInstance
     and determination.concludesCase = Yes
     consequence equals CourtDecisionType.Resolution
 
 # Appellate and cassation review concludes with postanova
-  label postanova_review definition requiredDecisionType equals CourtDecisionType.Postanova under condition
+  label postanova_review exception decision_default
+  definition requiredDecisionType under condition
     determination.isReviewInstance = Yes
     and determination.concludesReview = Yes
     consequence equals CourtDecisionType.Postanova
 
-# Case ended by ruling in specified cases
-  label ruling_ends_case definition requiredDecisionType equals CourtDecisionType.Ruling under condition
+# Case ended by ruling in specified cases (confirms default)
+  label ruling_ends_case exception decision_default
+  definition requiredDecisionType under condition
     determination.caseEndedByRuling = Yes
     consequence equals CourtDecisionType.Ruling
 ```

@@ -42,7 +42,7 @@ scope Article151SecuringMeasures:
 
 # Prohibit specific actions
   label measure_prohibit_available definition measureAvailable under condition
-    check.measureRequested = ProhibitSpecificActions
+    check.measureRequested = SecuringMeasure.ProhibitSpecificActions
     consequence equals Yes
 
 # Compel specific actions
@@ -73,8 +73,8 @@ scope Article151SecuringMeasures:
     consequence equals StayEnforcementOfAct
 
   label measure_prohibit definition applicableMeasure under condition
-    check.measureRequested = ProhibitSpecificActions
-    consequence equals ProhibitSpecificActions
+    check.measureRequested = SecuringMeasure.ProhibitSpecificActions
+    consequence equals SecuringMeasure.ProhibitSpecificActions
 
   label measure_compel definition applicableMeasure under condition
     check.measureRequested = CompelSpecificActions
