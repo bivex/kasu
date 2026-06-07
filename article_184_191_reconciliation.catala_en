@@ -1,0 +1,159 @@
+## Article 184. Judicial dispute resolution (grounds)
+
+```catala
+declaration scope Article184JudicialDisputeResolution:
+  input resolution content JudicialDisputeResolution
+  output canAppointResolution content YesNo
+
+scope Article184JudicialDisputeResolution:
+  label resolution_default definition canAppointResolution equals No
+
+  label resolution_available exception resolution_default
+  definition canAppointResolution under condition
+    resolution.groundsExist = Yes
+    and resolution.partiesConsent = Yes
+    consequence equals Yes
+```
+
+## Article 185. Appointment of judicial dispute resolution
+
+```catala
+declaration scope Article185AppointmentResolution:
+  input resolution content JudicialDisputeResolution
+  output resolutionCanBeAppointed content YesNo
+
+scope Article185AppointmentResolution:
+  label appoint_default definition resolutionCanBeAppointed equals No
+
+  label appoint_available exception appoint_default
+  definition resolutionCanBeAppointed under condition
+    resolution.groundsExist = Yes
+    consequence equals Yes
+```
+
+## Article 186. Procedure for judicial dispute resolution
+
+```catala
+declaration scope Article186ResolutionProcedure:
+  input resolution content JudicialDisputeResolution
+  input partiesAttend content YesNo
+  input mediatorAppointed content YesNo
+  output resolutionProcedureValid content YesNo
+
+scope Article186ResolutionProcedure:
+  label procedure_default definition resolutionProcedureValid equals No
+
+  label procedure_valid exception procedure_default
+  definition resolutionProcedureValid under condition
+    partiesAttend = Yes
+    consequence equals Yes
+```
+
+## Article 187. Deadline for judicial dispute resolution
+
+```catala
+declaration scope Article187ResolutionDeadline:
+  input resolution content JudicialDisputeResolution
+  output resolutionDeadlineDays content integer
+
+scope Article187ResolutionDeadline:
+  label deadline definition resolutionDeadlineDays equals 30
+```
+
+## Article 188. Termination of judicial dispute resolution
+
+```catala
+declaration scope Article188TerminationResolution:
+  input resolution content JudicialDisputeResolution
+  input resolutionSuccessful content YesNo
+  input deadlineExpired content YesNo
+  input partyRequestsTermination content YesNo
+  output resolutionMustTerminate content YesNo
+
+scope Article188TerminationResolution:
+  label terminate_default definition resolutionMustTerminate equals No
+
+  label terminate_successful exception terminate_default
+  definition resolutionMustTerminate under condition
+    resolutionSuccessful = Yes
+    consequence equals Yes
+
+  label terminate_deadline exception terminate_default
+  definition resolutionMustTerminate under condition
+    deadlineExpired = Yes
+    consequence equals Yes
+
+  label terminate_request exception terminate_default
+  definition resolutionMustTerminate under condition
+    partyRequestsTermination = Yes
+    consequence equals Yes
+```
+
+## Article 189. Withdrawal of claim and recognition of claim
+
+```catala
+declaration scope Article189WithdrawalRecognition:
+  input plaintiffWithdrawsClaim content YesNo
+  input defendantRecognizesClaim content YesNo
+  input withdrawalVoluntary content YesNo
+  input noViolationOfLaw content YesNo
+  output withdrawalAccepted content YesNo
+  output recognitionAccepted content YesNo
+
+scope Article189WithdrawalRecognition:
+  label withdrawal_default definition withdrawalAccepted equals No
+
+  label withdrawal_accepted exception withdrawal_default
+  definition withdrawalAccepted under condition
+    plaintiffWithdrawsClaim = Yes
+    and withdrawalVoluntary = Yes
+    and noViolationOfLaw = Yes
+    consequence equals Yes
+
+  label recognition_default definition recognitionAccepted equals No
+
+  label recognition_accepted exception recognition_default
+  definition recognitionAccepted under condition
+    defendantRecognizesClaim = Yes
+    and noViolationOfLaw = Yes
+    consequence equals Yes
+```
+
+## Article 190. Reconciliation of parties
+
+```catala
+declaration scope Article190Reconciliation:
+  input reconciliation content ReconciliationProceeding
+  input partiesAgree content YesNo
+  input termsNotViolatingLaw content YesNo
+  input termsNotViolatingOthersRights content YesNo
+  output reconciliationCanBeApproved content YesNo
+
+scope Article190Reconciliation:
+  label reconcile_default definition reconciliationCanBeApproved equals No
+
+  label reconcile_approved exception reconcile_default
+  definition reconciliationCanBeApproved under condition
+    partiesAgree = Yes
+    and termsNotViolatingLaw = Yes
+    and termsNotViolatingOthersRights = Yes
+    consequence equals Yes
+```
+
+## Article 191. Enforcement of reconciliation terms
+
+```catala
+declaration scope Article191ReconciliationEnforcement:
+  input reconciliation content ReconciliationProceeding
+  input reconciliationApproved content YesNo
+  output reconciliationTermsEnforceable content YesNo
+
+scope Article191ReconciliationEnforcement:
+  label enforce_default definition reconciliationTermsEnforceable equals No
+
+  label enforce_approved exception enforce_default
+  definition reconciliationTermsEnforceable under condition
+    reconciliationApproved = Yes
+    and reconciliation.result = ReconciliationResult.ReconciliationAccepted
+    consequence equals Yes
+```

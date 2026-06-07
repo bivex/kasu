@@ -458,4 +458,130 @@ declaration structure SecuringClaimCheck:
   data actAlreadyEnforced content YesNo
   data measureProportionate content YesNo
   data plaintiffProvidedSecurity content YesNo
+
+declaration enumeration ClaimReviewResult:
+  -- ClaimAccepted
+  -- ClaimLeftWithoutMotion
+  -- ClaimReturned
+  -- ProceedingsOpened
+  -- ProceedingsRefused
+
+declaration enumeration ClaimReturnGround:
+  -- NoCourtFeePaid
+  -- NoDefendantIdentification
+  -- NotCompliantWithForm
+  -- SignedByIncapablePerson
+  -- FiledByUnauthorizedPerson
+  -- NoPowerOfAttorney
+  -- NoCopiesForDefendants
+  -- DuplicateClaimPending
+  -- ClaimNotSigned
+
+declaration enumeration RefusalToOpenGround:
+  -- DisputeNotPublicLaw
+  -- PreTrialProcedureNotFollowed
+  -- DeadlineExpiredWithoutRestoration
+  -- SamePartiesSameSubjectAlreadyDecided
+
+declaration enumeration PreparatoryStage:
+  -- NotStarted
+  -- InProgress
+  -- Completed
+  -- SkippedSimplified
+
+declaration enumeration HearingStage:
+  -- NotStarted
+  -- PreparatoryHearing
+  -- MeritsHearing
+  -- EvidenceExamination
+  -- ClosingArguments
+  -- Deliberation
+
+declaration enumeration ReconciliationResult:
+  -- NoReconciliation
+  -- ReconciliationProposed
+  -- ReconciliationAccepted
+  -- ReconciliationFailed
+
+declaration enumeration CounterclaimStatus:
+  -- NotFiled
+  -- CounterclaimFiled
+  -- CounterclaimAccepted
+  -- CounterclaimRejected
+
+declaration enumeration NonAppearanceConsequence:
+  -- NoConsequence
+  -- FineImposed
+  -- ProceedingContinued
+  -- CaseLeftWithoutConsideration
+  -- CompulsoryBring
+
+declaration enumeration VideoconferenceMode:
+  -- NoVideoconference
+  -- PlaintiffVideoconference
+  -- DefendantVideoconference
+  -- BothPartiesVideoconference
+
+declaration enumeration JudicialDisputeResolutionResult:
+  -- NotAppointed
+  -- ResolutionPending
+  -- ResolutionSuccessful
+  -- ResolutionUnsuccessful
+  -- ResolutionDeadlineExpired
+
+declaration structure ClaimReview:
+  data case content AdministrativeCase
+  data statement content WrittenStatement
+  data courtFeePaid content YesNo
+  data copiesForAllDefendants content YesNo
+  data defendantIdentified content YesNo
+  data statementSigned content YesNo
+  data signedByCapablePerson content YesNo
+  data filedByAuthorizedPerson content YesNo
+  data powerOfAttorneyAttached content YesNo
+  data duplicateClaimPending content YesNo
+  data formCompliant content YesNo
+
+declaration structure PreparatoryProceeding:
+  data stage content PreparatoryStage
+  data startedDate content date
+  data deadlineDays content integer
+  data defenseFiled content YesNo
+  data thirdPartyExplanationsFiled content YesNo
+  data counterclaimFiled content YesNo
+  data allEvidenceIdentified content YesNo
+  data hearingScheduled content YesNo
+
+declaration structure HearingProceeding:
+  data stage content HearingStage
+  data presidingJudgeAssigned content YesNo
+  data videoconferenceMode content VideoconferenceMode
+  data allPartiesNotified content YesNo
+  data scheduledDate content date
+
+declaration structure ReconciliationProceeding:
+  data result content ReconciliationResult
+  data termsAgreed content YesNo
+  data termsApprovedByCourt content YesNo
+  data reconciliationDeadlineDays content integer
+
+declaration structure CounterclaimFiling:
+  data status content CounterclaimStatus
+  data counterclaimMeetsFormRequirements content YesNo
+  data counterclaimRelatedToOriginal content YesNo
+  data counterclaimFiledTimely content YesNo
+
+declaration structure JudicialDisputeResolution:
+  data result content JudicialDisputeResolutionResult
+  data groundsExist content YesNo
+  data partiesConsent content YesNo
+  data deadlineDays content integer
+  data resolutionDate content date
+
+declaration structure MeritsConsideration:
+  data hearingStarted content YesNo
+  data deadlineToStartDays content integer
+  data deadlineToCompleteDays content integer
+  data allEvidenceExamined content YesNo
+  data closingArgumentsCompleted content YesNo
 ```

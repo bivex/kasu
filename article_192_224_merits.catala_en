@@ -1,0 +1,327 @@
+## Article 192. Tasks of consideration on merits
+
+```catala
+declaration scope Article192MeritsTasks:
+  input merits content MeritsConsideration
+  output meritsConsiderationComplete content YesNo
+
+scope Article192MeritsTasks:
+  label merits_default definition meritsConsiderationComplete equals No
+
+  label merits_complete exception merits_default
+  definition meritsConsiderationComplete under condition
+    merits.allEvidenceExamined = Yes
+    and merits.closingArgumentsCompleted = Yes
+    consequence equals Yes
+```
+
+## Article 193. Deadlines for case consideration
+
+```catala
+declaration scope Article193MeritsDeadlines:
+  input merits content MeritsConsideration
+  output deadlineToStartDays content integer
+  output deadlineToCompleteDays content integer
+
+scope Article193MeritsDeadlines:
+  label start_deadline definition deadlineToStartDays equals 60
+
+  label complete_deadline definition deadlineToCompleteDays equals 30
+```
+
+## Article 194. Court hearing
+
+```catala
+declaration scope Article194CourtHearing:
+  input hearing content HearingProceeding
+  input allPartiesNotified content YesNo
+  output hearingCanBeHeld content YesNo
+
+scope Article194CourtHearing:
+  label hearing_default definition hearingCanBeHeld equals No
+
+  label hearing_ready exception hearing_default
+  definition hearingCanBeHeld under condition
+    hearing.presidingJudgeAssigned = Yes
+    and allPartiesNotified = Yes
+    consequence equals Yes
+```
+
+## Article 195. Videoconference participation
+
+```catala
+declaration scope Article195Videoconference:
+  input hearing content HearingProceeding
+  input courtHasTechnicalCapability content YesNo
+  input partyRequestsVideoconference content YesNo
+  output videoconferenceAllowed content YesNo
+
+scope Article195Videoconference:
+  label videoconference_default definition videoconferenceAllowed equals No
+
+  label videoconference_allowed exception videoconference_default
+  definition videoconferenceAllowed under condition
+    courtHasTechnicalCapability = Yes
+    and partyRequestsVideoconference = Yes
+    consequence equals Yes
+```
+
+## Article 196. Presiding judge
+
+```catala
+declaration scope Article196PresidingJudge:
+  input hearing content HearingProceeding
+  output presidingJudgeManagesProceedings content YesNo
+
+scope Article196PresidingJudge:
+  label presiding definition presidingJudgeManagesProceedings under condition
+    hearing.presidingJudgeAssigned = Yes
+    consequence equals Yes
+```
+
+## Article 197. Addressing the court
+
+```catala
+declaration scope Article197AddressingCourt:
+  input participant content Participant
+  output standingRequired content YesNo
+
+scope Article197AddressingCourt:
+  label standing definition standingRequired equals Yes
+```
+
+## Article 198. Duties of persons present
+
+```catala
+declaration scope Article198DutiesPresent:
+  input hearing content HearingProceeding
+  output mustMaintainOrder content YesNo
+
+scope Article198DutiesPresent:
+  label order definition mustMaintainOrder equals Yes
+```
+
+## Article 199. Opening consideration on merits
+
+```catala
+declaration scope Article199OpeningMerits:
+  input merits content MeritsConsideration
+  input preparatoryCompleted content YesNo
+  output meritsCanBeOpened content YesNo
+
+scope Article199OpeningMerits:
+  label open_default definition meritsCanBeOpened equals No
+
+  label open_ready exception open_default
+  definition meritsCanBeOpened under condition
+    preparatoryCompleted = Yes
+    consequence equals Yes
+```
+
+## Articles 200-201. Report of presiding judge and explanations of parties
+
+```catala
+declaration scope Article200PresidingReport:
+  input merits content MeritsConsideration
+  input presidingReportedCase content YesNo
+  output reportCompleted content YesNo
+
+scope Article200PresidingReport:
+  label report_default definition reportCompleted equals No
+
+  label report_done exception report_default
+  definition reportCompleted under condition
+    presidingReportedCase = Yes
+    consequence equals Yes
+```
+
+## Article 202. Additional explanations
+
+```catala
+declaration scope Article202AdditionalExplanations:
+  input partyRequestsAdditionalExplanation content YesNo
+  output additionalExplanationAllowed content YesNo
+
+scope Article202AdditionalExplanations:
+  label additional_default definition additionalExplanationAllowed equals No
+
+  label additional_allowed exception additional_default
+  definition additionalExplanationAllowed under condition
+    partyRequestsAdditionalExplanation = Yes
+    consequence equals Yes
+```
+
+## Articles 203-205. Witnesses, expert testimony, evidence examination
+
+```catala
+declaration scope Article203Witnesses:
+  input witnessPresent content YesNo
+  input witnessSwornIn content YesNo
+  output witnessCanTestify content YesNo
+
+scope Article203Witnesses:
+  label witness_default definition witnessCanTestify equals No
+
+  label witness_ready exception witness_default
+  definition witnessCanTestify under condition
+    witnessPresent = Yes
+    and witnessSwornIn = Yes
+    consequence equals Yes
+```
+
+## Article 206. Consequences of non-appearance
+
+```catala
+declaration scope Article206NonAppearance:
+  input hearing content HearingProceeding
+  input plaintiffAbsent content YesNo
+  input plaintiffProperlyNotified content YesNo
+  input defendantAbsent content YesNo
+  input defendantProperlyNotified content YesNo
+  input witnessAbsent content YesNo
+  input witnessProperlyNotified content YesNo
+  input repeatedAbsence content YesNo
+  output nonAppearanceConsequence content NonAppearanceConsequence
+
+scope Article206NonAppearance:
+  label consequence_default definition nonAppearanceConsequence equals NonAppearanceConsequence.ProceedingContinued
+
+# Plaintiff absent after proper notification → case left without consideration
+  label consequence_plaintiff_absent exception consequence_default
+  definition nonAppearanceConsequence under condition
+    plaintiffAbsent = Yes
+    and plaintiffProperlyNotified = Yes
+    consequence equals NonAppearanceConsequence.CaseLeftWithoutConsideration
+
+# Defendant absent → proceeding continues
+  label consequence_defendant_absent exception consequence_default
+  definition nonAppearanceConsequence under condition
+    defendantAbsent = Yes
+    and defendantProperlyNotified = Yes
+    consequence equals NonAppearanceConsequence.ProceedingContinued
+
+# Witness absent → fine may be imposed
+  label consequence_witness_absent exception consequence_default
+  definition nonAppearanceConsequence under condition
+    witnessAbsent = Yes
+    and witnessProperlyNotified = Yes
+    and repeatedAbsence = Yes
+    consequence equals NonAppearanceConsequence.FineImposed
+
+# Repeated witness absence → compulsory bring
+  label consequence_witness_compulsory exception consequence_default
+  definition nonAppearanceConsequence under condition
+    witnessAbsent = Yes
+    and repeatedAbsence = Yes
+    consequence equals NonAppearanceConsequence.CompulsoryBring
+```
+
+## Articles 207-208. Expert examination and specialist involvement
+
+```catala
+declaration scope Article207ExpertExamination:
+  input expertPresent content YesNo
+  input expertSwornIn content YesNo
+  output expertCanTestify content YesNo
+
+scope Article207ExpertExamination:
+  label expert_default definition expertCanTestify equals No
+
+  label expert_ready exception expert_default
+  definition expertCanTestify under condition
+    expertPresent = Yes
+    and expertSwornIn = Yes
+    consequence equals Yes
+```
+
+## Articles 209-211. Establishing circumstances, examining evidence
+
+```catala
+declaration scope Article209EstablishingCircumstances:
+  input merits content MeritsConsideration
+  input allCircumstancesEstablished content YesNo
+  output circumstancesEstablished content YesNo
+
+scope Article209EstablishingCircumstances:
+  label circumstances_default definition circumstancesEstablished equals No
+
+  label circumstances_done exception circumstances_default
+  definition circumstancesEstablished under condition
+    allCircumstancesEstablished = Yes
+    consequence equals Yes
+```
+
+## Articles 212-215. Written and physical evidence examination
+
+```catala
+declaration scope Article212WrittenEvidence:
+  input evidence content EvidenceItem
+  input evidencePresentedToParties content YesNo
+  output writtenEvidenceCanBeExamined content YesNo
+
+scope Article212WrittenEvidence:
+  label written_default definition writtenEvidenceCanBeExamined equals No
+
+  label written_ready exception written_default
+  definition writtenEvidenceCanBeExamined under condition
+    evidencePresentedToParties = Yes
+    and evidence.evidenceType = EvidenceType.DocumentaryEvidence
+    consequence equals Yes
+```
+
+## Articles 216-218. Witness examination
+
+```catala
+declaration scope Article216WitnessExamination:
+  input witnessIdentified content YesNo
+  input witnessRightsExplained content YesNo
+  output witnessCanBeExamined content YesNo
+
+scope Article216WitnessExamination:
+  label examination_default definition witnessCanBeExamined equals No
+
+  label examination_ready exception examination_default
+  definition witnessCanBeExamined under condition
+    witnessIdentified = Yes
+    and witnessRightsExplained = Yes
+    consequence equals Yes
+```
+
+## Articles 219-221. Expert examination in court
+
+```catala
+declaration scope Article219ExpertInCourt:
+  input expertPresent content YesNo
+  input expertReportSubmitted content YesNo
+  output expertCanBeQuestioned content YesNo
+
+scope Article219ExpertInCourt:
+  label question_default definition expertCanBeQuestioned equals No
+
+  label question_ready exception question_default
+  definition expertCanBeQuestioned under condition
+    expertPresent = Yes
+    and expertReportSubmitted = Yes
+    consequence equals Yes
+```
+
+## Articles 222-224. Closing arguments and deliberation
+
+```catala
+declaration scope Article222ClosingArguments:
+  input merits content MeritsConsideration
+  input plaintiffArgumentsCompleted content YesNo
+  input defendantArgumentsCompleted content YesNo
+  input thirdPartyArgumentsCompleted content YesNo
+  output closingArgumentsComplete content YesNo
+
+scope Article222ClosingArguments:
+  label closing_default definition closingArgumentsComplete equals No
+
+  label closing_complete exception closing_default
+  definition closingArgumentsComplete under condition
+    plaintiffArgumentsCompleted = Yes
+    and defendantArgumentsCompleted = Yes
+    and thirdPartyArgumentsCompleted = Yes
+    consequence equals Yes
+```

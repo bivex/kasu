@@ -1,0 +1,227 @@
+## Article 173. Preparatory proceedings
+
+```catala
+declaration scope Article173PreparatoryProceedings:
+  input preparatory content PreparatoryProceeding
+  output preparatoryDeadlineDays content integer
+  output preparatoryRequired content YesNo
+
+scope Article173PreparatoryProceedings:
+  label deadline definition preparatoryDeadlineDays equals 60
+
+  label required_simplified definition preparatoryRequired under condition
+    preparatory.stage = PreparatoryStage.SkippedSimplified
+    consequence equals No
+
+  label required_general definition preparatoryRequired under condition
+    preparatory.stage != PreparatoryStage.SkippedSimplified
+    consequence equals Yes
+```
+
+## Article 174. Sending copies of ruling opening proceedings
+
+```catala
+declaration scope Article174SendingRuling:
+  input proceedingsOpened content YesNo
+  input copiesSentToAllParties content YesNo
+  input sentWithinThreeDays content YesNo
+  output notificationComplete content YesNo
+
+scope Article174SendingRuling:
+  label notification_default definition notificationComplete equals No
+
+  label notification_done exception notification_default
+  definition notificationComplete under condition
+    proceedingsOpened = Yes
+    and copiesSentToAllParties = Yes
+    and sentWithinThreeDays = Yes
+    consequence equals Yes
+```
+
+## Article 175. Defense statement (відзив)
+
+```catala
+declaration scope Article175DefenseStatement:
+  input defenseFiled content YesNo
+  input filedWithinFifteenDays content YesNo
+  input respondsToEachClaim content YesNo
+  input statesDefendantPosition content YesNo
+  input listsDefenseEvidence content YesNo
+  output defenseMeetsRequirements content YesNo
+
+scope Article175DefenseStatement:
+  label defense_default definition defenseMeetsRequirements equals No
+
+  label defense_complete exception defense_default
+  definition defenseMeetsRequirements under condition
+    defenseFiled = Yes
+    and filedWithinFifteenDays = Yes
+    and respondsToEachClaim = Yes
+    and statesDefendantPosition = Yes
+    consequence equals Yes
+```
+
+## Article 176. Third party explanations
+
+```catala
+declaration scope Article176ThirdPartyExplanations:
+  input explanationFiled content YesNo
+  input filedWithinFifteenDays content YesNo
+  input thirdPartyIdentified content YesNo
+  input explainsPosition content YesNo
+  output explanationAccepted content YesNo
+
+scope Article176ThirdPartyExplanations:
+  label explanation_default definition explanationAccepted equals No
+
+  label explanation_accepted exception explanation_default
+  definition explanationAccepted under condition
+    explanationFiled = Yes
+    and filedWithinFifteenDays = Yes
+    and thirdPartyIdentified = Yes
+    and explainsPosition = Yes
+    consequence equals Yes
+```
+
+## Article 177. Counterclaim
+
+```catala
+declaration scope Article177Counterclaim:
+  input counterclaim content CounterclaimFiling
+  input counterclaimFiledBeforeMerits content YesNo
+  output counterclaimCanBeFiled content YesNo
+
+scope Article177Counterclaim:
+  label counterclaim_default definition counterclaimCanBeFiled equals No
+
+  label counterclaim_available exception counterclaim_default
+  definition counterclaimCanBeFiled under condition
+    counterclaim.counterclaimRelatedToOriginal = Yes
+    and counterclaimFiledBeforeMerits = Yes
+    consequence equals Yes
+```
+
+## Article 178. Counterclaim form and content
+
+```catala
+declaration scope Article178CounterclaimForm:
+  input counterclaim content CounterclaimFiling
+  input specifiesCourt content YesNo
+  input specifiesCounterclaimant content YesNo
+  input specifiesCounterclaimSubject content YesNo
+  input specifiesCounterclaimGrounds content YesNo
+  input specifiesCounterclaimRelief content YesNo
+  output counterclaimMeetsFormRequirements content YesNo
+
+scope Article178CounterclaimForm:
+  label form_default definition counterclaimMeetsFormRequirements equals No
+
+  label form_complete exception form_default
+  definition counterclaimMeetsFormRequirements under condition
+    specifiesCourt = Yes
+    and specifiesCounterclaimant = Yes
+    and specifiesCounterclaimSubject = Yes
+    and specifiesCounterclaimGrounds = Yes
+    and specifiesCounterclaimRelief = Yes
+    consequence equals Yes
+```
+
+## Article 179. Preparatory hearing
+
+```catala
+declaration scope Article179PreparatoryHearing:
+  input preparatory content PreparatoryProceeding
+  input hearingScheduledWithinThirtyDays content YesNo
+  output preparatoryHearingCanBeHeld content YesNo
+
+scope Article179PreparatoryHearing:
+  label hearing_default definition preparatoryHearingCanBeHeld equals No
+
+  label hearing_available exception hearing_default
+  definition preparatoryHearingCanBeHeld under condition
+    preparatory.stage = PreparatoryStage.InProgress
+    and hearingScheduledWithinThirtyDays = Yes
+    consequence equals Yes
+```
+
+## Article 180. Preparatory hearing tasks
+
+```catala
+declaration scope Article180PreparatoryTasks:
+  input preparatory content PreparatoryProceeding
+  input partiesClarifiedPositions content YesNo
+  input evidenceIdentified content YesNo
+  input reconciliationExplored content YesNo
+  input jurisdictionConfirmed content YesNo
+  input compositionCorrect content YesNo
+  input recusalsResolved content YesNo
+  output preparatoryTasksCompleted content YesNo
+
+scope Article180PreparatoryTasks:
+  label tasks_default definition preparatoryTasksCompleted equals No
+
+  label tasks_complete exception tasks_default
+  definition preparatoryTasksCompleted under condition
+    partiesClarifiedPositions = Yes
+    and evidenceIdentified = Yes
+    and reconciliationExplored = Yes
+    and jurisdictionConfirmed = Yes
+    and compositionCorrect = Yes
+    and recusalsResolved = Yes
+    consequence equals Yes
+```
+
+## Article 181. Order of preparatory hearing
+
+```catala
+declaration scope Article181PreparatoryOrder:
+  input hearing content HearingProceeding
+  input presidingJudgeAssigned content YesNo
+  output hearingOrderFollowed content YesNo
+
+scope Article181PreparatoryOrder:
+  label order_default definition hearingOrderFollowed equals No
+
+  label order_correct exception order_default
+  definition hearingOrderFollowed under condition
+    presidingJudgeAssigned = Yes
+    and hearing.allPartiesNotified = Yes
+    consequence equals Yes
+```
+
+## Article 182. Response to defense and objections
+
+```catala
+declaration scope Article182ResponseToDefense:
+  input responseFiled content YesNo
+  input filedWithinDeadline content YesNo
+  input respondsToEachDefensePoint content YesNo
+  output responseAccepted content YesNo
+
+scope Article182ResponseToDefense:
+  label response_default definition responseAccepted equals No
+
+  label response_accepted exception response_default
+  definition responseAccepted under condition
+    responseFiled = Yes
+    and filedWithinDeadline = Yes
+    and respondsToEachDefensePoint = Yes
+    consequence equals Yes
+```
+
+## Article 183. Court decisions in preparatory hearing
+
+```catala
+declaration scope Article183PreparatoryDecisions:
+  input preparatory content PreparatoryProceeding
+  input preparatoryTasksCompleted content YesNo
+  output canScheduleMeritsHearing content YesNo
+
+scope Article183PreparatoryDecisions:
+  label schedule_default definition canScheduleMeritsHearing equals No
+
+  label schedule_ready exception schedule_default
+  definition canScheduleMeritsHearing under condition
+    preparatoryTasksCompleted = Yes
+    consequence equals Yes
+```

@@ -1,0 +1,281 @@
+## Article 166. Applications, motions, objections
+
+```catala
+declaration scope Article166ProceduralApplications:
+  input application content WrittenStatement
+  input specifiesApplicant content YesNo
+  input specifiesRelief content YesNo
+  input specifiesGrounds content YesNo
+  input filedWithinDeadline content YesNo
+  output applicationMeetsRequirements content YesNo
+
+scope Article166ProceduralApplications:
+  label application_default definition applicationMeetsRequirements equals No
+
+  label application_complete exception application_default
+  definition applicationMeetsRequirements under condition
+    application.statementType = WrittenStatementType.ApplicationMotion
+    and specifiesApplicant = Yes
+    and specifiesRelief = Yes
+    and specifiesGrounds = Yes
+    consequence equals Yes
+```
+
+## Article 167. Formal requirements for written applications/motions/objections
+
+```catala
+declaration scope Article167FormalRequirements:
+  input statement content WrittenStatement
+  input specifiesCourt content YesNo
+  input specifiesFiler content YesNo
+  input specifiesFilerAddress content YesNo
+  input specifiesRelief content YesNo
+  input specifiesGrounds content YesNo
+  input signedByFiler content YesNo
+  input specifiesDate content YesNo
+  output meetsFormalRequirements content YesNo
+
+scope Article167FormalRequirements:
+  label formal_default definition meetsFormalRequirements equals No
+
+  label formal_complete exception formal_default
+  definition meetsFormalRequirements under condition
+    specifiesCourt = Yes
+    and specifiesFiler = Yes
+    and specifiesFilerAddress = Yes
+    and specifiesRelief = Yes
+    and specifiesGrounds = Yes
+    and signedByFiler = Yes
+    and specifiesDate = Yes
+    consequence equals Yes
+```
+
+## Article 168. Filing a claim
+
+```catala
+declaration scope Article168FilingClaim:
+  input review content ClaimReview
+  input claimFiled content YesNo
+  output claimCanBeFiled content YesNo
+
+scope Article168FilingClaim:
+  label filing_default definition claimCanBeFiled equals No
+
+  label filing_available exception filing_default
+  definition claimCanBeFiled under condition
+    claimFiled = Yes
+    and review.statement.statementType = WrittenStatementType.StatementOfClaim
+    consequence equals Yes
+```
+
+## Article 169. Leaving claim without motion, returning claim
+
+```catala
+declaration scope Article169ClaimReturn:
+  input review content ClaimReview
+  output claimReviewResult content ClaimReviewResult
+  output returnGround content ClaimReturnGround
+
+scope Article169ClaimReturn:
+  label review_default definition claimReviewResult equals ClaimReviewResult.ClaimAccepted
+
+# No court fee paid
+  label return_no_fee exception review_default
+  definition claimReviewResult under condition
+    review.courtFeePaid = No
+    consequence equals ClaimReviewResult.ClaimReturned
+
+  label ground_no_fee definition returnGround under condition
+    review.courtFeePaid = No
+    consequence equals ClaimReturnGround.NoCourtFeePaid
+
+# No defendant identification
+  label return_no_defendant exception review_default
+  definition claimReviewResult under condition
+    review.defendantIdentified = No
+    consequence equals ClaimReviewResult.ClaimReturned
+
+  label ground_no_defendant definition returnGround under condition
+    review.defendantIdentified = No
+    consequence equals ClaimReturnGround.NoDefendantIdentification
+
+# Not compliant with form
+  label return_not_compliant exception review_default
+  definition claimReviewResult under condition
+    review.formCompliant = No
+    consequence equals ClaimReviewResult.ClaimReturned
+
+  label ground_not_compliant definition returnGround under condition
+    review.formCompliant = No
+    consequence equals ClaimReturnGround.NotCompliantWithForm
+
+# Signed by incapable person
+  label return_incapable exception review_default
+  definition claimReviewResult under condition
+    review.signedByCapablePerson = No
+    consequence equals ClaimReviewResult.ClaimReturned
+
+  label ground_incapable definition returnGround under condition
+    review.signedByCapablePerson = No
+    consequence equals ClaimReturnGround.SignedByIncapablePerson
+
+# Filed by unauthorized person
+  label return_unauthorized exception review_default
+  definition claimReviewResult under condition
+    review.filedByAuthorizedPerson = No
+    consequence equals ClaimReviewResult.ClaimReturned
+
+  label ground_unauthorized definition returnGround under condition
+    review.filedByAuthorizedPerson = No
+    consequence equals ClaimReturnGround.FiledByUnauthorizedPerson
+
+# No power of attorney
+  label return_no_poap exception review_default
+  definition claimReviewResult under condition
+    review.powerOfAttorneyAttached = No
+    consequence equals ClaimReviewResult.ClaimReturned
+
+  label ground_no_poap definition returnGround under condition
+    review.powerOfAttorneyAttached = No
+    consequence equals ClaimReturnGround.NoPowerOfAttorney
+
+# No copies for defendants
+  label return_no_copies exception review_default
+  definition claimReviewResult under condition
+    review.copiesForAllDefendants = No
+    consequence equals ClaimReviewResult.ClaimReturned
+
+  label ground_no_copies definition returnGround under condition
+    review.copiesForAllDefendants = No
+    consequence equals ClaimReturnGround.NoCopiesForDefendants
+
+# Duplicate claim pending
+  label return_duplicate exception review_default
+  definition claimReviewResult under condition
+    review.duplicateClaimPending = Yes
+    consequence equals ClaimReviewResult.ClaimReturned
+
+  label ground_duplicate definition returnGround under condition
+    review.duplicateClaimPending = Yes
+    consequence equals ClaimReturnGround.DuplicateClaimPending
+
+# Claim not signed
+  label return_not_signed exception review_default
+  definition claimReviewResult under condition
+    review.statementSigned = No
+    consequence equals ClaimReviewResult.ClaimReturned
+
+  label ground_not_signed definition returnGround under condition
+    review.statementSigned = No
+    consequence equals ClaimReturnGround.ClaimNotSigned
+
+# Left without motion when deficiencies can be corrected
+  label left_without_motion exception review_default
+  definition claimReviewResult under condition
+    review.formCompliant = No
+    consequence equals ClaimReviewResult.ClaimLeftWithoutMotion
+```
+
+## Article 170. Refusal to open proceedings
+
+```catala
+declaration scope Article170RefusalToOpen:
+  input review content ClaimReview
+  input disputeIsPublicLaw content YesNo
+  input preTrialProcedureFollowed content YesNo
+  input filingDeadlineRestored content YesNo
+  input samePartiesSameSubjectDecided content YesNo
+  output proceedingOpened content YesNo
+  output refusalGround content RefusalToOpenGround
+
+scope Article170RefusalToOpen:
+  label open_default definition proceedingOpened equals Yes
+
+# Not a public law dispute
+  label refuse_not_public exception open_default
+  definition proceedingOpened under condition
+    disputeIsPublicLaw = No
+    consequence equals No
+
+  label ground_not_public definition refusalGround under condition
+    disputeIsPublicLaw = No
+    consequence equals RefusalToOpenGround.DisputeNotPublicLaw
+
+# Pre-trial procedure not followed
+  label refuse_pretrial exception open_default
+  definition proceedingOpened under condition
+    preTrialProcedureFollowed = No
+    consequence equals No
+
+  label ground_pretrial definition refusalGround under condition
+    preTrialProcedureFollowed = No
+    consequence equals RefusalToOpenGround.PreTrialProcedureNotFollowed
+
+# Deadline expired without restoration
+  label refuse_deadline exception open_default
+  definition proceedingOpened under condition
+    review.case.preTrialStatus = PreTrialStatus.NoAttempt
+    and filingDeadlineRestored = No
+    consequence equals No
+
+  label ground_deadline definition refusalGround under condition
+    filingDeadlineRestored = No
+    consequence equals RefusalToOpenGround.DeadlineExpiredWithoutRestoration
+
+# Same parties, same subject already decided
+  label refuse_res_judicata exception open_default
+  definition proceedingOpened under condition
+    samePartiesSameSubjectDecided = Yes
+    consequence equals No
+
+  label ground_res_judicata definition refusalGround under condition
+    samePartiesSameSubjectDecided = Yes
+    consequence equals RefusalToOpenGround.SamePartiesSameSubjectAlreadyDecided
+```
+
+## Article 171. Opening proceedings
+
+```catala
+declaration scope Article171OpeningProceedings:
+  input review content ClaimReview
+  input disputeIsPublicLaw content YesNo
+  input preTrialProcedureFollowed content YesNo
+  input filingDeadlineRestored content YesNo
+  output proceedingsOpened content YesNo
+
+scope Article171OpeningProceedings:
+  label opening_default definition proceedingsOpened equals No
+
+  label opening_granted exception opening_default
+  definition proceedingsOpened under condition
+    review.statement.statementType = WrittenStatementType.StatementOfClaim
+    and review.formCompliant = Yes
+    and disputeIsPublicLaw = Yes
+    and preTrialProcedureFollowed = Yes
+    consequence equals Yes
+```
+
+## Article 172. Joinder and separation of claims
+
+```catala
+declaration scope Article172JoinderSeparation:
+  input claimsRelated content YesNo
+  input separateConsiderationMoreAppropriate content YesNo
+  output canJoinClaims content YesNo
+  output canSeparateClaims content YesNo
+
+scope Article172JoinderSeparation:
+  label join_default definition canJoinClaims equals No
+
+  label join_related exception join_default
+  definition canJoinClaims under condition
+    claimsRelated = Yes
+    consequence equals Yes
+
+  label separate_default definition canSeparateClaims equals No
+
+  label separate_appropriate exception separate_default
+  definition canSeparateClaims under condition
+    separateConsiderationMoreAppropriate = Yes
+    consequence equals Yes
+```
