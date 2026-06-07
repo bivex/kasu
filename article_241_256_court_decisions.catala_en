@@ -1,0 +1,329 @@
+## Article 241. Types of court decisions
+
+```catala
+declaration scope Article241DecisionType:
+  input determination content CourtDecisionTypeDetermination
+  output requiredDecisionType content CourtDecisionType
+
+scope Article241DecisionType:
+# Procedural questions resolved by rulings
+  label ruling_for_procedural definition requiredDecisionType equals CourtDecisionType.Ruling under condition
+    determination.isProceduralQuestion = Yes
+    consequence equals CourtDecisionType.Ruling
+
+# First instance concludes with decision
+  label decision_first_instance definition requiredDecisionType equals CourtDecisionType.Resolution under condition
+    determination.instanceLevel = CourtInstance.FirstInstance
+    and determination.concludesCase = Yes
+    consequence equals CourtDecisionType.Resolution
+
+# Appellate and cassation review concludes with postanova
+  label postanova_review definition requiredDecisionType equals CourtDecisionType.Postanova under condition
+    determination.isReviewInstance = Yes
+    and determination.concludesReview = Yes
+    consequence equals CourtDecisionType.Postanova
+
+# Case ended by ruling in specified cases
+  label ruling_ends_case definition requiredDecisionType equals CourtDecisionType.Ruling under condition
+    determination.caseEndedByRuling = Yes
+    consequence equals CourtDecisionType.Ruling
+```
+
+## Article 242. Legality and justification of court decision
+
+```catala
+declaration scope Article242Legality:
+  input legality content DecisionLegality
+  output decisionIsLawful content YesNo
+  output decisionIsJustified content YesNo
+
+scope Article242Legality:
+# Decision is lawful when both substantive and procedural law followed
+  label lawful definition decisionIsLawful under condition
+    legality.followsSubstantiveLaw = Yes
+    and legality.followsProceduralLaw = Yes
+    consequence equals Yes
+
+  label unlawful definition decisionIsLawful under condition
+    legality.followsSubstantiveLaw = No
+    consequence equals No
+
+# Decision is justified when facts fully established, evidence examined, arguments evaluated
+  label justified definition decisionIsJustified under condition
+    legality.factsFullyEstablished = Yes
+    and legality.evidenceExaminedInHearing = Yes
+    and legality.allArgumentsEvaluated = Yes
+    consequence equals Yes
+
+  label unjustified definition decisionIsJustified under condition
+    legality.factsFullyEstablished = No
+    consequence equals No
+
+# When party acknowledges claim and not prohibited by Art 189
+  label acknowledged_claim definition decisionIsLawful under condition
+    legality.partyAcknowledgedClaim = Yes
+    and legality.acknowledgmentNotProhibitedByArticle189 = Yes
+    consequence equals Yes
+```
+
+## Article 243. Decision adoption procedure
+
+```catala
+declaration scope Article243AdoptionProcedure:
+  input adoption content DecisionAdoption
+  output maxPostponementDays content integer
+  output separateDocumentRequired content YesNo
+
+scope Article243AdoptionProcedure:
+# General case: max 10 days postponement
+  label general_postponement definition maxPostponementDays under condition
+    adoption.isSimplifiedProceeding = No
+    consequence equals 10
+
+# Simplified proceeding: max 5 days postponement
+  label simplified_postponement definition maxPostponementDays under condition
+    adoption.isSimplifiedProceeding = Yes
+    consequence equals 5
+
+# Rulings on specific subjects require separate document
+  label separate_document definition separateDocumentRequired under condition
+    adoption.rulingAsSeparateDocument = Yes
+    consequence equals Yes
+
+  label no_separate_document definition separateDocumentRequired under condition
+    adoption.rulingAsSeparateDocument = No
+    consequence equals No
+```
+
+## Article 245. Court powers when deciding a case
+
+```catala
+declaration scope Article245CourtPowers:
+  input powers content CourtPowersDetermination
+  output mayGrantRelief content YesNo
+  output mayCompelNewNormativeAct content YesNo
+  output maySetExecutionDeadline content YesNo
+
+scope Article245CourtPowers:
+# Court may satisfy claim fully or partially, or deny it
+  label may_satisfy definition mayGrantRelief under condition
+    powers.claimFullySatisfied = Yes
+    or powers.claimPartiallySatisfied = Yes
+    or powers.claimDenied = Yes
+    consequence equals Yes
+
+# When normative act unlawful and insufficient regulation, court may compel new act
+  label compel_new_act definition mayCompelNewNormativeAct under condition
+    powers.normativeActUnlawful = Yes
+    and powers.insufficientLegalRegulation = Yes
+    consequence equals Yes
+
+  label no_compel_new_act definition mayCompelNewNormativeAct under condition
+    powers.normativeActUnlawful = No
+    consequence equals No
+
+# Court may set reasonable execution deadline
+  label set_deadline definition maySetExecutionDeadline under condition
+    powers.reasonableExecutionDeadlineDays > 0
+    consequence equals Yes
+
+  label no_deadline definition maySetExecutionDeadline equals No
+```
+
+## Article 247. Partial decision on claims
+
+```catala
+declaration scope Article247PartialDecision:
+  input check content PartialDecisionCheck
+  output partialDecisionAllowed content YesNo
+
+scope Article247PartialDecision:
+# Partial decision allowed when multiple related claims joined
+  label partial_allowed definition partialDecisionAllowed under condition
+    check.multipleRelatedClaimsJoined = Yes
+    and check.unresolvedClaimsRemain = Yes
+    consequence equals Yes
+
+# Not allowed when single defendant objects
+  label partial_prohibited definition partialDecisionAllowed under condition
+    check.singleDefendantForAllClaims = Yes
+    and check.defendantObjectsToPartial = Yes
+    consequence equals No
+
+  label partial_default definition partialDecisionAllowed equals No
+```
+
+## Article 250. Pronouncement of court decision
+
+```catala
+declaration scope Article250Pronouncement:
+  input pronouncement content DecisionPronouncement
+  output decisionMustBePronounced content YesNo
+  output adoptionDate content date
+
+scope Article250Pronouncement:
+# Decision must be pronounced when participants present
+  label pronounce_required definition decisionMustBePronounced under condition
+    pronouncement.allParticipantsPresent = Yes
+    and pronouncement.isWrittenProceeding = No
+    consequence equals Yes
+
+# No pronouncement when all absent or written proceeding
+  label pronounce_not_required definition decisionMustBePronounced under condition
+    pronouncement.allParticipantsPresent = No
+    consequence equals No
+
+  label pronounce_written definition decisionMustBePronounced under condition
+    pronouncement.isWrittenProceeding = Yes
+    consequence equals No
+
+# Adoption date is pronouncement date when pronounced
+  label adoption_pronounced definition adoptionDate under condition
+    pronouncement.allParticipantsPresent = Yes
+    and pronouncement.isWrittenProceeding = No
+    consequence equals pronouncement.pronouncementDate
+
+# Adoption date is composition date for written proceeding
+  label adoption_written definition adoptionDate under condition
+    pronouncement.isWrittenProceeding = Yes
+    consequence equals pronouncement.fullDecisionComposedDate
+```
+
+## Article 251. Service of court decision
+
+```catala
+declaration scope Article251Service:
+  input service content DecisionServiceCheck
+  output mustServeImmediately content YesNo
+  output mustSendFullDecisionWithin2Days content YesNo
+
+scope Article251Service:
+# Immediate service when participants present
+  label serve_immediate definition mustServeImmediately under condition
+    service.participantsPresentAtHearing = Yes
+    and service.abbreviatedDecisionPronounced = No
+    consequence equals Yes
+
+# Send full decision within 2 days of composition when abbreviated
+  label send_full definition mustSendFullDecisionWithin2Days under condition
+    service.abbreviatedDecisionPronounced = Yes
+    and service.daysSinceFullComposition <= 2
+    consequence equals Yes
+
+# Send to absent participants within 2 days
+  label send_absent definition mustSendFullDecisionWithin2Days under condition
+    service.participantsPresentAtHearing = No
+    and service.daysSinceFullComposition <= 2
+    consequence equals Yes
+```
+
+## Article 252. Additional court decision
+
+```catala
+declaration scope Article252AdditionalDecision:
+  input check content AdditionalDecisionCheck
+  output additionalDecisionAllowed content YesNo
+
+scope Article252AdditionalDecision:
+# Additional decision allowed when ground exists and application timely
+  label additional_allowed definition additionalDecisionAllowed under condition
+    (check.ground = AdditionalDecisionGround.ClaimNotResolved
+    or check.ground = AdditionalDecisionGround.ExecutionMethodNotSpecified
+    or check.ground = AdditionalDecisionGround.CostsNotResolved)
+    and check.applicationFiledWithinExecutionPeriod = Yes
+    consequence equals Yes
+
+  label additional_default definition additionalDecisionAllowed equals No
+```
+
+## Article 253. Correction of clerical errors
+
+```catala
+declaration scope Article253Correction:
+  input correction content DecisionCorrection
+  output correctionAllowed content YesNo
+
+scope Article253Correction:
+# Correction allowed regardless of whether decision entered into force
+  label correction_allowed definition correctionAllowed under condition
+    correction.clericalErrorsPresent = Yes
+    or correction.obviousArithmeticErrorsPresent = Yes
+    consequence equals Yes
+
+  label correction_default definition correctionAllowed equals No
+```
+
+## Article 254. Clarification of court decision
+
+```catala
+declaration scope Article254Clarification:
+  input clarification content DecisionClarification
+  output clarificationAllowed content YesNo
+
+scope Article254Clarification:
+# Clarification allowed when decision in force and not yet executed
+  label clarification_allowed definition clarificationAllowed under condition
+    clarification.decisionEnteredIntoForce = Yes
+    and clarification.decisionExecuted = No
+    and clarification.executionPeriodExpired = No
+    consequence equals Yes
+
+  label clarification_default definition clarificationAllowed equals No
+```
+
+## Article 255. Entry into force of court decision
+
+```catala
+declaration scope Article255DecisionEntryIntoForce:
+  input entry content DecisionEntryIntoForce
+  output decisionEnteredIntoForce content YesNo
+
+scope Article255DecisionEntryIntoForce:
+# Decision enters into force when appeal period expires without filing
+  label force_no_appeal definition decisionEnteredIntoForce under condition
+    entry.appealPeriodExpired = Yes
+    and entry.appealFiled = No
+    consequence equals Yes
+
+# Decision enters into force after appeal returned/refused/closed
+  label force_appeal_resolved definition decisionEnteredIntoForce under condition
+    entry.appealFiled = Yes
+    and (entry.appealReturned = Yes
+    or entry.appealRefused = Yes
+    or entry.appealClosed = Yes)
+    consequence equals Yes
+
+# Decision enters into force after appellate decision
+  label force_appellate definition decisionEnteredIntoForce under condition
+    entry.appealFiled = Yes
+    and entry.appellateDecisionIssued = Yes
+    consequence equals Yes
+
+  label force_default definition decisionEnteredIntoForce equals No
+```
+
+## Article 256. Entry into force of rulings
+
+```catala
+declaration scope Article256RulingEntryIntoForce:
+  input entry content DecisionEntryIntoForce
+  output rulingEnteredIntoForce content YesNo
+
+scope Article256RulingEntryIntoForce:
+# Ruling enters into force immediately when pronounced in session
+  label ruling_immediate definition rulingEnteredIntoForce under condition
+    entry.isRuling = Yes
+    and entry.pronouncedInSession = Yes
+    consequence equals Yes
+
+# Ruling enters into force on signature when all absent or written proceeding
+  label ruling_signature definition rulingEnteredIntoForce under condition
+    entry.isRuling = Yes
+    and entry.allParticipantsAbsent = Yes
+    consequence equals Yes
+
+  label ruling_written definition rulingEnteredIntoForce under condition
+    entry.isRuling = Yes
+    and entry.isWrittenProceeding = Yes
+    consequence equals Yes
+```

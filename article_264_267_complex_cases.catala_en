@@ -1,0 +1,225 @@
+## Article 264. Normative act challenge proceedings
+
+```catala
+declaration scope Article264NormativeActChallenge:
+  input challenge content NormativeActChallenge
+  output challengeHasStanding content YesNo
+  output challengeTimely content YesNo
+  output allInterestedPartiesDeemedNotified content YesNo
+  output relatedActsMayBeChallenged content YesNo
+  output reproductionCaseUsesSimplified content YesNo
+
+scope Article264NormativeActChallenge:
+# Standing: affected person or subject of relations where act will be applied
+  label standing_affected definition challengeHasStanding under condition
+    challenge.actChallengedByAffectedPerson = Yes
+    consequence equals Yes
+
+  label standing_subject definition challengeHasStanding under condition
+    challenge.actChallengedBySubjectOfRelations = Yes
+    consequence equals Yes
+
+  label standing_default definition challengeHasStanding equals No
+
+# Normative acts can be challenged during entire period of validity
+  label timely definition challengeTimely under condition
+    challenge.actStillInForce = Yes
+    consequence equals Yes
+
+  label untimely definition challengeTimely under condition
+    challenge.actStillInForce = No
+    consequence equals No
+
+# If announcement published timely, all interested parties deemed notified
+  label deemed_notified definition allInterestedPartiesDeemedNotified under condition
+    challenge.announcementPublished7DaysBeforePreparatory = Yes
+    consequence equals Yes
+
+# Related acts may be challenged in same proceeding
+  label related_acts definition relatedActsMayBeChallenged under condition
+    challenge.relatedActsAffectDecision = Yes
+    consequence equals Yes
+
+# Act reproducing invalidated act is considered under simplified proceedings
+  label reproduction_simplified definition reproductionCaseUsesSimplified under condition
+    challenge.actReproducesInvalidatedAct = Yes
+    consequence equals Yes
+
+  label reproduction_default definition reproductionCaseUsesSimplified equals No
+```
+
+## Article 265. Consequences of declaring normative act unlawful
+
+```catala
+declaration scope Article265NormativeActConsequences:
+  input consequences content NormativeActConsequences
+  output operativePartMustBePublished content YesNo
+  output actLosesForceOnDecisionEntry content YesNo
+
+scope Article265NormativeActConsequences:
+# Operative part must be published in official outlet
+  label must_publish definition operativePartMustBePublished equals Yes
+
+# Act loses force from moment decision enters into force
+  label loses_force definition actLosesForceOnDecisionEntry equals Yes
+```
+
+## Article 266. High-level official act challenges
+
+```catala
+declaration scope Article266HighOfficialChallenge:
+  input challenge content HighOfficialChallenge
+  output supremeCourtHasJurisdiction content YesNo
+  output panelOfFiveRequired content YesNo
+  output grandChamberIsAppellate content YesNo
+
+scope Article266HighOfficialChallenge:
+# Supreme Court has jurisdiction for high official challenges
+  label supreme_court definition supremeCourtHasJurisdiction under condition
+    challenge.subject = HighOfficialSubject.ParliamentNormativeAct
+    or challenge.subject = HighOfficialSubject.PresidentialNormativeAct
+    or challenge.subject = HighOfficialSubject.ParliamentOrPresidentialAction
+    or challenge.subject = HighOfficialSubject.HighCouncilOfJusticeAct
+    or challenge.subject = HighOfficialSubject.HighQualificationCommissionAct
+    or challenge.subject = HighOfficialSubject.CabinetMinistersReferendumInaction
+    consequence equals Yes
+
+# Panel of at least 5 judges required
+  label five_judges definition panelOfFiveRequired under condition
+    challenge.panelOfAtLeastFiveJudges = Yes
+    consequence equals Yes
+
+# Grand Chamber is appellate instance
+  label grand_chamber definition grandChamberIsAppellate under condition
+    challenge.isGrandChamberAppeal = Yes
+    consequence equals Yes
+
+  label not_supreme definition supremeCourtHasJurisdiction equals No
+
+  label default_panel definition panelOfFiveRequired equals No
+
+  label default_appellate definition grandChamberIsAppellate equals No
+```
+
+## Article 266-1. Bank-related individual act challenges
+
+```catala
+declaration scope Article2661BankActChallenge:
+  input challenge content BankRelatedActChallenge
+  output filingTimely content YesNo
+  output filingDoesNotStayAct content YesNo
+  output generalProceedingRequired content YesNo
+  output courtMayRelyOnOfficialAssessments content YesNo
+  output mayDeclareUnlawfulAndCancel content YesNo
+  output cancellationDoesNotRestorePriorStatus content YesNo
+
+scope Article2661BankActChallenge:
+# 3-month filing deadline is absolute, no restoration
+  label timely definition filingTimely under condition
+    challenge.threeMonthsSincePublication = Yes
+    consequence equals Yes
+
+  label untimely definition filingTimely under condition
+    challenge.threeMonthsSincePublication = No
+    consequence equals No
+
+# Filing does not stay the act
+  label no_stay definition filingDoesNotStayAct equals Yes
+
+# General proceeding required (not simplified)
+  label general_required definition generalProceedingRequired equals Yes
+
+# Court relies on official assessments unless exception applies
+  label rely_on_assessments definition courtMayRelyOnOfficialAssessments under condition
+    challenge.reviewException = BankActReviewException.SubstantialProceduralViolation
+    or challenge.reviewException = BankActReviewException.ObviouslyErroneousData
+    or challenge.reviewException = BankActReviewException.ObviousDiscrepancyOrContradiction
+    or challenge.reviewException = BankActReviewException.LackOfAuthorityOrAbuseOfPurpose
+    consequence equals No
+
+  label default_rely definition courtMayRelyOnOfficialAssessments equals Yes
+
+# Court may declare act unlawful and cancel
+  label may_cancel definition mayDeclareUnlawfulAndCancel equals Yes
+
+# Cancellation does not restore prior bank status
+  label no_restoration definition cancellationDoesNotRestorePriorStatus equals Yes
+```
+
+## Article 266-2. Bank share sale act challenges
+
+```catala
+declaration scope Article2662BankShareChallenge:
+  input challenge content BankShareSaleChallenge
+  output filingTimely content YesNo
+  output filingDoesNotStayAct content YesNo
+  output generalProceedingRequired content YesNo
+  output courtMayRelyOnOfficialAssessments content YesNo
+  output cancellationDoesNotRestorePriorStatus content YesNo
+
+scope Article2662BankShareChallenge:
+# 3-month filing deadline is absolute
+  label timely definition filingTimely under condition
+    challenge.threeMonthsSincePublication = Yes
+    consequence equals Yes
+
+  label untimely definition filingTimely under condition
+    challenge.threeMonthsSincePublication = No
+    consequence equals No
+
+# Filing does not stay the act
+  label no_stay definition filingDoesNotStayAct equals Yes
+
+# General proceeding required
+  label general_required definition generalProceedingRequired equals Yes
+
+# Court relies on official assessments unless exception applies
+  label exception_applies definition courtMayRelyOnOfficialAssessments under condition
+    challenge.reviewException = BankActReviewException.SubstantialProceduralViolation
+    or challenge.reviewException = BankActReviewException.ObviouslyErroneousData
+    or challenge.reviewException = BankActReviewException.ObviousDiscrepancyOrContradiction
+    or challenge.reviewException = BankActReviewException.LackOfAuthorityOrAbuseOfPurpose
+    consequence equals No
+
+  label default_rely definition courtMayRelyOnOfficialAssessments equals Yes
+
+# Cancellation does not restore prior status
+  label no_restoration definition cancellationDoesNotRestorePriorStatus equals Yes
+```
+
+## Article 267. Forced expropriation proceedings
+
+```catala
+declaration scope Article267ForcedExpropriation:
+  input case content ForcedExpropriationCase
+  output filingAllowed content YesNo
+  output appellateCourtHasJurisdiction content YesNo
+  output courtFeeExempt content YesNo
+  output generalProceedingRequired content YesNo
+  output supremeCourtIsAppealInstance content YesNo
+
+scope Article267ForcedExpropriation:
+# Only authorized bodies may file
+  label filing_by_authorized definition filingAllowed under condition
+    case.filedByAuthorizedBody = Yes
+    consequence equals Yes
+
+  label filing_prohibited definition filingAllowed under condition
+    case.filedByAuthorizedBody = No
+    consequence equals No
+
+# Appellate administrative court has jurisdiction
+  label appellate_jurisdiction definition appellateCourtHasJurisdiction under condition
+    case.filedAtAppellateCourt = Yes
+    and case.propertyLocatedInJurisdiction = Yes
+    consequence equals Yes
+
+# No court fee for expropriation claims
+  label fee_exempt definition courtFeeExempt equals Yes
+
+# General proceeding required
+  label general_proceeding definition generalProceedingRequired equals Yes
+
+# Supreme Court is appellate instance, decisions enter into force immediately
+  label supreme_appeal definition supremeCourtIsAppealInstance equals Yes
+```

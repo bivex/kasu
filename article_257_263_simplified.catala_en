@@ -1,0 +1,195 @@
+## Article 257. Cases considered under simplified proceedings
+
+```catala
+declaration scope Article257SimplifiedEligibility:
+  input check content SimplifiedEligibilityCheck
+  output simplifiedProceedingAllowed content YesNo
+
+scope Article257SimplifiedEligibility:
+# Default: simplified proceeding allowed for minor complexity cases
+  label simplified_allowed definition simplifiedProceedingAllowed under condition
+    check.isMinorComplexity = Yes
+    consequence equals Yes
+
+# Excluded: normative act challenge
+  label excluded_normative exception simplified_allowed
+  definition simplifiedProceedingAllowed under condition
+    check.simplifiedExclusion = SimplifiedExclusion.NormativeActChallengeExcluded
+    consequence equals No
+
+# Excluded: compensation above 100 minimums
+  label excluded_compensation exception simplified_allowed
+  definition simplifiedProceedingAllowed under condition
+    check.simplifiedExclusion = SimplifiedExclusion.CompensationAboveThreshold
+    and check.compensationClaimAbove100Minimums = Yes
+    consequence equals No
+
+# Excluded: forced expropriation
+  label excluded_expropriation exception simplified_allowed
+  definition simplifiedProceedingAllowed under condition
+    check.simplifiedExclusion = SimplifiedExclusion.ForcedExpropriationExcluded
+    consequence equals No
+
+# Excluded: monetary claim above threshold for legal entities (500 minimums)
+  label excluded_monetary_legal exception simplified_allowed
+  definition simplifiedProceedingAllowed under condition
+    check.simplifiedExclusion = SimplifiedExclusion.MonetaryClaimAboveThreshold
+    and check.monetaryClaimAbove500MinimumsLegalEntity = Yes
+    consequence equals No
+
+# Excluded: monetary claim above threshold for individuals (100 minimums)
+  label excluded_monetary_individual exception simplified_allowed
+  definition simplifiedProceedingAllowed under condition
+    check.simplifiedExclusion = SimplifiedExclusion.MonetaryClaimAboveThreshold
+    and check.monetaryClaimAbove100MinimumsIndividual = Yes
+    consequence equals No
+
+# Excluded: bank-related acts
+  label excluded_bank exception simplified_allowed
+  definition simplifiedProceedingAllowed under condition
+    check.simplifiedExclusion = SimplifiedExclusion.BankRelatedActExcluded
+    consequence equals No
+
+  label simplified_default definition simplifiedProceedingAllowed equals No
+```
+
+## Article 258. Timeline for simplified proceedings
+
+```catala
+declaration scope Article258SimplifiedTimeline:
+  input timeline content SimplifiedTimeline
+  output withinTimeLimit content YesNo
+
+scope Article258SimplifiedTimeline:
+# Simplified proceedings must be completed within 60 days
+  label general_timeline definition withinTimeLimit under condition
+    timeline.daysSinceOpening <= 60
+    and timeline.maxDays <= 60
+    consequence equals Yes
+
+  label exceeded_timeline definition withinTimeLimit under condition
+    timeline.daysSinceOpening > 60
+    consequence equals No
+```
+
+## Article 259-260. Determination of simplified proceeding
+
+```catala
+declaration scope Article260SimplifiedDetermination:
+  input determination content SimplifiedDetermination
+  output simplifiedProceedingConfirmed content YesNo
+  output mustSwitchToGeneralProceeding content YesNo
+
+scope Article260SimplifiedDetermination:
+# Simplified confirmed when plaintiff requests and covers entire case
+  label simplified_confirmed definition simplifiedProceedingConfirmed under condition
+    determination.plaintiffRequestedSimplified = Yes
+    and determination.requestCoversEntireCase = Yes
+    consequence equals Yes
+
+# Must switch to general if defendant objects timely and substantively
+  label switch_to_general definition mustSwitchToGeneralProceeding under condition
+    determination.defendantObjectsToSimplified = Yes
+    and determination.defendantObjectionTimely = Yes
+    and determination.defendantObjectionSubstantiated = Yes
+    consequence equals Yes
+
+# Stay on simplified if defendant objection untimely
+  label objection_untimely definition simplifiedProceedingConfirmed under condition
+    determination.defendantObjectsToSimplified = Yes
+    and determination.defendantObjectionTimely = No
+    consequence equals Yes
+
+  label simplified_not_confirmed definition simplifiedProceedingConfirmed equals No
+
+  label no_switch definition mustSwitchToGeneralProceeding equals No
+```
+
+## Article 261. Statements in simplified proceedings
+
+```catala
+declaration scope Article261SimplifiedStatements:
+  output defenseStatementDeadlineDays content integer
+  output replyToDefenseDeadlineDays content integer
+  output thirdPartyExplanationDeadlineDays content integer
+
+scope Article261SimplifiedStatements:
+# Defense statement deadline: 15 days
+  label defense_deadline definition defenseStatementDeadlineDays equals 15
+
+# Reply to defense: set by court
+  label reply_deadline definition replyToDefenseDeadlineDays equals 10
+
+# Third party explanation: 10 days after receiving defense
+  label third_party_deadline definition thirdPartyExplanationDeadlineDays equals 10
+```
+
+## Article 262. Features of simplified proceedings
+
+```catala
+declaration scope Article262SimplifiedFeatures:
+  input features content SimplifiedProceedingFeatures
+  output meritsReviewStartDays content integer
+  output preparatoryHearingRequired content YesNo
+  output hearingMustBeScheduled content YesNo
+  output debatesProhibited content YesNo
+
+scope Article262SimplifiedFeatures:
+# Written proceeding: merits start after 30 days
+  label written_start definition meritsReviewStartDays under condition
+    features.isWrittenProceedingCategory = No
+    consequence equals 30
+
+# No preparatory hearing in simplified proceedings
+  label no_preparatory definition preparatoryHearingRequired equals No
+
+# First hearing within 30 days
+  label first_hearing definition hearingMustBeScheduled under condition
+    features.firstHearingWithin30Days = No
+    consequence equals No
+
+# Hearing when requested by party or court initiative
+  label hearing_requested definition hearingMustBeScheduled under condition
+    features.eitherPartyRequestsHearing = Yes
+    or features.courtInitiatesHearing = Yes
+    consequence equals Yes
+
+# Debates are prohibited in simplified proceedings
+  label no_debates definition debatesProhibited equals Yes
+```
+
+## Article 263. Written proceeding categories
+
+```catala
+declaration scope Article263WrittenProceeding:
+  input eligibility content WrittenProceedingEligibility
+  output writtenProceedingApplies content YesNo
+  output maxDaysForWrittenProceeding content integer
+
+scope Article263WrittenProceeding:
+# Written proceeding applies to specific categories
+  label written_inaction definition writtenProceedingApplies under condition
+    eligibility.category = WrittenProceedingCategory.InactionChallengeWritten
+    consequence equals Yes
+
+  label written_pension definition writtenProceedingApplies under condition
+    eligibility.category = WrittenProceedingCategory.PensionSocialPaymentsWritten
+    consequence equals Yes
+
+  label written_business definition writtenProceedingApplies under condition
+    eligibility.category = WrittenProceedingCategory.BusinessTerminationWritten
+    consequence equals Yes
+
+  label written_debt definition writtenProceedingApplies under condition
+    eligibility.category = WrittenProceedingCategory.DebtCollectionBasedOnActWritten
+    consequence equals Yes
+
+  label written_entry_exit definition writtenProceedingApplies under condition
+    eligibility.category = WrittenProceedingCategory.EntryExitTerritoryWritten
+    consequence equals Yes
+
+# Written proceedings must be completed within 30 days
+  label written_timeline definition maxDaysForWrittenProceeding equals 30
+
+  label written_default definition writtenProceedingApplies equals No
+```

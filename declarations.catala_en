@@ -702,4 +702,282 @@ declaration structure ClaimWithoutConsideration:
   data ground content ClaimWithoutConsiderationGround
   data groundCured content YesNo
   data filedBeforeMeritsStarted content YesNo
+
+declaration enumeration DecisionContentPart:
+  -- IntroductoryPart
+  -- DescriptivePart
+  -- MotivationalPart
+  -- OperativePart
+
+declaration enumeration CourtReliefType:
+  -- DeclareNormativeActUnlawfulAndInvalid
+  -- DeclareIndividualActUnlawfulAndCancel
+  -- ProhibitSpecificActions
+  -- CompelSpecificAction
+  -- EstablishCompetencePresence
+  -- CompelActionAndCompensateHarm
+  -- TemporarilyProhibitActivity
+  -- CompulsoryDissolution
+  -- ProhibitPoliticalParty
+  -- TerminateReligiousOrganization
+  -- OtherEffectiveProtection
+  -- DetainForeignerForIdentification
+  -- DetainForeignerForRefugeeStatus
+  -- DetainForeignerForReadmission
+  -- ReleaseForeignerOnSurety
+  -- RequireForeignerDepositBail
+
+declaration enumeration AdditionalDecisionGround:
+  -- ClaimNotResolved
+  -- ExecutionMethodNotSpecified
+  -- CostsNotResolved
+
+declaration enumeration SeparateRulingGround:
+  -- LawViolationDetected
+  -- LiabilityGroundsExist
+  -- ProfessionalMisconduct
+  -- CriminalSignsDetected
+
+declaration enumeration RulingSeparateDocumentSubject:
+  -- LeaveClaimWithoutMotion
+  -- ReturnClaim
+  -- OpenProceedings
+  -- JoinOrSeparateClaims
+  -- SecureEvidence
+  -- DetermineCosts
+  -- ExtendOrRestoreDeadlines
+  -- TransferCase
+  -- SecureClaim
+  -- AppointExpertise
+  -- CorrectClericalErrors
+  -- RefuseAdditionalDecision
+  -- ClarifyDecision
+  -- SuspendProceedings
+  -- CloseProceedings
+  -- LeaveClaimWithoutConsideration
+
+declaration enumeration DecisionEffectBasis:
+  -- AfterAppealPeriodExpires
+  -- AfterAppealReturned
+  -- AfterAppealRefused
+  -- AfterAppealClosed
+  -- AfterAppellateDecision
+  -- ImmediatelyOnPronouncement
+  -- OnSignatureByJudges
+
+declaration enumeration SimplifiedExclusion:
+  -- NormativeActChallengeExcluded
+  -- CompensationAboveThreshold
+  -- ForcedExpropriationExcluded
+  -- MonetaryClaimAboveThreshold
+  -- RehabilitationCommissionExcluded
+  -- BankRelatedActExcluded
+
+declaration enumeration WrittenProceedingCategory:
+  -- InactionChallengeWritten
+  -- PensionSocialPaymentsWritten
+  -- BusinessTerminationWritten
+  -- DebtCollectionBasedOnActWritten
+  -- EntryExitTerritoryWritten
+
+declaration enumeration HighOfficialSubject:
+  -- ParliamentNormativeAct
+  -- PresidentialNormativeAct
+  -- ParliamentOrPresidentialAction
+  -- HighCouncilOfJusticeAct
+  -- HighQualificationCommissionAct
+  -- HighCouncilOfJusticeDisciplinaryDecision
+  -- CabinetMinistersReferendumInaction
+
+declaration enumeration BankRelatedActSubject:
+  -- NBUInsolvencyClassification
+  -- NBULicenseRevocationLiquidation
+  -- NBUStateParticipationProposal
+  -- FundTemporaryAdministration
+  -- FundLiquidationStart
+  -- FundPlanApproval
+  -- FundAuthorizedPersonAppointment
+  -- CabinetMinistersStateParticipation
+  -- MinistryFinanceImplementationAct
+  -- SecuritiesCommissionBankAct
+
+declaration enumeration BankShareSaleSubject:
+  -- MinistryFinanceShareDecision
+  -- CabinetMinistersShareDecision
+  -- NBUShareDecision
+  -- SecuritiesCommissionShareDecision
+
+declaration enumeration ForcedExpropriationAspect:
+  -- PropertyDescriptionAspect
+  -- CompensationConditionsAspect
+  -- VacationDeadlineAspect
+  -- FinancingSourceAspect
+
+declaration enumeration BankActReviewException:
+  -- SubstantialProceduralViolation
+  -- ObviouslyErroneousData
+  -- ObviousDiscrepancyOrContradiction
+  -- LackOfAuthorityOrAbuseOfPurpose
+
+declaration structure CourtDecisionTypeDetermination:
+  data instanceLevel content CourtInstance
+  data isProceduralQuestion content YesNo
+  data concludesCase content YesNo
+  data isReviewInstance content YesNo
+  data concludesReview content YesNo
+  data caseEndedByRuling content YesNo
+
+declaration structure DecisionLegality:
+  data followsSubstantiveLaw content YesNo
+  data followsProceduralLaw content YesNo
+  data factsFullyEstablished content YesNo
+  data evidenceExaminedInHearing content YesNo
+  data allArgumentsEvaluated content YesNo
+  data consistentWithSupremeCourtPractice content YesNo
+  data partyAcknowledgedClaim content YesNo
+  data acknowledgmentNotProhibitedByArticle189 content YesNo
+
+declaration structure DecisionAdoption:
+  data caseComplexityRequiresPostponement content YesNo
+  data postponementDays content integer
+  data isSimplifiedProceeding content YesNo
+  data isWrittenProceeding content YesNo
+  data rulingAsSeparateDocument content YesNo
+
+declaration structure CourtPowersDetermination:
+  data case content AdministrativeCase
+  data reliefSought content CourtReliefType
+  data claimFullySatisfied content YesNo
+  data claimPartiallySatisfied content YesNo
+  data claimDenied content YesNo
+  data normativeActUnlawful content YesNo
+  data insufficientLegalRegulation content YesNo
+  data defendantMustDecideForPlaintiff content YesNo
+  data defendantHasDiscretion content YesNo
+  data reasonableExecutionDeadlineDays content integer
+
+declaration structure PartialDecisionCheck:
+  data multipleRelatedClaimsJoined content YesNo
+  data singleDefendantForAllClaims content YesNo
+  data defendantObjectsToPartial content YesNo
+  data unresolvedClaimsRemain content YesNo
+
+declaration structure DecisionPronouncement:
+  data allParticipantsPresent content YesNo
+  data isWrittenProceeding content YesNo
+  data decisionDate content date
+  data fullDecisionComposedDate content date
+  data pronouncementDate content date
+
+declaration structure DecisionServiceCheck:
+  data participantsPresentAtHearing content YesNo
+  data abbreviatedDecisionPronounced content YesNo
+  data participantRequestsCopy content YesNo
+  data participantHasElectronicCabinet content YesNo
+  data daysSinceFullComposition content integer
+
+declaration structure AdditionalDecisionCheck:
+  data ground content AdditionalDecisionGround
+  data applicationFiledWithinExecutionPeriod content YesNo
+  data tenDaysSinceApplication content integer
+
+declaration structure DecisionCorrection:
+  data clericalErrorsPresent content YesNo
+  data obviousArithmeticErrorsPresent content YesNo
+  data decisionEnteredIntoForce content YesNo
+  data tenDaysSinceApplication content integer
+
+declaration structure DecisionClarification:
+  data decisionEnteredIntoForce content YesNo
+  data decisionExecuted content YesNo
+  data executionPeriodExpired content YesNo
+  data tenDaysSinceApplication content integer
+
+declaration structure DecisionEntryIntoForce:
+  data appealPeriodExpired content YesNo
+  data appealFiled content YesNo
+  data appealReturned content YesNo
+  data appealRefused content YesNo
+  data appealClosed content YesNo
+  data appellateDecisionIssued content YesNo
+  data isRuling content YesNo
+  data pronouncedInSession content YesNo
+  data allParticipantsAbsent content YesNo
+  data isWrittenProceeding content YesNo
+
+declaration structure SimplifiedEligibilityCheck:
+  data case content AdministrativeCase
+  data isMinorComplexity content YesNo
+  data simplifiedExclusion content SimplifiedExclusion
+  data compensationClaimAbove100Minimums content YesNo
+  data monetaryClaimAbove500MinimumsLegalEntity content YesNo
+  data monetaryClaimAbove100MinimumsIndividual content YesNo
+  data isForcedExpropriation content YesNo
+  data isNormativeActChallenge content YesNo
+  data isBankRelatedAct content YesNo
+
+declaration structure SimplifiedTimeline:
+  data daysSinceOpening content integer
+  data maxDays content integer
+
+declaration structure SimplifiedDetermination:
+  data plaintiffRequestedSimplified content YesNo
+  data requestCoversEntireCase content YesNo
+  data defendantObjectsToSimplified content YesNo
+  data defendantObjectionTimely content YesNo
+  data defendantObjectionSubstantiated content YesNo
+
+declaration structure SimplifiedProceedingFeatures:
+  data isWrittenProceedingCategory content YesNo
+  data daysSinceOpening content integer
+  data firstHearingWithin30Days content YesNo
+  data eitherPartyRequestsHearing content YesNo
+  data courtInitiatesHearing content YesNo
+
+declaration structure WrittenProceedingEligibility:
+  data category content WrittenProceedingCategory
+  data daysSinceOpening content integer
+
+declaration structure NormativeActChallenge:
+  data actChallengedByAffectedPerson content YesNo
+  data actChallengedBySubjectOfRelations content YesNo
+  data actStillInForce content YesNo
+  data announcementPublished7DaysBeforePreparatory content YesNo
+  data relatedActsAffectDecision content YesNo
+  data actReproducesInvalidatedAct content YesNo
+
+declaration structure NormativeActConsequences:
+  data operativePartPublished content YesNo
+  data actLosesForceFromDecisionEntryIntoForce content YesNo
+
+declaration structure HighOfficialChallenge:
+  data subject content HighOfficialSubject
+  data isNormativeAct content YesNo
+  data panelOfAtLeastFiveJudges content YesNo
+  data isSupremeCourtFirstInstance content YesNo
+  data isGrandChamberAppeal content YesNo
+
+declaration structure BankRelatedActChallenge:
+  data subject content BankRelatedActSubject
+  data threeMonthsSincePublication content YesNo
+  data filingStaysActEffect content YesNo
+  data reviewException content BankActReviewException
+  data compensationClaimedSimultaneously content YesNo
+
+declaration structure BankShareSaleChallenge:
+  data subject content BankShareSaleSubject
+  data threeMonthsSincePublication content YesNo
+  data filingStaysActEffect content YesNo
+  data reviewException content BankActReviewException
+  data compensationClaimedSimultaneously content YesNo
+
+declaration structure ForcedExpropriationCase:
+  data filedByAuthorizedBody content YesNo
+  data filedAtAppellateCourt content YesNo
+  data propertyLocatedInJurisdiction content YesNo
+  data courtFeePaid content YesNo
+  data compensationConditionsSpecified content YesNo
+  data vacationDeadlineSpecified content YesNo
+  data financingSourceSpecified content YesNo
+  data isSupremeCourtAppeal content YesNo
 ```
